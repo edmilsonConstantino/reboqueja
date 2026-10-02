@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-neutral-50 text-neutral-900 antialiased;
+}
+
+.dark body {
+  @apply bg-neutral-950 text-neutral-100;
+}
+
+/* MapLibre ajustes para bottom sheet */
+.maplibregl-ctrl-attrib {
+  font-size: 10px !important;
+}
+
+.maplibregl-canvas:focus {
+  outline: none;
+}
+
+/* Animações utilitárias */
+@keyframes rj-radar {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.rj-radar {
+  animation: rj-radar 1.6s ease-out infinite;
+  transform-origin: center;
+}
+
+@keyframes rj-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rj-fade-up {
+  animation: rj-fade-up 0.25s ease-out both;
+}
+
+@keyframes rj-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.rj-sheet-up {
+  animation: rj-sheet-up 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Linha do tempo vertical */
+.rj-timeline::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    #ffc300,
+    rgba(255, 195, 0, 0.25)
+  );
+}

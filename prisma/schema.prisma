@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Utilizadores e papéis ----------
+
+model Utilizador {
+  id          String    @id @default(cuid())
+  nome        String
+  telefone    String    @unique
+  email       String?   @unique
+  senhaHash   String
+  papel       String // CONDUTOR | EMPRESA | ADMIN
+  activo      Boolean   @default(true)
+  criadoEm    DateTime  @default(now())
+
+  veiculos     Veiculo[]
+  pedidos      Pedido[]  @relation("PedidosDoCondutor")
+  empresa      Empresa?
+  respostas    RespostaPrototipo[]
+}
+
+model Veiculo {
+  id         String @id @default(cuid())
+  condutorId String
+  marca      String
+  modelo     String
+  matricula  String
+  tipo       String // LIGEIRO | SUV | MINIBUS | PESADO
+
+  condutor Utilizador @relation(fields: [condutorId], references: [id], onDelete: Cascade)
+  pedidos  Pedido[]
+
+  @@index([condutorId])
+}
+
+// ---------- Empresas ----------
+
+model Empresa {
+  id            String  @id @default(cuid())
+  utilizadorId  String  @unique
+  nome          String
+  nuit          String
+  telefone      String
+  email         String
+  endereco      String
+  lat           Float
+  lng           Float
+  raioKm        Float   @default(15)
+  disponivel    Boolean @default(false)
+  estadoAprovacao String @default("PENDENTE") // PENDENTE | APROVADA | REJEITADA
+  consentimentoEm DateTime?
+
+  utilizador Utilizador @relation(fields: [utilizadorId], references: [id], onDelete: Cascade)
+  camioes    Camiao[]
+  precos     FaixaPreco[]
+  pedidos    Pedido[]
+
+  @@index([estadoAprovacao])
+}
+
+model Camiao {
+  id              String  @id @default(cuid())
+  empresaId       String
+  matricula       String
+  tipo            String // LIGEIRO | SUV | MINIBUS | PESADO
+  capacidade      String?
+  motoristaNome   String
+  motoristaTelefone String
+  lat             Float   @default(0)
+  lng             Float   @default(0)
+  activo          Boolean @default(true)
+
+  empresa Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  pedidos Pedido[]
+
+  @@index([empresaId])
+}
+
+model FaixaPreco {
+  id          String @id @default(cuid())
+  empresaId   String
+  tipoVeiculo String // LIGEIRO | SUV | MINIBUS | PESADO
+  kmMin       Float
+  kmMax       Float // 9999 = "mais de X"
+  precoMin    Int
+  precoMax    Int
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@unique([empresaId, tipoVeiculo, kmMin])
+}
+
+// ---------- Pedidos ----------
+
+model Pedido {
+  id               String  @id @default(cuid())
+  condutorId       String
+  empresaId        String?
+  camiaoId         String?
+  veiculoId        String?
+  origemLat        Float
+  origemLng        Float
+  origemEndereco   String
+  destinoLat       Float
+  destinoLng       Float
+  destinoEndereco  String
+  distanciaKm      Float
+  tipoProblema     String // AVARIA_MECANICA | ACIDENTE | PNEU_FURADO | SEM_COMBUSTIVEL | BATERIA | OUTRO
+  tipoVeiculo      String  // LIGEIRO | SUV | MINIBUS | PESADO
+  observacoes      String?
+  estado           String  @default("PENDENTE") // PENDENTE | ACEITE | A_CAMINHO | NO_LOCAL | EM_TRANSPORTE | CONCLUIDO | CANCELADO
+  precoMin         Int
+  precoMax         Int
+  metodoPagamento  String? // DINHEIRO | MPESA | EMOLA
+  pagamentoConfirmado Boolean @default(false)
+  canceladoPor     String?
+  criadoEm         DateTime @default(now())
+  actualizadoEm    DateTime @updatedAt
+
+  condutor Utilizador    @relation("PedidosDoCondutor", fields: [condutorId], references: [id], onDelete: Cascade)
+  empresa  Empresa?      @relation(fields: [empresaId], references: [id])
+  camiao   Camiao?       @relation(fields: [camiaoId], references: [id])
+  veiculo  Veiculo?      @relation(fields: [veiculoId], references: [id])
+  eventos  PedidoEvento[]
+  avaliacao Avaliacao?
+
+  @@index([condutorId])
+  @@index([empresaId])
+  @@index([estado])
+}
+
+model PedidoEvento {
+  id        String   @id @default(cuid())
+  pedidoId  String
+  estado    String
+  nota      String?
+  criadoEm  DateTime @default(now())
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  @@index([pedidoId])
+}
+
+// ---------- Avaliações ----------
+
+model Avaliacao {
+  id         String  @id @default(cuid())
+  pedidoId   String  @unique
+  estrelas   Int // 1-5
+  comentario String?
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+}
+
+// ---------- Questionário do protótipo ----------
+
+model RespostaPrototipo {
+  id           String   @id @default(cuid())
+  utilizadorId String
+  papel        String
+  respostas    String // JSON: { sus: number[10], extras: number[3], comentario }
+  susScore     Int
+  comentario   String?
+  criadoEm     DateTime @default(now())
+
+  utilizador Utilizador @relation(fields: [utilizadorId], references: [id], onDelete: Cascade)
+}

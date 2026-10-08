@@ -24,6 +24,9 @@ export function Mapa(props: {
   aoClicar?: (p: LatLng) => void;
   className?: string;
   encaixarEm?: boolean;
+  escuro?: boolean;
+  controlos?: boolean;
+  aoLocalizar?: () => void;
 }) {
   return <MapaInterno {...props} />;
 }

@@ -8,7 +8,13 @@ export async function GET() {
     const pedidos = await prisma.pedido.findMany({
       where: { condutorId: sessao.id },
       orderBy: { criadoEm: "desc" },
-      include: { empresa: { select: { nome: true } } },
+      include: {
+        empresa: { select: { nome: true, telefone: true } },
+        camiao: {
+          select: { matricula: true, motoristaNome: true, motoristaTelefone: true, lat: true, lng: true },
+        },
+        eventos: { select: { estado: true, criadoEm: true }, orderBy: { criadoEm: "asc" } },
+      },
     });
     return ok({ pedidos });
   } catch (e) {

@@ -43,6 +43,9 @@ export function MapaLibre({
   aoClicar,
   className = "",
   encaixarEm,
+  escuro = false,
+  controlos = false,
+  aoLocalizar,
 }: {
   centro?: LatLng;
   zoom?: number;
@@ -54,6 +57,12 @@ export function MapaLibre({
   className?: string;
   /** Encaixa a vista nos marcadores (fitBounds). */
   encaixarEm?: boolean;
+  /** Aplica um filtro escuro aos tiles (os marcadores não são afectados). */
+  escuro?: boolean;
+  /** Mostra botões de zoom (+/−) sobre o mapa. */
+  controlos?: boolean;
+  /** Se definido, mostra o botão "a minha localização". */
+  aoLocalizar?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapaRef = useRef<maplibregl.Map | null>(null);
@@ -232,8 +241,48 @@ export function MapaLibre({
   }, [centroChave, pronto]);
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${escuro ? "rj-mapa-escuro" : ""} ${className}`}>
       <div ref={ref} className="absolute inset-0" />
+      {(controlos || aoLocalizar) && pronto && (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
+          {controlos && (
+            <div className="flex flex-col rounded-xl overflow-hidden border border-white/10 bg-neutral-950/80 backdrop-blur shadow-lg">
+              <button
+                type="button"
+                aria-label="Aproximar"
+                onClick={() => mapaRef.current?.zoomIn()}
+                className="w-10 h-10 grid place-items-center text-xl text-neutral-200 hover:text-primary-400 hover:bg-white/[0.06]"
+              >
+                +
+              </button>
+              <span className="h-px bg-white/10" />
+              <button
+                type="button"
+                aria-label="Afastar"
+                onClick={() => mapaRef.current?.zoomOut()}
+                className="w-10 h-10 grid place-items-center text-xl text-neutral-200 hover:text-primary-400 hover:bg-white/[0.06]"
+              >
+                −
+              </button>
+            </div>
+          )}
+          {aoLocalizar && (
+            <button
+              type="button"
+              aria-label="Usar a minha localização"
+              title="Usar a minha localização"
+              onClick={aoLocalizar}
+              className="w-10 h-10 grid place-items-center rounded-xl border border-white/10 bg-neutral-950/80 backdrop-blur shadow-lg text-neutral-200 hover:text-primary-400"
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+                <circle cx="12" cy="12" r="7" />
+                <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
       {!pronto && (
         <div className="absolute inset-0 grid place-items-center bg-neutral-100 dark:bg-neutral-900">
           <div className="w-9 h-9 rounded-full border-4 border-primary-400 border-t-transparent animate-spin" />

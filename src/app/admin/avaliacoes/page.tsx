@@ -49,7 +49,7 @@ export default function AdminAvaliacoes() {
   const mediaExtra3 = mediaPorPergunta(2, "extras");
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
+    <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <h1 className="text-2xl font-extrabold">Avaliações do protótipo</h1>
         <a href="/api/admin/avaliacoes?csv=1">

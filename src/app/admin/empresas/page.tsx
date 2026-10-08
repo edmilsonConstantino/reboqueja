@@ -65,8 +65,13 @@ export default function AdminEmpresas() {
     s === "APROVADA" ? "verde" : s === "PENDENTE" ? "amarelo" : "vermelho";
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-      <h1 className="text-2xl font-extrabold">Empresas</h1>
+    <div className="max-w-5xl mx-auto px-4 py-6 space-y-5">
+      <div>
+        <h1 className="text-2xl font-extrabold">Empresas</h1>
+        <p className="text-sm text-neutral-400 mt-1">
+          Aprove ou rejeite as empresas de reboque registadas na plataforma.
+        </p>
+      </div>
 
       {/* Filtros */}
       <div className="flex gap-2 flex-wrap">

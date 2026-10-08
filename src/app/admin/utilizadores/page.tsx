@@ -52,11 +52,13 @@ export default function AdminUtilizadores() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-      <h1 className="text-2xl font-extrabold">Utilizadores</h1>
-      <p className="text-sm text-neutral-500 dark:text-neutral-400 -mt-3">
-        Utilizadores desactivados não conseguem entrar na aplicação.
-      </p>
+    <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
+      <div>
+        <h1 className="text-2xl font-extrabold">Utilizadores</h1>
+        <p className="text-sm text-neutral-400 mt-1">
+          Utilizadores desactivados não conseguem entrar na aplicação.
+        </p>
+      </div>
 
       <div className="space-y-3">
         {utilizadores.map((u) => (

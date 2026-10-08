@@ -22,15 +22,14 @@ function FormularioEntrar() {
   const [erroMsg, setErroMsg] = useState("");
   const [aEntrar, setAEntrar] = useState(false);
 
-  const submeter = async (e: FormEvent) => {
-    e.preventDefault();
+  const entrar = async (c: string, s: string) => {
     setAEntrar(true);
     setErroMsg("");
     try {
       const res = await fetch("/api/entrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contacto, senha }),
+        body: JSON.stringify({ contacto: c, senha: s }),
       });
       const dados = await res.json();
       if (!res.ok) {
@@ -44,13 +43,18 @@ function FormularioEntrar() {
         ADMIN: "/admin",
       };
       const destino =
-        proximo && proximo.startsWith(`/${dados.papel.toLowerCase()}`)
+        proximo && destinos[dados.papel] && proximo.startsWith(destinos[dados.papel])
           ? proximo
           : destinos[dados.papel] || "/";
       router.replace(destino);
     } finally {
       setAEntrar(false);
     }
+  };
+
+  const submeter = async (e: FormEvent) => {
+    e.preventDefault();
+    await entrar(contacto, senha);
   };
 
   return (
@@ -94,10 +98,13 @@ function FormularioEntrar() {
         </p>
       </Cartao>
 
-      {/* Credenciais de teste */}
+      {/* Credenciais de teste: clicar entra automaticamente */}
       <Cartao className="p-4 mt-4">
         <p className="text-xs font-bold text-neutral-500 uppercase tracking-wide mb-2">
           Contas de teste (protótipo)
+        </p>
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
+          Clique num botão para entrar automaticamente:
         </p>
         <div className="text-xs space-y-1.5 text-neutral-600 dark:text-neutral-400">
           <p>
@@ -111,36 +118,25 @@ function FormularioEntrar() {
           </p>
         </div>
         <div className="grid grid-cols-3 gap-2 mt-3">
-          <button
-            type="button"
-            onClick={() => {
-              setContacto("+258841111111");
-              setSenha("teste123");
-            }}
-            className="text-xs border border-neutral-200 dark:border-neutral-700 rounded-lg py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-          >
-            Condutor
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setContacto("+258865000001");
-              setSenha("teste123");
-            }}
-            className="text-xs border border-neutral-200 dark:border-neutral-700 rounded-lg py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-          >
-            Empresa
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setContacto("admin@reboqueja.co.mz");
-              setSenha("admin123");
-            }}
-            className="text-xs border border-neutral-200 dark:border-neutral-700 rounded-lg py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-          >
-            Admin
-          </button>
+          {[
+            { rotulo: "Condutor", contacto: "+258841111111", senha: "teste123" },
+            { rotulo: "Empresa", contacto: "+258865000001", senha: "teste123" },
+            { rotulo: "Admin", contacto: "admin@reboqueja.co.mz", senha: "admin123" },
+          ].map((conta) => (
+            <button
+              key={conta.rotulo}
+              type="button"
+              disabled={aEntrar}
+              onClick={() => {
+                setContacto(conta.contacto);
+                setSenha(conta.senha);
+                void entrar(conta.contacto, conta.senha);
+              }}
+              className="text-xs border border-neutral-200 dark:border-neutral-700 rounded-lg py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {aEntrar ? "A entrar…" : conta.rotulo}
+            </button>
+          ))}
         </div>
       </Cartao>
     </div>

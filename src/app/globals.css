@@ -91,3 +91,8 @@ body {
     rgba(255, 195, 0, 0.25)
   );
 }
+
+/* Mapa em tons escuros (só os tiles; marcadores mantêm as cores) */
+.rj-mapa-escuro .maplibregl-canvas {
+  filter: invert(1) hue-rotate(195deg) brightness(0.9) contrast(0.9) saturate(0.6);
+}

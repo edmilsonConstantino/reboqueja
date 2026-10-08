@@ -53,8 +53,13 @@ export default function AdminPedidos() {
     s === "CONCLUIDO" ? "verde" : s === "CANCELADO" ? "vermelho" : s === "PENDENTE" ? "amarelo" : "azul";
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-      <h1 className="text-2xl font-extrabold">Todos os pedidos</h1>
+    <div className="max-w-6xl mx-auto px-4 py-6 space-y-5">
+      <div>
+        <h1 className="text-2xl font-extrabold">Todos os pedidos</h1>
+        <p className="text-sm text-neutral-400 mt-1">
+          Histórico completo com filtros por estado, empresa e data.
+        </p>
+      </div>
 
       {/* Filtros */}
       <Cartao className="p-4 grid grid-cols-2 md:grid-cols-4 gap-3">

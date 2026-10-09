@@ -3,146 +3,24 @@
 > next dev
 
   ▲ Next.js 14.2.28
-  - Local:        http://localhost:52431
+  - Local:        http://localhost:58728
   - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 3.9s
+ ✓ Ready in 12.4s
  ○ Compiling / ...
- ✓ Compiled / in 10.9s (511 modules)
- GET / 200 in 11594ms
+ ✓ Compiled / in 6.4s (513 modules)
+ GET / 200 in 6839ms
  ○ Compiling /entrar ...
- ✓ Compiled /entrar in 10.2s (519 modules)
- GET /entrar 200 in 10589ms
+ ✓ Compiled /entrar in 3.7s (519 modules)
+ GET /entrar 200 in 3941ms
+ ✓ Compiled /registar in 350ms (511 modules)
+ GET /registar 200 in 478ms
+ ○ Compiling /registar/empresa ...
+ ✓ Compiled /registar/empresa in 521ms (519 modules)
+ GET /registar/empresa 200 in 636ms
  ○ Compiling /empresas ...
- ✓ Compiled /empresas in 634ms (513 modules)
- GET /empresas 200 in 1169ms
- GET / 200 in 123ms
- GET / 200 in 81ms
- GET / 200 in 111ms
- GET / 200 in 193ms
- ○ Compiling /api/entrar ...
- ✓ Compiled /api/entrar in 923ms (394 modules)
- POST /api/entrar 200 in 2170ms
- ✓ Compiled in 631ms (264 modules)
- ✓ Compiled /entrar in 275ms (256 modules)
- GET /entrar 200 in 508ms
- ✓ Compiled /api/entrar in 285ms (399 modules)
- POST /api/entrar 200 in 1519ms
- ○ Compiling /src/middleware ...
- ✓ Compiled /src/middleware in 947ms (152 modules)
- ○ Compiling /app ...
- ✓ Compiled /app in 2.2s (712 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\(publico)\empresas\page.js'
-<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/(publico)/empresas/page' in C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\(publico)\empresas\page.js', but to 'Error: Can't resolve '../../../../.next/server/app/(publico)/empresas/page' in 'C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
-<w>  at resolve commonjs file ../../../../.next/server/app/(publico)/empresas/page (expected C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\(publico)\empresas\page.js)
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\server\require.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\server\require.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\server\load-components.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\server\load-components.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\utils.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\utils.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\webpack\loaders\next-app-loader.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\webpack\loaders\next-app-loader.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\compiled\webpack\bundle5.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\compiled\webpack\bundle5.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\compiled\webpack\webpack.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\compiled\webpack\webpack.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\swc\index.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\swc\index.js
-<w>  at file dependencies C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
-<w>  at file C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
-<w>  at resolve commonjs C:\Users\Dell Latitude 5520\Desktop\reboqueja\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
- GET /entrar 200 in 157ms
- POST /api/entrar 200 in 293ms
- ○ Compiling /empresa ...
- ✓ Compiled /empresa in 629ms (700 modules)
- ✓ Compiled /api/empresa/painel in 392ms (429 modules)
- GET /api/empresa/painel 200 in 520ms
- GET /api/empresa/painel 200 in 536ms
- GET /api/empresa/painel 200 in 47ms
- GET /api/empresa/painel 200 in 63ms
- GET /api/empresa/painel 200 in 59ms
- GET /api/empresa/painel 200 in 47ms
- GET /entrar 200 in 162ms
- POST /api/entrar 200 in 255ms
- ○ Compiling /admin ...
- ✓ Compiled /admin in 535ms (713 modules)
- ✓ Compiled /api/admin in 279ms (438 modules)
- GET /api/admin 200 in 378ms
- GET /api/admin 200 in 390ms
- ✓ Compiled /_not-found in 424ms (571 modules)
- GET /admin 200 in 111ms
- ✓ Compiled /api/admin in 249ms (434 modules)
- GET /api/admin 200 in 1349ms
- GET /api/admin 200 in 1358ms
- ✓ Compiled in 1036ms (582 modules)
- ✓ Compiled /_not-found in 398ms (571 modules)
- GET /admin 404 in 168ms
- ✓ Compiled in 708ms (585 modules)
- GET /admin 404 in 94ms
- GET / 200 in 67ms
- GET / 200 in 78ms
- GET / 200 in 97ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 7.4s (723 modules)
- ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /_next/static/webpack/8a29d22192661c3e.webpack.hot-update.json 404 in 6394ms
- GET / 200 in 136ms
- ✓ Compiled in 3.1s (582 modules)
- ○ Compiling /api/sessao ...
- ✓ Compiled /api/sessao in 2.3s (433 modules)
- GET /api/sessao 200 in 4944ms
- GET /api/sessao 200 in 36ms
- ○ Compiling /api/sessao ...
- ✓ Compiled /api/sessao in 31.6s (582 modules)
- ✓ Compiled in 1ms (433 modules)
- GET /api/sessao 200 in 13137ms
- GET /api/sessao 200 in 13161ms
- ✓ Compiled in 5.8s (291 modules)
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 4.4s (571 modules)
- GET / 200 in 854ms
- ○ Compiling /api/sessao ...
- ✓ Compiled /api/sessao in 1018ms (434 modules)
- GET /api/sessao 200 in 6008ms
- GET /api/sessao 200 in 6169ms
- ✓ Compiled in 7s (582 modules)
- ✓ Compiled in 3.2s (291 modules)
- ✓ Compiled in 1951ms (291 modules)
- ✓ Compiled /api/sessao in 18.2s (582 modules)
- ✓ Compiled in 2.7s (725 modules)
- ✓ Compiled in 2ms (434 modules)
- GET /api/sessao 200 in 8110ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 5s (715 modules)
- GET /api/sessao 404 in 13732ms
- ✓ Compiled in 5.9s (587 modules)
- ✓ Compiled in 5.1s (584 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: EPERM: operation not permitted, rename 'C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\cache\webpack\server-development\0.pack.gz_' -> 'C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\cache\webpack\server-development\0.pack.gz'
- ✓ Compiled in 16.1s (584 modules)
- ✓ Compiled in 1597ms (292 modules)
- ✓ Compiled in 4.6s (586 modules)
- ✓ Compiled in 11.3s (586 modules)
- ✓ Compiled in 10.4s (586 modules)
- ✓ Compiled in 2.7s (586 modules)
- ✓ Compiled in 3.3s (586 modules)
- ✓ Compiled in 3.1s (586 modules)
- ✓ Compiled in 2.6s (293 modules)
- GET /entrar 200 in 414ms
- ○ Compiling /api/entrar ...
- ✓ Compiled /api/entrar in 8.3s (436 modules)
- POST /api/entrar 200 in 13562ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 2.6s (732 modules)
- ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /_next/static/webpack/37e8b9828ba2c427.webpack.hot-update.json 404 in 1135ms
- GET /entrar 200 in 356ms
- POST /api/entrar 404 in 111ms
- GET / 200 in 385ms
- GET /entrar 200 in 293ms
- POST /api/entrar 404 in 198ms
+ ✓ Compiled /empresas in 561ms (527 modules)
+ GET /empresas 200 in 988ms
+ ✓ Compiled /termos in 483ms (529 modules)
+ GET /termos 200 in 681ms

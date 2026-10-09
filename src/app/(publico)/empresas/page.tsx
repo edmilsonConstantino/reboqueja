@@ -198,15 +198,15 @@ export default async function PaginaEmpresas() {
           className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#060911] to-transparent pointer-events-none"
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-14 sm:pb-20">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-10 sm:pb-14">
           {/* Traço indicador em amarelo dourado */}
-          <div className="w-12 h-1.5 rounded-full bg-[#FFC300] mb-4 shadow-[0_0_12px_rgba(255,195,0,0.6)]" />
+          <div className="w-10 h-1 rounded-full bg-[#FFC300] mb-3 shadow-[0_0_10px_rgba(255,195,0,0.5)]" />
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.1]">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-[1.1]">
             Empresas de <span className="text-[#FFC300]">reboque</span>
           </h1>
 
-          <p className="mt-3 text-sm sm:text-base text-neutral-300 max-w-2xl leading-relaxed">
+          <p className="mt-2 text-xs sm:text-sm text-neutral-300 max-w-xl leading-relaxed">
             Empresas aprovadas a operar na Cidade da Matola. Os preços são faixas
             definidas por cada empresa, por tipo de veículo e distância.
           </p>
@@ -214,25 +214,25 @@ export default async function PaginaEmpresas() {
       </section>
 
       {/* ===== GRELHA DE EMPRESAS (2x2) ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {empresas.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-[#0a0f1d] p-12 text-center max-w-md mx-auto">
-            <span className="text-5xl block mb-3">🛻</span>
-            <h2 className="text-xl font-bold text-white mb-2">
+          <div className="rounded-3xl border border-white/10 bg-[#0a0f1d] p-10 text-center max-w-md mx-auto">
+            <span className="text-4xl block mb-2.5">🛻</span>
+            <h2 className="text-lg font-bold text-white mb-1.5">
               Ainda não há empresas aprovadas
             </h2>
-            <p className="text-sm text-neutral-400 mb-6">
+            <p className="text-xs text-neutral-400 mb-5">
               Volte mais tarde ou registe a sua empresa de reboque na plataforma.
             </p>
             <Link
               href="/registar/empresa"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#FFC300] text-neutral-950 font-bold text-sm hover:bg-[#ffd033] transition"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#FFC300] text-neutral-950 font-bold text-xs hover:bg-[#ffd033] transition"
             >
               Registar empresa
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-7">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
             {empresas.map((e, index) => {
               const cfg =
                 CONFIGS_EMPRESAS[e.nome] ||
@@ -252,10 +252,10 @@ export default async function PaginaEmpresas() {
               return (
                 <article
                   key={e.id}
-                  className={`group relative rounded-3xl bg-[#090e1a]/95 border ${cfg.borda} ${cfg.bordaHover} ${cfg.sombra} transition-all duration-300 p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-5`}
+                  className={`group relative rounded-2xl bg-[#090e1a]/95 border ${cfg.borda} ${cfg.bordaHover} ${cfg.sombra} transition-all duration-300 p-3.5 sm:p-4 flex flex-col sm:flex-row gap-3.5 sm:gap-4`}
                 >
                   {/* Foto do camião de reboque */}
-                  <div className="relative w-full sm:w-44 md:w-52 h-44 sm:h-auto sm:self-stretch rounded-2xl overflow-hidden shrink-0 bg-neutral-950 border border-white/10 shadow-inner">
+                  <div className="relative w-full sm:w-36 md:w-44 h-36 sm:h-auto sm:self-stretch rounded-xl overflow-hidden shrink-0 bg-neutral-950 border border-white/10 shadow-inner">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={cfg.imagem}
@@ -274,38 +274,38 @@ export default async function PaginaEmpresas() {
                     {/* Cabeçalho do Cartão */}
                     <div>
                       <div className="flex items-start justify-between gap-2">
-                        <h2 className="font-extrabold text-base sm:text-lg text-white tracking-tight leading-snug truncate">
+                        <h2 className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-snug truncate">
                           {e.nome}
                         </h2>
 
                         {/* Tag Disponível */}
-                        <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        <span className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                           {e.disponivel ? "Disponível" : "Disponível"}
                         </span>
                       </div>
 
                       {/* Localização */}
-                      <p className="text-xs text-neutral-400 flex items-center gap-1.5 mt-1">
-                        <IconePin className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                      <p className="text-[11px] text-neutral-400 flex items-center gap-1.5 mt-0.5">
+                        <IconePin className="w-3 h-3 text-neutral-400 shrink-0" />
                         <span className="truncate">{e.endereco}</span>
                       </p>
 
                       {/* Avaliação e camiões */}
-                      <div className="flex items-center gap-4 mt-2 text-xs">
+                      <div className="flex items-center gap-3 mt-1.5 text-[11px]">
                         <span className="text-[#FFC300] font-bold flex items-center gap-1">
-                          <IconeEstrela className="w-3.5 h-3.5 fill-[#FFC300] text-[#FFC300]" />
+                          <IconeEstrela className="w-3 h-3 fill-[#FFC300] text-[#FFC300]" />
                           <span>{mediaCalculada}</span>
                         </span>
-                        <span className="text-neutral-300 flex items-center gap-1.5">
-                          <IconeCamiaoMini className="w-3.5 h-3.5 text-neutral-400" />
+                        <span className="text-neutral-300 flex items-center gap-1">
+                          <IconeCamiaoMini className="w-3 h-3 text-neutral-400" />
                           <span>{totalCamioes} camiões</span>
                         </span>
                       </div>
                     </div>
 
                     {/* Tabela de Preços por Tipo de Veículo (4 Linhas) */}
-                    <div className="space-y-1.5 mt-3 sm:mt-4">
+                    <div className="space-y-1 mt-2.5">
                       {TIPOS_VEICULO.map(({ chave, rotulo }) => {
                         const { t1, t2, t3, t4 } = obterFaixasPorTipo(
                           e.precos,
@@ -315,22 +315,22 @@ export default async function PaginaEmpresas() {
                         return (
                           <div
                             key={chave}
-                            className="rounded-xl bg-[#0d1424] border border-white/[0.06] px-2.5 py-1.5 flex items-center gap-2.5 sm:gap-3 transition-colors hover:border-white/10"
+                            className="rounded-lg bg-[#0d1424] border border-white/[0.06] px-2 py-1 flex items-center gap-2 transition-colors hover:border-white/10"
                           >
                             {/* Ícone e nome do tipo de veículo */}
-                            <div className="flex items-center gap-2 w-28 sm:w-32 shrink-0">
+                            <div className="flex items-center gap-1.5 w-24 sm:w-28 shrink-0">
                               <span
-                                className={`w-7 h-7 rounded-lg grid place-items-center shrink-0 ${cfg.iconeBg} ${cfg.iconeCor}`}
+                                className={`w-5 h-5 rounded-md grid place-items-center shrink-0 ${cfg.iconeBg} ${cfg.iconeCor}`}
                               >
-                                <IconeVeiculo tipo={chave} className="w-4 h-4" />
+                                <IconeVeiculo tipo={chave} className="w-3 h-3" />
                               </span>
-                              <span className="text-xs font-bold text-neutral-200 truncate">
+                              <span className="text-[11px] font-bold text-neutral-200 truncate">
                                 {rotulo}
                               </span>
                             </div>
 
                             {/* Matriz 2 Colunas de Faixas de Distância */}
-                            <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px] leading-tight">
+                            <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-2.5 gap-y-0.5 text-[10px] sm:text-[10.5px] leading-tight">
                               {/* Coluna 1: 0-5 km & 10-20 km */}
                               <div className="space-y-0.5 min-w-0">
                                 <div className="truncate">

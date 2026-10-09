@@ -58,31 +58,31 @@ export default function Landing() {
         />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#060911] to-transparent pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#060911] to-transparent pointer-events-none"
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-28">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-12 sm:pb-20">
           {/* Pílula de destaque */}
-          <span className="inline-block bg-[#FFC300] text-neutral-950 text-xs font-black tracking-wider uppercase px-4 py-1.5 rounded-full mb-6 shadow-[0_0_15px_rgba(255,195,0,0.4)]">
+          <span className="inline-block bg-[#FFC300] text-neutral-950 text-[11px] font-black tracking-wider uppercase px-3.5 py-1 rounded-full mb-4 shadow-[0_0_12px_rgba(255,195,0,0.35)]">
             SERVIÇO DE REBOQUE NA MATOLA
           </span>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.1]">
             O veículo avariu?
             <br />
             <span className="text-[#FFC300]">O reboque chega já.</span>
           </h1>
 
-          <p className="mt-5 text-sm sm:text-base md:text-lg text-neutral-300 max-w-xl leading-relaxed">
+          <p className="mt-4 text-xs sm:text-sm md:text-base text-neutral-300 max-w-lg leading-relaxed">
             O Reboque Já liga-o às empresas de reboque da Cidade da Matola em
             minutos. Veja a faixa de preço antes de pedir, acompanhe o camião no
             mapa e pague como preferir.
           </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-3.5">
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link
               href="/registar"
-              className="min-h-[50px] px-8 py-3.5 rounded-full bg-[#FFC300] text-neutral-950 font-extrabold text-sm hover:bg-[#ffd033] inline-flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-lg shadow-[#FFC300]/25"
+              className="min-h-[44px] px-6 py-2.5 rounded-full bg-[#FFC300] text-neutral-950 font-bold text-xs sm:text-sm hover:bg-[#ffd033] inline-flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-md shadow-[#FFC300]/25"
             >
               <span aria-hidden>🛻</span> Pedir reboque{" "}
               <span aria-hidden className="font-normal">
@@ -91,13 +91,13 @@ export default function Landing() {
             </Link>
             <Link
               href="/registar/empresa"
-              className="min-h-[50px] px-8 py-3.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white font-extrabold text-sm hover:bg-white/10 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
+              className="min-h-[44px] px-6 py-2.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white font-bold text-xs sm:text-sm hover:bg-white/10 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
             >
-              <IconePredio className="w-4 h-4 text-neutral-200" /> Sou empresa de reboque
+              <IconePredio className="w-3.5 h-3.5 text-neutral-200" /> Sou empresa de reboque
             </Link>
           </div>
 
-          <p className="mt-6 text-sm text-neutral-300">
+          <p className="mt-4 text-xs text-neutral-300">
             Já tem conta?{" "}
             <Link
               href="/entrar"
@@ -111,59 +111,59 @@ export default function Landing() {
       </section>
 
       {/* ===== COMO FUNCIONA (3 CARTÕES) ===== */}
-      <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+      <section className="py-10 sm:py-14 max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8 sm:mb-10">
           {/* Traço indicador em amarelo dourado */}
-          <div className="w-12 h-1 bg-[#FFC300] rounded-full mx-auto mb-3 shadow-[0_0_10px_rgba(255,195,0,0.5)]" />
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">
+          <div className="w-10 h-1 bg-[#FFC300] rounded-full mx-auto mb-2.5 shadow-[0_0_8px_rgba(255,195,0,0.5)]" />
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white">
             Como funciona
           </h2>
-          <p className="text-sm text-neutral-400 mt-2">
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1.5">
             É simples, rápido e seguro. Veja como pedir o seu reboque:
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
           {/* Passo 1 */}
-          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-6 flex flex-col justify-start transition hover:border-white/20">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-full bg-[#FFC300] text-neutral-950 font-black text-sm grid place-items-center shrink-0">
+          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-5 flex flex-col justify-start transition hover:border-white/20">
+            <div className="flex items-center gap-2.5">
+              <span className="w-7 h-7 rounded-full bg-[#FFC300] text-neutral-950 font-black text-xs grid place-items-center shrink-0">
                 1
               </span>
-              <IconePin className="w-6 h-6 text-[#FFC300]" />
+              <IconePin className="w-5 h-5 text-[#FFC300]" />
             </div>
-            <h3 className="font-bold text-lg text-white mt-5">Marque o local</h3>
-            <p className="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
+            <h3 className="font-bold text-base text-white mt-4">Marque o local</h3>
+            <p className="text-xs sm:text-[13px] text-neutral-400 mt-1.5 leading-relaxed">
               A app usa o GPS para encontrar o veículo. Confirme o ponto da avaria
               no mapa e escolha o destino.
             </p>
           </div>
 
           {/* Passo 2 */}
-          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-6 flex flex-col justify-start transition hover:border-white/20">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-full bg-[#FFC300] text-neutral-950 font-black text-sm grid place-items-center shrink-0">
+          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-5 flex flex-col justify-start transition hover:border-white/20">
+            <div className="flex items-center gap-2.5">
+              <span className="w-7 h-7 rounded-full bg-[#FFC300] text-neutral-950 font-black text-xs grid place-items-center shrink-0">
                 2
               </span>
-              <IconeLupa className="w-6 h-6 text-[#FFC300]" />
+              <IconeLupa className="w-5 h-5 text-[#FFC300]" />
             </div>
-            <h3 className="font-bold text-lg text-white mt-5">Compare e escolha</h3>
-            <p className="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
+            <h3 className="font-bold text-base text-white mt-4">Compare e escolha</h3>
+            <p className="text-xs sm:text-[13px] text-neutral-400 mt-1.5 leading-relaxed">
               Vê as empresas disponíveis, com a faixa de preço em MT e o tempo
               estimado de chegada. Escolhe a melhor para si.
             </p>
           </div>
 
           {/* Passo 3 */}
-          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-6 flex flex-col justify-start transition hover:border-white/20">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-full bg-[#FFC300] text-neutral-950 font-black text-sm grid place-items-center shrink-0">
+          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-5 flex flex-col justify-start transition hover:border-white/20">
+            <div className="flex items-center gap-2.5">
+              <span className="w-7 h-7 rounded-full bg-[#FFC300] text-neutral-950 font-black text-xs grid place-items-center shrink-0">
                 3
               </span>
-              <IconeCarro className="w-6 h-6 text-[#FFC300]" />
+              <IconeCarro className="w-5 h-5 text-[#FFC300]" />
             </div>
-            <h3 className="font-bold text-lg text-white mt-5">Acompanhe e avalie</h3>
-            <p className="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
+            <h3 className="font-bold text-base text-white mt-4">Acompanhe e avalie</h3>
+            <p className="text-xs sm:text-[13px] text-neutral-400 mt-1.5 leading-relaxed">
               Siga o camião em tempo real no mapa. No fim, indica o método de
               pagamento e avalia o serviço.
             </p>
@@ -171,21 +171,21 @@ export default function Landing() {
         </div>
 
         {/* ===== PREÇOS TRANSPARENTES, EM FAIXAS ===== */}
-        <div className="mt-7 rounded-3xl bg-[#090e1a]/95 border border-white/10 p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="mt-6 rounded-3xl bg-[#090e1a]/95 border border-white/10 p-5 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           {/* Lado Esquerdo: Texto & Filtros */}
           <div className="lg:col-span-7">
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3.5">
               <span
                 aria-hidden
-                className="w-12 h-12 shrink-0 rounded-full border-2 border-[#FFC300] text-[#FFC300] font-black text-base grid place-items-center"
+                className="w-10 h-10 shrink-0 rounded-full border-2 border-[#FFC300] text-[#FFC300] font-black text-xs sm:text-sm grid place-items-center"
               >
                 MT
               </span>
               <div>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                <h3 className="text-lg sm:text-xl font-extrabold text-white">
                   Preços transparentes, em faixas
                 </h3>
-                <p className="text-xs sm:text-sm text-neutral-400 mt-1.5 leading-relaxed">
+                <p className="text-xs sm:text-[13px] text-neutral-400 mt-1 leading-relaxed">
                   Cada empresa define as suas faixas por tipo de veículo e distância.
                   <br className="hidden sm:inline" />{" "}
                   {VEICULOS_INFO[veiculoAtivo].texto}
@@ -194,7 +194,7 @@ export default function Landing() {
             </div>
 
             {/* Pílulas de tipos de veículo */}
-            <div className="flex flex-wrap gap-2.5 mt-6">
+            <div className="flex flex-wrap gap-2 mt-5">
               {(["LIGEIRO", "SUV", "MINIBUS", "PESADO"] as const).map((tipo) => {
                 const ativo = veiculoAtivo === tipo;
                 const info = VEICULOS_INFO[tipo];
@@ -203,9 +203,9 @@ export default function Landing() {
                     key={tipo}
                     type="button"
                     onClick={() => setVeiculoAtivo(tipo)}
-                    className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       ativo
-                        ? "border border-[#FFC300] bg-[#FFC300]/15 text-white shadow-[0_0_12px_rgba(255,195,0,0.2)]"
+                        ? "border border-[#FFC300] bg-[#FFC300]/15 text-white shadow-[0_0_10px_rgba(255,195,0,0.2)]"
                         : "border border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
                     }`}
                   >
@@ -219,10 +219,10 @@ export default function Landing() {
 
           {/* Lado Direito: Ilustração do Mapa com Rota & ETA */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-2xl bg-[#060a14] border border-white/10 overflow-hidden p-6 min-h-[190px] flex items-center justify-between">
+            <div className="relative rounded-2xl bg-[#060a14] border border-white/10 overflow-hidden p-5 min-h-[160px] flex items-center justify-between">
               {/* Badge de ETA no canto superior direito */}
-              <div className="absolute top-4 right-4 z-10 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 flex items-center gap-2 text-xs text-white">
-                <IconeRelogio className="w-3.5 h-3.5 text-neutral-400" />
+              <div className="absolute top-3 right-3 z-10 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 flex items-center gap-1.5 text-[11px] text-white">
+                <IconeRelogio className="w-3 h-3 text-neutral-400" />
                 <span className="font-bold text-white">5.2 km</span>
                 <span className="text-neutral-400">~ 12 min</span>
               </div>
@@ -235,63 +235,63 @@ export default function Landing() {
               >
                 <defs>
                   <pattern
-                    id="grid-mapa"
-                    width="32"
-                    height="32"
+                    id="grid-mapa-home"
+                    width="28"
+                    height="28"
                     patternUnits="userSpaceOnUse"
                   >
                     <path
-                      d="M 32 0 L 0 0 0 32"
+                      d="M 28 0 L 0 0 0 28"
                       fill="none"
                       stroke="#142138"
                       strokeWidth="0.8"
                     />
                   </pattern>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#grid-mapa)" />
+                <rect width="100%" height="100%" fill="url(#grid-mapa-home)" />
                 {/* Vias principais */}
                 <path
-                  d="M-20 120 Q 120 100 240 140 T 500 90"
+                  d="M-20 100 Q 120 80 240 120 T 500 70"
                   stroke="#1c2d4d"
-                  strokeWidth="8"
+                  strokeWidth="7"
                   fill="none"
                 />
                 <path
-                  d="M140 -20 Q 160 100 120 220"
+                  d="M130 -20 Q 150 80 110 200"
                   stroke="#1c2d4d"
-                  strokeWidth="6"
+                  strokeWidth="5"
                   fill="none"
                 />
               </svg>
 
               {/* Rota traçada e marcadores */}
-              <div className="relative z-10 w-full flex items-center justify-between pt-4">
+              <div className="relative z-10 w-full flex items-center justify-between pt-3">
                 {/* Pin de Origem */}
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full bg-[#FFC300] grid place-items-center shadow-lg shadow-[#FFC300]/40">
-                    <span className="w-3 h-3 rounded-full bg-neutral-950" />
+                  <div className="w-7 h-7 rounded-full bg-[#FFC300] grid place-items-center shadow-md shadow-[#FFC300]/40">
+                    <span className="w-2.5 h-2.5 rounded-full bg-neutral-950" />
                   </div>
                 </div>
 
                 {/* Linha pontilhada curva da rota */}
-                <div className="flex-1 mx-3 flex items-center justify-center">
-                  <svg className="w-full h-12 overflow-visible" viewBox="0 0 200 40">
+                <div className="flex-1 mx-2.5 flex items-center justify-center">
+                  <svg className="w-full h-10 overflow-visible" viewBox="0 0 200 40">
                     <path
                       d="M 10 20 Q 90 40, 190 20"
                       fill="none"
                       stroke="#FFC300"
-                      strokeWidth="3.5"
-                      strokeDasharray="6 8"
+                      strokeWidth="3"
+                      strokeDasharray="5 7"
                       strokeLinecap="round"
                     />
                     {/* Ponto intermédio de conexão */}
-                    <circle cx="100" cy="27" r="4" fill="#FFC300" />
+                    <circle cx="100" cy="27" r="3.5" fill="#FFC300" />
                   </svg>
                 </div>
 
                 {/* Marcador de destino com camião */}
                 <div className="flex flex-col items-center">
-                  <div className="w-11 h-11 rounded-full bg-[#FFC300] grid place-items-center text-neutral-950 text-xl font-bold shadow-lg shadow-[#FFC300]/50 animate-pulse">
+                  <div className="w-9 h-9 rounded-full bg-[#FFC300] grid place-items-center text-neutral-950 text-base font-bold shadow-md shadow-[#FFC300]/50 animate-pulse">
                     🛻
                   </div>
                 </div>

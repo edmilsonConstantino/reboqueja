@@ -315,16 +315,16 @@ export function BarraNavegacaoPublica() {
 
   return (
     <header className="sticky top-0 z-40 bg-[#060911]/90 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
         {/* Logo */}
-        <Link href="/" className="group flex items-center gap-2.5 shrink-0" aria-label="ReboqueJá — início">
+        <Link href="/" className="group flex items-center gap-2 shrink-0" aria-label="ReboqueJá — início">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.svg"
             alt=""
-            className="w-9 h-9 rounded-xl shadow-[0_0_0_3px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
+            className="w-8 h-8 rounded-lg shadow-[0_0_0_2px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
           />
-          <span className="font-extrabold text-xl tracking-tight text-white">
+          <span className="font-extrabold text-lg tracking-tight text-white">
             Reboque<span className="text-primary-400">Já</span>
           </span>
         </Link>
@@ -338,7 +338,7 @@ export function BarraNavegacaoPublica() {
                 key={item.href}
                 href={item.href}
                 aria-current={activo ? "page" : undefined}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition ${
                   activo
                     ? "bg-primary-400 text-neutral-950 shadow-[0_4px_14px_-4px_rgba(255,195,0,0.6)]"
                     : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"

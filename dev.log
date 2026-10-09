@@ -24,3 +24,8 @@
  GET /empresas 200 in 988ms
  ✓ Compiled /termos in 483ms (529 modules)
  GET /termos 200 in 681ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 755ms (508 modules)
+ GET /registar 404 in 996ms
+ GET /registar 200 in 98ms
+ GET /registar 200 in 81ms

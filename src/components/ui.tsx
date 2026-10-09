@@ -314,18 +314,8 @@ export function BarraNavegacaoPublica() {
       : { href: "/entrar", rotulo: "Entrar" };
 
   return (
-    <header
-      className={`${emCasa ? "fixed inset-x-0" : "sticky"} top-0 z-40 transition-all duration-300 ${
-        transparente
-          ? "bg-transparent border-b border-transparent"
-          : "bg-neutral-950/85 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20"
-      }`}
-    >
-      <div
-        className={`max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 transition-all duration-300 ${
-          transparente ? "h-20" : "h-16"
-        }`}
-      >
+    <header className="sticky top-0 z-40 bg-[#060911]/90 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5 shrink-0" aria-label="ReboqueJá — início">
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -1,50 +1,88 @@
+"use client";
+
 import Link from "next/link";
-import { faixaPrecoTexto } from "@/lib/format";
+import { useState } from "react";
+
+type TipoVeiculoPreco = "LIGEIRO" | "SUV" | "MINIBUS" | "PESADO";
+
+const VEICULOS_INFO: Record<
+  TipoVeiculoPreco,
+  { icone: string; rotulo: string; faixaExemplo: string; texto: string }
+> = {
+  LIGEIRO: {
+    icone: "🚗",
+    rotulo: "Ligeiro",
+    faixaExemplo: "500 MT – 1 000 MT",
+    texto: "Sem surpresas: 500 MT – 1 000 MT para um ligeiro até 5 km.",
+  },
+  SUV: {
+    icone: "🚙",
+    rotulo: "SUV/Pick-up",
+    faixaExemplo: "700 MT – 1 200 MT",
+    texto: "Sem surpresas: 700 MT – 1 200 MT para um SUV/Pick-up até 5 km.",
+  },
+  MINIBUS: {
+    icone: "🚐",
+    rotulo: "Mini-bus",
+    faixaExemplo: "1 000 MT – 1 800 MT",
+    texto: "Sem surpresas: 1 000 MT – 1 800 MT para um mini-bus até 5 km.",
+  },
+  PESADO: {
+    icone: "🚛",
+    rotulo: "Pesado",
+    faixaExemplo: "1 500 MT – 2 500 MT",
+    texto: "Sem surpresas: 1 500 MT – 2 500 MT para um pesado até 5 km.",
+  },
+};
 
 export default function Landing() {
+  const [veiculoAtivo, setVeiculoAtivo] = useState<TipoVeiculoPreco>("LIGEIRO");
+
   return (
-    <div>
-      {/* ===== HERO com imagem de fundo ===== */}
-      <section className="relative overflow-hidden bg-neutral-950">
+    <div className="min-h-screen bg-[#060911] text-neutral-100 antialiased selection:bg-[#FFC300] selection:text-neutral-950">
+      {/* ===== HERO COM IMAGEM DE REBOQUE AO PÔR DO SOL ===== */}
+      <section className="relative overflow-hidden bg-[#060911] border-b border-white/[0.06]">
+        {/* Imagem de fundo */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-cover bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-no-repeat pointer-events-none"
           style={{
             backgroundImage: "url('/hero-reboque.png')",
-            backgroundPosition: "72% center",
+            backgroundPosition: "88% center",
           }}
         />
-        {/* Escurecer à esquerda para o texto ficar legível */}
+        {/* Degradês para leitura limpa do texto à esquerda */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/75 to-neutral-950/10"
+          className="absolute inset-0 bg-gradient-to-r from-[#060911] via-[#060911]/95 sm:via-[#060911]/85 to-transparent pointer-events-none"
         />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-neutral-950 to-transparent"
+          className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#060911] to-transparent pointer-events-none"
         />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-32 pb-16 sm:pt-40 sm:pb-24">
-          <span className="inline-block bg-primary-400 text-neutral-950 text-[11px] sm:text-xs font-extrabold tracking-wide px-3.5 py-1.5 rounded-full mb-6">
-            PROTÓTIPO ACADÉMICO · CIDADE DA MATOLA
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-16 sm:pb-28">
+          {/* Pílula de destaque */}
+          <span className="inline-block bg-[#FFC300] text-neutral-950 text-xs font-black tracking-wider uppercase px-4 py-1.5 rounded-full mb-6 shadow-[0_0_15px_rgba(255,195,0,0.4)]">
+            SERVIÇO DE REBOQUE NA MATOLA
           </span>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05] text-white">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05]">
             O veículo avariu?
             <br />
-            <span className="text-primary-400">O reboque chega já.</span>
+            <span className="text-[#FFC300]">O reboque chega já.</span>
           </h1>
 
-          <p className="mt-5 text-sm sm:text-base text-neutral-300 max-w-xl">
+          <p className="mt-5 text-sm sm:text-base md:text-lg text-neutral-300 max-w-xl leading-relaxed">
             O Reboque Já liga-o às empresas de reboque da Cidade da Matola em
             minutos. Veja a faixa de preço antes de pedir, acompanhe o camião no
             mapa e pague como preferir.
           </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <div className="mt-8 flex flex-col sm:flex-row gap-3.5">
             <Link
               href="/registar"
-              className="min-h-[48px] px-7 py-3.5 rounded-xl bg-primary-400 text-neutral-950 font-bold hover:bg-primary-300 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
+              className="min-h-[50px] px-8 py-3.5 rounded-full bg-[#FFC300] text-neutral-950 font-extrabold text-sm hover:bg-[#ffd033] inline-flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-lg shadow-[#FFC300]/25"
             >
               <span aria-hidden>🛻</span> Pedir reboque{" "}
               <span aria-hidden className="font-normal">
@@ -53,125 +91,211 @@ export default function Landing() {
             </Link>
             <Link
               href="/registar/empresa"
-              className="min-h-[48px] px-7 py-3.5 rounded-xl border border-white/40 bg-white/5 backdrop-blur-sm text-white font-bold hover:bg-white/10 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
+              className="min-h-[50px] px-8 py-3.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white font-extrabold text-sm hover:bg-white/10 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
             >
-              <span aria-hidden>🏢</span> Sou empresa de reboque
+              <IconePredio className="w-4 h-4 text-neutral-200" /> Sou empresa de reboque
             </Link>
           </div>
 
-          <p className="mt-5 text-sm text-neutral-300">
+          <p className="mt-6 text-sm text-neutral-300">
             Já tem conta?{" "}
             <Link
               href="/entrar"
-              className="text-primary-400 font-semibold underline underline-offset-4 hover:text-primary-300"
+              className="text-[#FFC300] font-semibold underline underline-offset-4 hover:text-[#ffd033] transition"
             >
               Entre aqui
             </Link>
+            .
           </p>
         </div>
       </section>
 
-      {/* ===== COMO FUNCIONA (faixa escura) ===== */}
-      <section className="bg-neutral-950 text-neutral-100 py-14 sm:py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <div
-              aria-hidden
-              className="w-14 h-1 bg-primary-400 rounded-full mx-auto mb-4"
-            />
-            <h2 className="text-2xl sm:text-3xl font-extrabold">
-              Como funciona
-            </h2>
-            <p className="text-sm text-neutral-400 mt-2">
-              É simples, rápido e seguro. Veja como pedir o seu reboque:
+      {/* ===== COMO FUNCIONA (3 CARTÕES) ===== */}
+      <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          {/* Traço indicador em amarelo dourado */}
+          <div className="w-12 h-1 bg-[#FFC300] rounded-full mx-auto mb-3 shadow-[0_0_10px_rgba(255,195,0,0.5)]" />
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">
+            Como funciona
+          </h2>
+          <p className="text-sm text-neutral-400 mt-2">
+            É simples, rápido e seguro. Veja como pedir o seu reboque:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Passo 1 */}
+          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-6 flex flex-col justify-start transition hover:border-white/20">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-[#FFC300] text-neutral-950 font-black text-sm grid place-items-center shrink-0">
+                1
+              </span>
+              <IconePin className="w-6 h-6 text-[#FFC300]" />
+            </div>
+            <h3 className="font-bold text-lg text-white mt-5">Marque o local</h3>
+            <p className="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
+              A app usa o GPS para encontrar o veículo. Confirme o ponto da avaria
+              no mapa e escolha o destino.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                n: "1",
-                t: "Marque o local",
-                d: "A app usa o GPS para encontrar o veículo. Confirme o ponto da avaria no mapa e escolha o destino.",
-                icone: <IconeLocal className="w-7 h-7 text-primary-400" />,
-                marca: <IconeLocal className="w-24 h-24 text-neutral-800/80" />,
-              },
-              {
-                n: "2",
-                t: "Compare e escolha",
-                d: "Vê as empresas disponíveis, com a faixa de preço em MT e o tempo estimado de chegada. Escolhe a melhor para si.",
-                icone: <IconeLupa className="w-7 h-7 text-primary-400" />,
-                marca: <IconeEscudo className="w-24 h-24 text-neutral-800/80" />,
-              },
-              {
-                n: "3",
-                t: "Acompanhe e avalie",
-                d: "Siga o camião em tempo real no mapa. No fim, indica o método de pagamento e avalia o serviço.",
-                icone: <IconeCarro className="w-7 h-7 text-primary-400" />,
-                marca: <IconeRota className="w-24 h-24 text-neutral-800/80" />,
-              },
-            ].map((p) => (
-              <div
-                key={p.n}
-                className="relative overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 border-b-2 border-b-primary-400 p-6"
-              >
-                <div aria-hidden className="absolute -top-3 right-2 opacity-60 pointer-events-none">
-                  {p.marca}
-                </div>
-                <div className="relative flex items-center gap-3">
-                  <span className="w-9 h-9 rounded-full bg-primary-400 text-neutral-950 font-extrabold grid place-items-center">
-                    {p.n}
-                  </span>
-                  {p.icone}
-                </div>
-                <h3 className="relative font-bold text-lg mt-4">{p.t}</h3>
-                <p className="relative text-sm text-neutral-400 mt-1.5 leading-relaxed">
-                  {p.d}
-                </p>
-              </div>
-            ))}
+          {/* Passo 2 */}
+          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-6 flex flex-col justify-start transition hover:border-white/20">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-[#FFC300] text-neutral-950 font-black text-sm grid place-items-center shrink-0">
+                2
+              </span>
+              <IconeLupa className="w-6 h-6 text-[#FFC300]" />
+            </div>
+            <h3 className="font-bold text-lg text-white mt-5">Compare e escolha</h3>
+            <p className="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
+              Vê as empresas disponíveis, com a faixa de preço em MT e o tempo
+              estimado de chegada. Escolhe a melhor para si.
+            </p>
           </div>
 
-          {/* ===== PREÇOS TRANSPARENTES ===== */}
-          <div className="mt-6 relative overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 border-b-2 border-b-primary-400 p-6 sm:p-8 grid lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="flex items-start gap-4">
-                <span
-                  aria-hidden
-                  className="w-12 h-12 shrink-0 rounded-full border-2 border-primary-400 grid place-items-center font-extrabold text-primary-400 text-sm"
-                >
-                  MT
-                </span>
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white">
-                    Preços transparentes, em faixas
-                  </h3>
-                  <p className="text-sm text-neutral-400 mt-2 max-w-md leading-relaxed">
-                    Cada empresa define as suas faixas por tipo de veículo e
-                    distância. Sem surpresas: {faixaPrecoTexto(500, 1000)} para
-                    um ligeiro até 5 km.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-5">
-                {[
-                  { i: "🚗", t: "Ligeiro" },
-                  { i: "🚙", t: "SUV/Pick-up" },
-                  { i: "🚐", t: "Mini-bus" },
-                  { i: "🚛", t: "Pesado" },
-                ].map((v) => (
-                  <span
-                    key={v.t}
-                    className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-neutral-800/60 px-4 py-2 text-sm font-semibold text-neutral-200"
-                  >
-                    <span aria-hidden>{v.i}</span> {v.t}
-                  </span>
-                ))}
+          {/* Passo 3 */}
+          <div className="rounded-2xl bg-[#090e1a]/95 border border-white/10 p-6 flex flex-col justify-start transition hover:border-white/20">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-[#FFC300] text-neutral-950 font-black text-sm grid place-items-center shrink-0">
+                3
+              </span>
+              <IconeCarro className="w-6 h-6 text-[#FFC300]" />
+            </div>
+            <h3 className="font-bold text-lg text-white mt-5">Acompanhe e avalie</h3>
+            <p className="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
+              Siga o camião em tempo real no mapa. No fim, indica o método de
+              pagamento e avalia o serviço.
+            </p>
+          </div>
+        </div>
+
+        {/* ===== PREÇOS TRANSPARENTES, EM FAIXAS ===== */}
+        <div className="mt-7 rounded-3xl bg-[#090e1a]/95 border border-white/10 p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Lado Esquerdo: Texto & Filtros */}
+          <div className="lg:col-span-7">
+            <div className="flex items-start gap-4">
+              <span
+                aria-hidden
+                className="w-12 h-12 shrink-0 rounded-full border-2 border-[#FFC300] text-[#FFC300] font-black text-base grid place-items-center"
+              >
+                MT
+              </span>
+              <div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                  Preços transparentes, em faixas
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-400 mt-1.5 leading-relaxed">
+                  Cada empresa define as suas faixas por tipo de veículo e distância.
+                  <br className="hidden sm:inline" />{" "}
+                  {VEICULOS_INFO[veiculoAtivo].texto}
+                </p>
               </div>
             </div>
 
-            <div className="max-w-md w-full justify-self-center lg:justify-self-end">
-              <IlustracaoMapa />
+            {/* Pílulas de tipos de veículo */}
+            <div className="flex flex-wrap gap-2.5 mt-6">
+              {(["LIGEIRO", "SUV", "MINIBUS", "PESADO"] as const).map((tipo) => {
+                const ativo = veiculoAtivo === tipo;
+                const info = VEICULOS_INFO[tipo];
+                return (
+                  <button
+                    key={tipo}
+                    type="button"
+                    onClick={() => setVeiculoAtivo(tipo)}
+                    className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition ${
+                      ativo
+                        ? "border border-[#FFC300] bg-[#FFC300]/15 text-white shadow-[0_0_12px_rgba(255,195,0,0.2)]"
+                        : "border border-white/10 bg-white/[0.04] text-neutral-300 hover:text-white hover:bg-white/[0.08]"
+                    }`}
+                  >
+                    <span>{info.icone}</span>
+                    <span>{info.rotulo}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Lado Direito: Ilustração do Mapa com Rota & ETA */}
+          <div className="lg:col-span-5">
+            <div className="relative rounded-2xl bg-[#060a14] border border-white/10 overflow-hidden p-6 min-h-[190px] flex items-center justify-between">
+              {/* Badge de ETA no canto superior direito */}
+              <div className="absolute top-4 right-4 z-10 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 flex items-center gap-2 text-xs text-white">
+                <IconeRelogio className="w-3.5 h-3.5 text-neutral-400" />
+                <span className="font-bold text-white">5.2 km</span>
+                <span className="text-neutral-400">~ 12 min</span>
+              </div>
+
+              {/* Malha de ruas em SVG ao fundo */}
+              <svg
+                aria-hidden
+                className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <pattern
+                    id="grid-mapa"
+                    width="32"
+                    height="32"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path
+                      d="M 32 0 L 0 0 0 32"
+                      fill="none"
+                      stroke="#142138"
+                      strokeWidth="0.8"
+                    />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid-mapa)" />
+                {/* Vias principais */}
+                <path
+                  d="M-20 120 Q 120 100 240 140 T 500 90"
+                  stroke="#1c2d4d"
+                  strokeWidth="8"
+                  fill="none"
+                />
+                <path
+                  d="M140 -20 Q 160 100 120 220"
+                  stroke="#1c2d4d"
+                  strokeWidth="6"
+                  fill="none"
+                />
+              </svg>
+
+              {/* Rota traçada e marcadores */}
+              <div className="relative z-10 w-full flex items-center justify-between pt-4">
+                {/* Pin de Origem */}
+                <div className="flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full bg-[#FFC300] grid place-items-center shadow-lg shadow-[#FFC300]/40">
+                    <span className="w-3 h-3 rounded-full bg-neutral-950" />
+                  </div>
+                </div>
+
+                {/* Linha pontilhada curva da rota */}
+                <div className="flex-1 mx-3 flex items-center justify-center">
+                  <svg className="w-full h-12 overflow-visible" viewBox="0 0 200 40">
+                    <path
+                      d="M 10 20 Q 90 40, 190 20"
+                      fill="none"
+                      stroke="#FFC300"
+                      strokeWidth="3.5"
+                      strokeDasharray="6 8"
+                      strokeLinecap="round"
+                    />
+                    {/* Ponto intermédio de conexão */}
+                    <circle cx="100" cy="27" r="4" fill="#FFC300" />
+                  </svg>
+                </div>
+
+                {/* Marcador de destino com camião */}
+                <div className="flex flex-col items-center">
+                  <div className="w-11 h-11 rounded-full bg-[#FFC300] grid place-items-center text-neutral-950 text-xl font-bold shadow-lg shadow-[#FFC300]/50 animate-pulse">
+                    🛻
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -180,9 +304,9 @@ export default function Landing() {
   );
 }
 
-/* ===== Ícones (traço, cor herda de currentColor) ===== */
+/* ===== ÍCONES SVG PERSONALIZADOS ===== */
 
-function IconeLocal(props: React.SVGProps<SVGSVGElement>) {
+function IconePin(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -207,6 +331,7 @@ function IconeLupa(props: React.SVGProps<SVGSVGElement>) {
       stroke="currentColor"
       strokeWidth={2}
       strokeLinecap="round"
+      strokeLinejoin="round"
       {...props}
     >
       <circle cx="11" cy="11" r="7" />
@@ -226,116 +351,45 @@ function IconeCarro(props: React.SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" />
-      <path d="M4 11h16a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1" />
-      <path d="M3 12v4a1 1 0 0 0 1 1h1" />
-      <path d="M5 17v2M19 17v2" />
-      <circle cx="8" cy="15.5" r="0.5" />
-      <circle cx="16" cy="15.5" r="0.5" />
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.5-1.2-.7-1.8-.7H7c-.8 0-1.5.4-1.9 1.1L3.3 11.2C2.5 11.5 2 12.2 2 13v3c0 .6.4 1 1 1h2" />
+      <circle cx="7" cy="17" r="2" />
+      <path d="M9 17h6" />
+      <circle cx="17" cy="17" r="2" />
     </svg>
   );
 }
 
-function IconeEscudo(props: React.SVGProps<SVGSVGElement>) {
+function IconeRelogio(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.6}
+      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3Z" />
-      <path d="m9 12 2 2 4-4" />
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
     </svg>
   );
 }
 
-function IconeRota(props: React.SVGProps<SVGSVGElement>) {
+function IconePredio(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.6}
+      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
       {...props}
     >
-      <circle cx="6" cy="18" r="2.5" />
-      <circle cx="18" cy="6" r="2.5" />
-      <path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5" strokeDasharray="3 3" />
-    </svg>
-  );
-}
-
-/* ===== Ilustração do mapa (rota com pin e camião) ===== */
-
-function IlustracaoMapa() {
-  return (
-    <svg
-      viewBox="0 0 440 240"
-      className="w-full h-auto"
-      role="img"
-      aria-label="Ilustração de uma rota no mapa, do local da avaria até ao camião"
-    >
-      <rect x="1" y="1" width="438" height="238" rx="15" fill="#0b0e14" />
-      <defs>
-        <pattern id="rj-grade" width="44" height="44" patternUnits="userSpaceOnUse">
-          <path d="M44 0H0v44" fill="none" stroke="#161c26" strokeWidth="1" />
-        </pattern>
-      </defs>
-      <rect x="1" y="1" width="438" height="238" rx="15" fill="url(#rj-grade)" />
-
-      {/* Avenidas */}
-      <path
-        d="M0 175 C 120 150, 240 200, 440 145"
-        stroke="#1d2532"
-        strokeWidth="14"
-        fill="none"
-      />
-      <path
-        d="M150 0 C 165 80, 110 160, 160 240"
-        stroke="#1d2532"
-        strokeWidth="10"
-        fill="none"
-      />
-
-      {/* Rota tracejada */}
-      <path
-        d="M92 74 C 160 95, 190 130, 280 148 S 356 160, 368 182"
-        stroke="#FFC300"
-        strokeWidth="3"
-        strokeDasharray="8 9"
-        fill="none"
-        strokeLinecap="round"
-      />
-
-      {/* Pin de origem */}
-      <g transform="translate(92,74)">
-        <path
-          d="M0 -26 C -12 -26 -19 -17 -19 -9 C -19 2 0 20 0 20 C 0 20 19 2 19 -9 C 19 -17 12 -26 0 -26 Z"
-          fill="#FFC300"
-        />
-        <circle cx="0" cy="-10" r="6.5" fill="#0b0e14" />
-      </g>
-
-      {/* Ponto intermédio */}
-      <circle cx="230" cy="128" r="5" fill="#FFC300" />
-
-      {/* Camião no destino */}
-      <circle cx="368" cy="188" r="27" fill="#FFC300" />
-      <text
-        x="368"
-        y="189"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="24"
-      >
-        🛻
-      </text>
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <path d="M9 7h1.5M13.5 7H15M9 11h1.5M13.5 11H15M9 15h1.5M13.5 15H15" />
+      <path d="M10.5 21v-3h3v3" />
     </svg>
   );
 }

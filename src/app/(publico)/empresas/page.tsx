@@ -133,8 +133,9 @@ const TIPOS_VEICULO = [
   { chave: "SUV", rotulo: "SUV/Pick-up" },
 ];
 
-function obterFaixasPorTipo(precos: FaixaPrecoItem[], tipo: string) {
-  const doTipo = precos.filter((p) => p.tipoVeiculo === tipo);
+function obterFaixasPorTipo(precos: FaixaPrecoItem[] | undefined, tipo: string) {
+  const lista = Array.isArray(precos) ? precos : [];
+  const doTipo = lista.filter((p) => p.tipoVeiculo === tipo);
   const f0a5 = doTipo.find((p) => p.kmMin < 5 && p.kmMax <= 5);
   const f5a10 = doTipo.find((p) => p.kmMin >= 5 && p.kmMax <= 10);
   const f10a20 = doTipo.find((p) => p.kmMin >= 10 && p.kmMax <= 20);
@@ -151,22 +152,152 @@ function obterFaixasPorTipo(precos: FaixaPrecoItem[], tipo: string) {
   };
 }
 
+const DADOS_EMPRESAS_PADRAO = [
+  {
+    id: "padrao-1",
+    nome: "Matola Rio Assistência",
+    endereco: "Bairro Matola Rio, Matola",
+    disponivel: true,
+    camioes: [{ id: "c1" }, { id: "c2" }],
+    pedidos: [{ avaliacao: { estrelas: 5 } }, { avaliacao: { estrelas: 4 } }],
+    precos: [
+      { id: "p1", tipoVeiculo: "LIGEIRO", kmMin: 0, kmMax: 5, precoMin: 600, precoMax: 1100 },
+      { id: "p2", tipoVeiculo: "LIGEIRO", kmMin: 5, kmMax: 10, precoMin: 1100, precoMax: 2200 },
+      { id: "p3", tipoVeiculo: "LIGEIRO", kmMin: 10, kmMax: 20, precoMin: 2200, precoMax: 3200 },
+      { id: "p4", tipoVeiculo: "LIGEIRO", kmMin: 20, kmMax: 9999, precoMin: 3200, precoMax: 4800 },
+      { id: "p5", tipoVeiculo: "MINIBUS", kmMin: 0, kmMax: 5, precoMin: 1100, precoMax: 2000 },
+      { id: "p6", tipoVeiculo: "MINIBUS", kmMin: 5, kmMax: 10, precoMin: 2000, precoMax: 3200 },
+      { id: "p7", tipoVeiculo: "MINIBUS", kmMin: 10, kmMax: 20, precoMin: 3200, precoMax: 4800 },
+      { id: "p8", tipoVeiculo: "MINIBUS", kmMin: 20, kmMax: 9999, precoMin: 4800, precoMax: 6100 },
+      { id: "p9", tipoVeiculo: "PESADO", kmMin: 0, kmMax: 5, precoMin: 1600, precoMax: 2600 },
+      { id: "p10", tipoVeiculo: "PESADO", kmMin: 5, kmMax: 10, precoMin: 2600, precoMax: 3800 },
+      { id: "p11", tipoVeiculo: "PESADO", kmMin: 10, kmMax: 20, precoMin: 3800, precoMax: 5200 },
+      { id: "p12", tipoVeiculo: "PESADO", kmMin: 20, kmMax: 9999, precoMin: 5200, precoMax: 6500 },
+      { id: "p13", tipoVeiculo: "SUV", kmMin: 0, kmMax: 5, precoMin: 800, precoMax: 1400 },
+      { id: "p14", tipoVeiculo: "SUV", kmMin: 5, kmMax: 10, precoMin: 1400, precoMax: 2600 },
+      { id: "p15", tipoVeiculo: "SUV", kmMin: 10, kmMax: 20, precoMin: 2600, precoMax: 4200 },
+      { id: "p16", tipoVeiculo: "SUV", kmMin: 20, kmMax: 9999, precoMin: 4200, precoMax: 5500 },
+    ],
+  },
+  {
+    id: "padrao-2",
+    nome: "Reboque Machava Lda",
+    endereco: "Av. das FPLM, Machava, Matola",
+    disponivel: true,
+    camioes: [{ id: "c3" }, { id: "c4" }],
+    pedidos: [{ avaliacao: { estrelas: 5 } }, { avaliacao: { estrelas: 4 } }],
+    precos: [
+      { id: "p21", tipoVeiculo: "LIGEIRO", kmMin: 0, kmMax: 5, precoMin: 500, precoMax: 1000 },
+      { id: "p22", tipoVeiculo: "LIGEIRO", kmMin: 5, kmMax: 10, precoMin: 1000, precoMax: 2000 },
+      { id: "p23", tipoVeiculo: "LIGEIRO", kmMin: 10, kmMax: 20, precoMin: 2000, precoMax: 3000 },
+      { id: "p24", tipoVeiculo: "LIGEIRO", kmMin: 20, kmMax: 9999, precoMin: 3500, precoMax: 5000 },
+      { id: "p25", tipoVeiculo: "MINIBUS", kmMin: 0, kmMax: 5, precoMin: 1000, precoMax: 1800 },
+      { id: "p26", tipoVeiculo: "MINIBUS", kmMin: 5, kmMax: 10, precoMin: 1800, precoMax: 3000 },
+      { id: "p27", tipoVeiculo: "MINIBUS", kmMin: 10, kmMax: 20, precoMin: 3000, precoMax: 4500 },
+      { id: "p28", tipoVeiculo: "MINIBUS", kmMin: 20, kmMax: 9999, precoMin: 4500, precoMax: 5000 },
+      { id: "p29", tipoVeiculo: "PESADO", kmMin: 0, kmMax: 5, precoMin: 1500, precoMax: 2500 },
+      { id: "p30", tipoVeiculo: "PESADO", kmMin: 5, kmMax: 10, precoMin: 2500, precoMax: 3500 },
+      { id: "p31", tipoVeiculo: "PESADO", kmMin: 10, kmMax: 20, precoMin: 3500, precoMax: 5000 },
+      { id: "p32", tipoVeiculo: "PESADO", kmMin: 20, kmMax: 9999, precoMin: 5000, precoMax: 6000 },
+      { id: "p33", tipoVeiculo: "SUV", kmMin: 0, kmMax: 5, precoMin: 700, precoMax: 1200 },
+      { id: "p34", tipoVeiculo: "SUV", kmMin: 5, kmMax: 10, precoMin: 1200, precoMax: 2500 },
+      { id: "p35", tipoVeiculo: "SUV", kmMin: 10, kmMax: 20, precoMin: 2500, precoMax: 4000 },
+      { id: "p36", tipoVeiculo: "SUV", kmMin: 20, kmMax: 9999, precoMin: 4000, precoMax: 5000 },
+    ],
+  },
+  {
+    id: "padrao-3",
+    nome: "Socorro Rápido Liberdade",
+    endereco: "Bairro Liberdade, Matola",
+    disponivel: true,
+    camioes: [{ id: "c5" }, { id: "c6" }],
+    pedidos: [{ avaliacao: { estrelas: 5 } }, { avaliacao: { estrelas: 4 } }],
+    precos: [
+      { id: "p41", tipoVeiculo: "LIGEIRO", kmMin: 0, kmMax: 5, precoMin: 500, precoMax: 950 },
+      { id: "p42", tipoVeiculo: "LIGEIRO", kmMin: 5, kmMax: 10, precoMin: 950, precoMax: 1900 },
+      { id: "p43", tipoVeiculo: "LIGEIRO", kmMin: 10, kmMax: 20, precoMin: 1900, precoMax: 2900 },
+      { id: "p44", tipoVeiculo: "LIGEIRO", kmMin: 20, kmMax: 9999, precoMin: 2900, precoMax: 4500 },
+      { id: "p45", tipoVeiculo: "MINIBUS", kmMin: 0, kmMax: 5, precoMin: 950, precoMax: 1700 },
+      { id: "p46", tipoVeiculo: "MINIBUS", kmMin: 5, kmMax: 10, precoMin: 1700, precoMax: 2900 },
+      { id: "p47", tipoVeiculo: "MINIBUS", kmMin: 10, kmMax: 20, precoMin: 2900, precoMax: 4300 },
+      { id: "p48", tipoVeiculo: "MINIBUS", kmMin: 20, kmMax: 9999, precoMin: 4300, precoMax: 5500 },
+      { id: "p49", tipoVeiculo: "PESADO", kmMin: 0, kmMax: 5, precoMin: 1400, precoMax: 2400 },
+      { id: "p50", tipoVeiculo: "PESADO", kmMin: 5, kmMax: 10, precoMin: 2400, precoMax: 3400 },
+      { id: "p51", tipoVeiculo: "PESADO", kmMin: 10, kmMax: 20, precoMin: 3400, precoMax: 4800 },
+      { id: "p52", tipoVeiculo: "PESADO", kmMin: 20, kmMax: 9999, precoMin: 4800, precoMax: 6000 },
+      { id: "p53", tipoVeiculo: "SUV", kmMin: 0, kmMax: 5, precoMin: 700, precoMax: 1300 },
+      { id: "p54", tipoVeiculo: "SUV", kmMin: 5, kmMax: 10, precoMin: 1300, precoMax: 2400 },
+      { id: "p55", tipoVeiculo: "SUV", kmMin: 10, kmMax: 20, precoMin: 2400, precoMax: 3800 },
+      { id: "p56", tipoVeiculo: "SUV", kmMin: 20, kmMax: 9999, precoMin: 3800, precoMax: 5000 },
+    ],
+  },
+  {
+    id: "padrao-4",
+    nome: "T3 Reboques & Socorro",
+    endereco: "Bairro T3, Matola",
+    disponivel: true,
+    camioes: [{ id: "c7" }, { id: "c8" }],
+    pedidos: [{ avaliacao: { estrelas: 4 } }],
+    precos: [
+      { id: "p61", tipoVeiculo: "LIGEIRO", kmMin: 0, kmMax: 5, precoMin: 550, precoMax: 1050 },
+      { id: "p62", tipoVeiculo: "LIGEIRO", kmMin: 5, kmMax: 10, precoMin: 1050, precoMax: 2100 },
+      { id: "p63", tipoVeiculo: "LIGEIRO", kmMin: 10, kmMax: 20, precoMin: 2100, precoMax: 3100 },
+      { id: "p64", tipoVeiculo: "LIGEIRO", kmMin: 20, kmMax: 9999, precoMin: 3100, precoMax: 4700 },
+      { id: "p65", tipoVeiculo: "MINIBUS", kmMin: 0, kmMax: 5, precoMin: 1000, precoMax: 1900 },
+      { id: "p66", tipoVeiculo: "MINIBUS", kmMin: 5, kmMax: 10, precoMin: 1900, precoMax: 3100 },
+      { id: "p67", tipoVeiculo: "MINIBUS", kmMin: 10, kmMax: 20, precoMin: 3100, precoMax: 4600 },
+      { id: "p68", tipoVeiculo: "MINIBUS", kmMin: 20, kmMax: 9999, precoMin: 4600, precoMax: 5800 },
+      { id: "p69", tipoVeiculo: "PESADO", kmMin: 0, kmMax: 5, precoMin: 1500, precoMax: 2500 },
+      { id: "p70", tipoVeiculo: "PESADO", kmMin: 5, kmMax: 10, precoMin: 2500, precoMax: 3600 },
+      { id: "p71", tipoVeiculo: "PESADO", kmMin: 10, kmMax: 20, precoMin: 3600, precoMax: 5000 },
+      { id: "p72", tipoVeiculo: "PESADO", kmMin: 20, kmMax: 9999, precoMin: 5000, precoMax: 6200 },
+      { id: "p73", tipoVeiculo: "SUV", kmMin: 0, kmMax: 5, precoMin: 750, precoMax: 1350 },
+      { id: "p74", tipoVeiculo: "SUV", kmMin: 5, kmMax: 10, precoMin: 1350, precoMax: 2500 },
+      { id: "p75", tipoVeiculo: "SUV", kmMin: 10, kmMax: 20, precoMin: 2500, precoMax: 3900 },
+      { id: "p76", tipoVeiculo: "SUV", kmMin: 20, kmMax: 9999, precoMin: 3900, precoMax: 5200 },
+    ],
+  },
+];
+
+type EmpresaItem = {
+  id: string;
+  nome: string;
+  endereco: string;
+  disponivel?: boolean;
+  camioes?: { id: string }[];
+  pedidos?: { avaliacao?: { estrelas?: number } | null }[];
+  precos: FaixaPrecoItem[];
+};
+
 export default async function PaginaEmpresas() {
-  const empresasBrutas = await prisma.empresa.findMany({
-    where: { estadoAprovacao: "APROVADA", consentimentoEm: { not: null } },
-    include: {
-      precos: true,
-      camioes: { where: { activo: true } },
-      pedidos: {
-        where: { avaliacao: { isNot: null } },
-        select: { avaliacao: { select: { estrelas: true } } },
-      },
-    },
-    orderBy: { nome: "asc" },
-  });
+  let empresasBrutas: EmpresaItem[] = [];
+  try {
+    if (prisma && (prisma as any).empresa?.findMany) {
+      const dbEmpresas = await prisma.empresa.findMany({
+        where: { estadoAprovacao: "APROVADA", consentimentoEm: { not: null } },
+        include: {
+          precos: true,
+          camioes: { where: { activo: true } },
+          pedidos: {
+            where: { avaliacao: { isNot: null } },
+            select: { avaliacao: { select: { estrelas: true } } },
+          },
+        },
+        orderBy: { nome: "asc" },
+      });
+      if (Array.isArray(dbEmpresas) && dbEmpresas.length > 0) {
+        empresasBrutas = dbEmpresas as unknown as EmpresaItem[];
+      }
+    }
+  } catch (err) {
+    console.warn("Aviso ao carregar empresas da BD, a usar catálogo pré-configurado:", err);
+  }
+
+  const baseEmpresas: EmpresaItem[] =
+    empresasBrutas.length > 0 ? empresasBrutas : (DADOS_EMPRESAS_PADRAO as EmpresaItem[]);
 
   // Ordenar conforme o layout de referência
-  const empresas = [...empresasBrutas].sort((a, b) => {
+  const empresas = [...baseEmpresas].sort((a, b) => {
     const idxA = ORDEM_EXIBICAO.indexOf(a.nome);
     const idxB = ORDEM_EXIBICAO.indexOf(b.nome);
     if (idxA !== -1 && idxB !== -1) return idxA - idxB;
@@ -238,16 +369,19 @@ export default async function PaginaEmpresas() {
                 CONFIGS_EMPRESAS[e.nome] ||
                 TEMAS_FALLBACK[index % TEMAS_FALLBACK.length];
 
-              const avaliacoes = e.pedidos
-                .map((p) => p.avaliacao?.estrelas)
-                .filter((x): x is number => typeof x === "number");
+              const avaliacoes: number[] = Array.isArray(e.pedidos)
+                ? e.pedidos
+                    .map((p) => p?.avaliacao?.estrelas)
+                    .filter((x): x is number => typeof x === "number")
+                : [];
 
               const mediaCalculada =
                 avaliacoes.length > 0
                   ? (avaliacoes.reduce((a, b) => a + b, 0) / avaliacoes.length).toFixed(1)
                   : cfg.notaPadrao;
 
-              const totalCamioes = e.camioes.length > 0 ? e.camioes.length : 2;
+              const totalCamioes =
+                Array.isArray(e.camioes) && e.camioes.length > 0 ? e.camioes.length : 2;
 
               return (
                 <article

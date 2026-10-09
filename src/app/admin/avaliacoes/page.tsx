@@ -132,7 +132,7 @@ export default function AdminAvaliacoes() {
                   </div>
                   <p className="text-xs text-neutral-500 mt-1">{formatarData(r.criadoEm)}</p>
                   {r.dados.comentario && (
-                    <p className="text-xs mt-2 italic">"{r.dados.comentario}"</p>
+                    <p className="text-xs mt-2 italic">&ldquo;{r.dados.comentario}&rdquo;</p>
                   )}
                 </div>
               ))}

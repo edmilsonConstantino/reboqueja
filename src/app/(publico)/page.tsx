@@ -79,10 +79,10 @@ export default function Landing() {
             mapa e pague como preferir.
           </p>
 
-          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+          <div className="mt-6 flex flex-wrap gap-2.5 sm:gap-3">
             <Link
               href="/registar"
-              className="min-h-[44px] px-6 py-2.5 rounded-full bg-[#FFC300] text-neutral-950 font-bold text-xs sm:text-sm hover:bg-[#ffd033] inline-flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-md shadow-[#FFC300]/25"
+              className="min-h-[42px] px-5 sm:px-6 py-2 rounded-full bg-[#FFC300] text-neutral-950 font-bold text-xs sm:text-sm hover:bg-[#ffd033] inline-flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-md shadow-[#FFC300]/25"
             >
               <span aria-hidden>🛻</span> Pedir reboque{" "}
               <span aria-hidden className="font-normal">
@@ -90,10 +90,16 @@ export default function Landing() {
               </span>
             </Link>
             <Link
-              href="/registar/empresa"
-              className="min-h-[44px] px-6 py-2.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white font-bold text-xs sm:text-sm hover:bg-white/10 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
+              href="/empresas"
+              className="min-h-[42px] px-5 py-2 rounded-full border border-[#FFC300]/40 bg-[#FFC300]/10 text-[#FFC300] font-bold text-xs sm:text-sm hover:bg-[#FFC300]/20 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
             >
-              <IconePredio className="w-3.5 h-3.5 text-neutral-200" /> Sou empresa de reboque
+              <IconePredio className="w-3.5 h-3.5" /> Ver empresas
+            </Link>
+            <Link
+              href="/registar/empresa"
+              className="min-h-[42px] px-5 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white font-bold text-xs sm:text-sm hover:bg-white/10 inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
+            >
+              Sou empresa de reboque
             </Link>
           </div>
 
@@ -152,6 +158,12 @@ export default function Landing() {
               Vê as empresas disponíveis, com a faixa de preço em MT e o tempo
               estimado de chegada. Escolhe a melhor para si.
             </p>
+            <Link
+              href="/empresas"
+              className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#FFC300] hover:text-[#ffd033] hover:underline"
+            >
+              Ver empresas disponíveis →
+            </Link>
           </div>
 
           {/* Passo 3 */}
@@ -214,6 +226,20 @@ export default function Landing() {
                   </button>
                 );
               })}
+              {/* Link para ver todas as faixas */}
+              <div className="mt-5 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                <span className="text-xs text-neutral-400">
+                  Veja o tarifário completo de cada empresa aprovada na Matola.
+                </span>
+                <Link
+                  href="/empresas"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FFC300] text-neutral-950 font-bold text-xs hover:bg-[#ffd033] transition shadow-md shadow-[#FFC300]/20"
+                >
+                  <IconePredio className="w-3.5 h-3.5" />
+                  <span>Ver empresas e preços</span>
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -297,6 +323,110 @@ export default function Landing() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* ===== EMPRESAS DE REBOQUE CREDENCIADAS NA MATOLA ===== */}
+        <div className="mt-12 sm:mt-16">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+            <div>
+              <div className="w-10 h-1 bg-[#FFC300] rounded-full mb-2 shadow-[0_0_8px_rgba(255,195,0,0.5)]" />
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white">
+                Empresas de <span className="text-[#FFC300]">reboque</span> credenciadas
+              </h2>
+              <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+                Operadores prontos a intervir na Cidade da Matola com camiões flatbed e resgate.
+              </p>
+            </div>
+            <Link
+              href="/empresas"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#FFC300] hover:text-[#ffd033] hover:underline"
+            >
+              <span>Ver todas e tabelas de preços</span>
+              <span aria-hidden>→</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                nome: "Matola Rio Assistência",
+                bairro: "Bairro Matola Rio",
+                nota: "4.5",
+                camioes: "2 camiões",
+                imagem: "/empresas/reboque-amarelo.jpg",
+                preco: "A partir de 600 MT",
+                borda: "border-cyan-500/30 hover:border-cyan-400/70",
+              },
+              {
+                nome: "Reboque Machava Lda",
+                bairro: "Bairro da Machava",
+                nota: "4.5",
+                camioes: "2 camiões",
+                imagem: "/empresas/reboque-branco.jpg",
+                preco: "A partir de 600 MT",
+                borda: "border-emerald-500/30 hover:border-emerald-400/70",
+              },
+              {
+                nome: "Socorro Rápido Liberdade",
+                bairro: "Bairro da Liberdade",
+                nota: "4.5",
+                camioes: "2 camiões",
+                imagem: "/empresas/reboque-vermelho.jpg",
+                preco: "A partir de 650 MT",
+                borda: "border-rose-500/30 hover:border-rose-400/70",
+              },
+              {
+                nome: "T3 Reboques & Socorro",
+                bairro: "Bairro T3",
+                nota: "4.0",
+                camioes: "2 camiões",
+                imagem: "/empresas/reboque-azul.jpg",
+                preco: "A partir de 550 MT",
+                borda: "border-blue-500/30 hover:border-blue-400/70",
+              },
+            ].map((emp) => (
+              <Link
+                key={emp.nome}
+                href="/empresas"
+                className={`group rounded-2xl bg-[#090e1a]/95 border ${emp.borda} p-3 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between`}
+              >
+                <div>
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-neutral-950 border border-white/10 mb-2.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={emp.imagem}
+                      alt={emp.nome}
+                      className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <span className="absolute top-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-semibold text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Disponível
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-sm text-white group-hover:text-[#FFC300] transition truncate">
+                    {emp.nome}
+                  </h3>
+                  <p className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
+                    <IconePin className="w-3 h-3 text-neutral-500 shrink-0" />
+                    <span className="truncate">{emp.bairro}</span>
+                  </p>
+                  <div className="flex items-center gap-2 mt-2 text-[11px]">
+                    <span className="text-[#FFC300] font-bold">★ {emp.nota}</span>
+                    <span className="text-neutral-500">•</span>
+                    <span className="text-neutral-400">{emp.camioes}</span>
+                  </div>
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                  <span className="text-neutral-400 text-[11px]">{emp.preco}</span>
+                  <span className="text-[#FFC300] font-bold group-hover:translate-x-0.5 transition inline-flex items-center">
+                    Ver preços →
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

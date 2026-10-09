@@ -1,14 +1,14 @@
+
 {
   "name": "reboqueja",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 -H 0.0.0.0",
+    "dev": "next dev",
     "build": "prisma generate && next build",
-    "start": "next start -p 3000 -H 0.0.0.0",
+    "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts"
   },
@@ -31,8 +31,6 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.6.1",
-    "eslint": "^10.12.0",
-    "eslint-config-next": "^16.4.0",
     "postcss": "^8.5.28",
     "prisma": "5.22.0",
     "tailwindcss": "^3.4.19",

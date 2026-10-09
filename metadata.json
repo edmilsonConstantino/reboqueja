@@ -1,0 +1,7 @@
+{
+  "name": "ReboqueJá",
+  "description": "Plataforma de reboque e assistência rápida na Cidade da Matola, Moçambique.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

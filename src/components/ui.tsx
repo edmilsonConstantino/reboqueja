@@ -369,7 +369,7 @@ export function BarraNavegacaoPublica() {
             <>
               <Link
                 href={painel.href}
-                className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-neutral-900 transition"
+                className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1.5 rounded-xl hover:bg-white/[0.06] transition"
                 title={`Ir para: ${painel.rotulo}`}
               >
                 <span className="w-8 h-8 rounded-full bg-primary-400 text-neutral-950 grid place-items-center text-sm font-extrabold">
@@ -383,6 +383,7 @@ export function BarraNavegacaoPublica() {
                     {ROTULO_PAPEL[sessao.papel] ?? sessao.papel}
                   </span>
                 </span>
+                <IconeChevronBaixo className="w-4 h-4 text-neutral-400 ml-0.5" />
               </Link>
               <button
                 onClick={sair}
@@ -590,17 +591,37 @@ function IconeSair(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function IconeChevronBaixo(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
 export function Rodape() {
   return (
-    <footer className="border-t border-neutral-200 dark:border-neutral-800 py-8 mt-16">
-      <div className="max-w-5xl mx-auto px-4 text-center text-xs text-neutral-500 dark:text-neutral-400 space-y-1">
-        <p className="font-semibold text-neutral-700 dark:text-neutral-300">
+    <footer className="border-t border-white/10 py-10 mt-16 bg-[#060911] text-center">
+      <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-2">
+        <Link href="/" className="inline-flex items-center gap-2 group">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.svg"
+            alt=""
+            className="w-7 h-7 rounded-lg shadow-[0_0_0_2px_rgba(255,195,0,0.2)] transition group-hover:scale-105"
+          />
+          <span className="font-extrabold text-base tracking-tight text-white">
+            Reboque<span className="text-primary-400">Já</span>
+          </span>
+        </Link>
+        <p className="text-xs font-semibold text-neutral-300 mt-1">
           Reboque Já — protótipo académico
         </p>
-        <p>Cidade da Matola, Moçambique · Preços em Meticais (MT)</p>
-        <p>
-          Trabalho de fim de curso · Sem pagamento real · Dados fictícios no
-          protótipo
+        <p className="text-xs text-neutral-400">
+          Cidade da Matola, Moçambique • Preços em Meticais (MT)
+        </p>
+        <p className="text-xs text-neutral-500">
+          Trabalho de fim de curso • Sem pagamento real • Dados fictícios no protótipo
         </p>
       </div>
     </footer>

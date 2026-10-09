@@ -12,7 +12,7 @@ export default function RootLayoutPublico({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#060911] text-neutral-100">
       <BarraNavegacaoPublica />
       <main className="flex-1">{children}</main>
       <Rodape />

@@ -21,11 +21,17 @@ export function BottomSheetArrastavel({
 
   useEffect(() => {
     const actualizar = () => {
-      setExpandidaMax(Math.round(window.innerHeight * alturaExpandidaPct));
+      // visualViewport acompanha a barra de endereço do telemóvel.
+      const alturaVisivel = window.visualViewport?.height ?? window.innerHeight;
+      setExpandidaMax(Math.round(alturaVisivel * alturaExpandidaPct));
     };
     actualizar();
     window.addEventListener("resize", actualizar);
-    return () => window.removeEventListener("resize", actualizar);
+    window.visualViewport?.addEventListener("resize", actualizar);
+    return () => {
+      window.removeEventListener("resize", actualizar);
+      window.visualViewport?.removeEventListener("resize", actualizar);
+    };
   }, [alturaExpandidaPct]);
 
   const iniciar = (y: number) => {
@@ -73,7 +79,7 @@ export function BottomSheetArrastavel({
         <div className="w-12 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700" />
       </div>
       <div
-        className="overflow-y-auto px-4 pb-6 no-scrollbar"
+        className="overflow-y-auto px-4 pb-[calc(1.5rem_+_env(safe-area-inset-bottom))] no-scrollbar rj-sheet-scroll"
         style={{ height: altura - 36 }}
       >
         {children}

@@ -62,7 +62,7 @@ function FormularioEntrar() {
       <div className="grid lg:grid-cols-[320px_1fr] rounded-3xl overflow-hidden border border-neutral-200 dark:border-white/10 shadow-card bg-white dark:bg-neutral-900">
 
         {/* ===== Painel lateral esquerdo ===== */}
-        <aside className="bg-neutral-950 text-white p-6 sm:p-8 flex flex-col gap-8">
+        <aside className="order-2 lg:order-1 bg-neutral-950 text-white p-6 sm:p-8 flex flex-col gap-8">
           {/* Marca */}
           <div>
             <Link href="/" className="flex items-center gap-3" aria-label="ReboqueJá — início">
@@ -158,7 +158,7 @@ function FormularioEntrar() {
         </aside>
 
         {/* ===== Painel principal direito ===== */}
-        <section className="p-6 sm:p-10 lg:p-12">
+        <section className="order-1 lg:order-2 p-6 sm:p-10 lg:p-12">
           <header className="mb-8">
             <h1 className="text-3xl font-extrabold tracking-tight">Entrar na plataforma</h1>
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5">
@@ -189,6 +189,9 @@ function FormularioEntrar() {
                     onChange={(e) => setContacto(e.target.value)}
                     placeholder="+258 84 123 4567"
                     autoComplete="username"
+                    inputMode="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
                     required
                     className={campo}
                   />

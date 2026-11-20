@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-MZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReboqueJá — Plano de Negócio</title>
+<style>
+  :root{
+    --amarelo:#FFC300; --fundo:#0d0d0f; --cartao:#17171b; --borda:#2a2a30;
+    --texto:#f4f4f5; --cinza:#a1a1aa; --verde:#22c55e; --vermelho:#ef4444; --azul:#3b82f6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--fundo); color:var(--texto); overflow:hidden;
+  }
+  .slide{
+    display:none; height:100vh; padding:56px 72px 84px;
+    flex-direction:column; justify-content:center; position:relative;
+  }
+  .slide.active{display:flex;}
+  .tag{
+    display:inline-block; background:rgba(255,195,0,.12); color:var(--amarelo);
+    border:1px solid rgba(255,195,0,.4); padding:4px 14px; border-radius:999px;
+    font-size:.8rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-bottom:18px; width:fit-content;
+  }
+  h1{font-size:3.4rem; line-height:1.05; font-weight:800;}
+  h2{font-size:2.1rem; font-weight:800; margin-bottom:26px; color:var(--amarelo);}
+  h3{font-size:1.15rem; font-weight:700; margin-bottom:8px;}
+  p.lead{font-size:1.25rem; color:var(--cinza); max-width:60ch; line-height:1.5;}
+  .destaque{color:var(--amarelo);}
+  .grade{display:grid; gap:18px;}
+  .g2{grid-template-columns:repeat(2,1fr);} .g3{grid-template-columns:repeat(3,1fr);} .g4{grid-template-columns:repeat(4,1fr);}
+  .cartao{background:var(--cartao); border:1px solid var(--borda); border-radius:16px; padding:22px;}
+  .cartao p{color:var(--cinza); font-size:.98rem; line-height:1.5;}
+  .icone{font-size:2rem; display:block; margin-bottom:10px;}
+  ul.lista{list-style:none; display:grid; gap:12px;}
+  ul.lista li{background:var(--cartao); border:1px solid var(--borda); border-radius:12px; padding:14px 18px; line-height:1.45; font-size:1.05rem;}
+  ul.lista b{color:var(--amarelo);}
+  .num{font-size:2.6rem; font-weight:800; color:var(--amarelo);}
+  .rodapkpi{color:var(--cinza); font-size:.85rem; margin-top:6px;}
+  table{width:100%; border-collapse:collapse; font-size:1rem;}
+  th,td{padding:12px 14px; text-align:left; border-bottom:1px solid var(--borda);}
+  th{color:var(--amarelo); font-weight:700; font-size:.85rem; text-transform:uppercase; letter-spacing:.05em;}
+  td{color:var(--cinza);} td:first-child{color:var(--texto); font-weight:600;}
+  .nota{margin-top:auto; padding-top:18px; color:var(--cinza); font-size:.85rem;}
+  .nota b{color:var(--amarelo);}
+  .capa{align-items:flex-start;}
+  .capa .logo{font-size:4.6rem; font-weight:900; line-height:1;}
+  .capa .logo span{color:var(--amarelo);}
+  #hud{
+    position:fixed; left:0; right:0; bottom:0; height:52px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 28px; font-size:.85rem; color:var(--cinza);
+    background:linear-gradient(transparent, rgba(0,0,0,.7)); z-index:10;
+  }
+  #progresso{position:fixed; top:0; left:0; height:4px; background:var(--amarelo); width:0%; transition:width .25s; z-index:10;}
+  .setas{display:flex; gap:10px;}
+  .setas button{
+    background:var(--cartao); color:var(--texto); border:1px solid var(--borda);
+    border-radius:10px; padding:8px 16px; font-size:1rem; cursor:pointer;
+  }
+  .setas button:hover{border-color:var(--amarelo); color:var(--amarelo);}
+  @media print{
+    body{overflow:visible;} .slide{display:flex !important; height:100vh; page-break-after:always;}
+    #hud,#progresso{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 · CAPA -->
+<section class="slide capa active">
+  <div class="tag">Plano de negócio · MVP</div>
+  <div class="logo">🛻 Reboque<span>Já</span></div>
+  <p class="lead" style="margin-top:22px; font-size:1.5rem;">
+    Plataforma digital que liga condutores com o veículo avariado ou acidentado a empresas de reboque na <b class="destaque">Cidade da Matola, Moçambique</b> — em minutos, com preço transparente e acompanhamento em tempo real.
+  </p>
+  <p class="nota">Trabalho de fim de curso · Protótipo funcional (Next.js 14 + Prisma + MapLibre) · Matola — Outubro de 2026</p>
+</section>
+
+<!-- 2 · RESUMO EXECUTIVO -->
+<section class="slide">
+  <div class="tag">01 · Resumo executivo</div>
+  <h2>O problema numa frase</h2>
+  <p class="lead">Na Matola, quem fica avariado não tem forma rápida e confiável de encontrar um reboque: só existem ligações telefonadas e preço negociado à vista.</p>
+  <div class="grade g4" style="margin-top:34px;">
+    <div class="cartao"><span class="num">10 min</span><p class="rodapkpi">fluxo completo: pedir → aceitar → acompanhar → pagar → avaliar</p></div>
+    <div class="cartao"><span class="num">4</span><p class="rodapkpi">empresas aprovadas no seed, com 2 camiões cada e faixas 500–6 500 MT</p></div>
+    <div class="cartao"><span class="num">3 perfis</span><p class="rodapkpi">Condutor · Empresa · Admin, com autenticação e papéis</p></div>
+    <div class="cartao"><span class="num">0 MT</span><p class="rodapkpi">custo de stack de mapas: OpenStreetMap + Nominatim, sem chave paga</p></div>
+  </div>
+  <p class="nota">Este documento transforma o MVP académico <b>ReboqueJá</b> num plano de negócio para operação comercial.</p>
+</section>
+
+<!-- 3 · PROBLEMA -->
+<section class="slide">
+  <div class="tag">02 · O problema</div>
+  <h2>Avaria na estrada = improviso</h2>
+  <div class="grade g3">
+    <div class="cartao"><span class="icone">📞</span><h3>Não há canal único</h3><p>Não existe um directorio público de empresas de reboque na Matola nem número de emergência dedicado.</p></div>
+    <div class="cartao"><span class="icone">❓</span><h3>Preço opaco</h3><p>O valor é acordado "no momento", sem referência — suspeita de abuso em situações de urgência.</p></div>
+    <div class="cartao"><span class="icone">🕳️</span><h3>Zero visibilidade</h3><p>Depois da chamada, o condutor não sabe nada: o camião vem? quando chega? quem é o motorista?</p></div>
+  </div>
+  <p class="nota"><b>Oportunidade:</b> a frota e o trânsito da Matola (EN1, T3, Machava, Matola Rio) continuam a crescer — o aumento de avarias e acidentes é estrutural, não sazonal.</p>
+</section>
+
+<!-- 4 · SOLUÇÃO -->
+<section class="slide">
+  <div class="tag">03 · A solução</div>
+  <h2>ReboqueJá — o "Uber do reboque" da Matola</h2>
+  <ul class="lista">
+    <li>📍 <b>Mapa em ecrã inteiro</b> — o condutor marca o ponto (GPS ou toque no mapa) e o destino com pesquisa de endereços.</li>
+    <li>🚨 <b>Pedido com radar animado</b> — cartões das empresas próximas com ★ média, faixa de preço, distância e tempo estimado.</li>
+    <li>🚛 <b>Acompanhamento em tempo real</b> — polling de 5 s; a empresa pode simular o trajecto e o camião move-se no ecrã do condutor.</li>
+    <li>💰 <b>Preço em faixas, nunca fixo</b> — ex.: 500–1 000 MT; o valor final é combinado dentro da faixa publicada.</li>
+    <li>⭐ <b>Avaliação e histórico</b> — cada serviço termina com pagamento (Dinheiro / M-Pesa / e-Mola) e avaliação de 1 a 5.</li>
+  </ul>
+</section>
+
+<!-- 5 · MVP -->
+<section class="slide">
+  <div class="tag">04 · MVP implementado</div>
+  <h2>O produto já existe e funciona</h2>
+  <div class="grade g2">
+    <div class="cartao">
+      <h3>🧱 Tecnologia</h3>
+      <p>Next.js 14 (App Router) + TypeScript · Tailwind (amarelo #FFC300, modo escuro, mobile-first) · Prisma + SQLite (9 modelos) · JWT em cookie HttpOnly · MapLibre GL + OpenStreetMap · Zod · middleware de protecção de rotas por papel.</p>
+    </div>
+    <div class="cartao">
+      <h3>🔐 Confiança desde o desenho</h3>
+      <p>Consentimento expresso + aprovação do admin antes de publicar uma empresa · polígono da Matola validado no cliente <i>e</i> no servidor · pedidos fora da cidade são bloqueados.</p>
+    </div>
+    <div class="cartao">
+      <h3>🏢 Painel da empresa</h3>
+      <p>Disponível / indisponível · aceitar o pedido e escolher camião e motorista · avançar estados · CRUD de camiões e faixas de preço · sinal sonoro em pedidos novos.</p>
+    </div>
+    <div class="cartao">
+      <h3>📊 Dashboard do admin</h3>
+      <p>KPIs reais: pedidos por estado, tempo médio de resposta (PENDENTE→ACEITE), tempo até à chegada, ★ média e pedidos por bairro · aprovar / rejeitar / revogar empresas.</p>
+    </div>
+  </div>
+  <p class="nota">O MVP inclui questionário de usabilidade <b>SUS (0–100)</b> com exportação CSV — pronto para validar com utilizadores reais.</p>
+</section>
+
+<!-- 6 · MERCADO -->
+<section class="slide">
+  <div class="tag">05 · Mercado-alvo</div>
+  <h2>Segmentação inicial</h2>
+  <div class="grade g3">
+    <div class="cartao"><span class="icone">🚗</span><h3>Primário</h3><p><b>Condutores particulares</b> da Matola (ligeiro/SUV), sem seguro que inclua assistência com reboque.</p></div>
+    <div class="cartao"><span class="icone">🚐</span><h3>Secundário</h3><p><b>Comércio e minibuses</b> — cada hora parada é receita perdida directa.</p></div>
+    <div class="cartao"><span class="icone">🏢</span><h3>Lado da oferta</h3><p><b>Empresas de reboque</b> formais e informais que hoje dependem da indicação de amigos para achar clientes.</p></div>
+  </div>
+  <p class="nota"><b>Âmbito controlado.</b> O MVP nasce delimitado ao polígono da Matola — densidade de oferta suficiente, custo de aquisição baixo e a expansão num clique (o polígono é um parâmetro no código).</p>
+</section>
+
+<!-- 7 · CONCORRÊNCIA -->
+<section class="slide">
+  <div class="tag">06 · Concorrência</div>
+  <h2>Com quem competimos hoje</h2>
+  <table>
+    <tr><th>Alternativa</th><th>Preço</th><th>Tempo de resposta</th><th>Visibilidade do camião</th><th>Avaliação</th></tr>
+    <tr><td>Cartão / contacto que se tem à mão</td><td>negociado à vista</td><td>incerto</td><td>não</td><td>não</td></tr>
+    <tr><td>Indicação de conhecido</td><td>variável</td><td>depende da sorte</td><td>não</td><td>boca a boca</td></tr>
+    <tr><td>Oficinas com assistência própria</td><td>fechado</td><td>horário comercial</td><td>não</td><td>não</td></tr>
+    <tr><td style="color:var(--amarelo)">ReboqueJá</td><td style="color:var(--amarelo)">faixa publicada</td><td style="color:var(--amarelo)">minutos + ETA</td><td style="color:var(--amarelo)">sim, em tempo real</td><td style="color:var(--amarelo)">sim, 1–5 ★</td></tr>
+  </table>
+  <p class="nota"><b>Referência digital local:</b> as apps de transporte por aplicação já provaram que o moçambicano aceita o padrão "pedido → acompanhar → pagar por M-Pesa" — ninguém o aplicou ao reboque.</p>
+</section>
+
+<!-- 8 · MODELO DE RECEITA -->
+<section class="slide">
+  <div class="tag">07 · Modelo de negócio</div>
+  <h2>Como o ReboqueJá ganha dinheiro</h2>
+  <div class="grade g3">
+    <div class="cartao"><span class="icone">📈</span><h3>1 · Comissão por serviço</h3><p><b>10–15%</b> sobre cada serviço concluído, cobrada à empresa: <span class="destaque">receita principal</span>, alinhada com o volume de pedidos.</p></div>
+    <div class="cartao"><span class="icone">🎫</span><h3>2 · Assinatura de empresas</h3><p>Plano mensal fixo (ex.: 1 500 MT/mês) com presença garantida, mais camiões visíveis e destaque na lista — receita recorrente que estabiliza o caixa.</p></div>
+    <div class="cartao"><span class="icone">⭐</span><h3>3 · Destaque pago</h3><p>Posição de destaque nas sugestões de pedido e na lista pública ("Patrocinado"), claramente rotulada.</p></div>
+  </div>
+  <p class="nota">No MVP académico <b>não há pagamento real</b> — o condutor apenas indica o método (M-Pesa / e-Mola / Dinheiro) e a empresa confirma. O passaporte para o modelo comercial é integrar o <b>gateway do M-Pesa e do e-Mola</b>, que passa a intermediar o valor + a comissão.</p>
+</section>
+
+<!-- 9 · ECONOMIA UNITÁRIA -->
+<section class="slide">
+  <div class="tag">08 · Economia unitária (estimativa)</div>
+  <h2>Um serviço típico de ligeiro, 5–10 km</h2>
+  <table>
+    <tr><th>Item</th><th>Valor</th><th>Nota</th></tr>
+    <tr><td>Faixa de preço publicada</td><td>1 000 – 2 000 MT</td><td>definida pela empresa</td></tr>
+    <tr><td>Valor médio acordado</td><td>≈ 1 400 MT</td><td>dentro da faixa</td></tr>
+    <tr><td>Comissão da plataforma (12%)</td><td>≈ 168 MT</td><td>receita bruta do ReboqueJá</td></tr>
+    <tr><td>Custo do gateway / M-Pesa</td><td>≈ 20–40 MT</td><td>taxa do operador</td></tr>
+    <tr><td><b>Contribuição por serviço</b></td><td class="destaque"><b>≈ 130 MT</b></td><td>antes de custos fixos de infra-estrutura</td></tr>
+  </table>
+  <p class="nota"><b>Ponto de equilíbrio ilustrativo:</b> com custos fixos de ≈ 15 000 MT/mês (hosting, SMS/WhatsApp, suporte) ⇒ ≈ <b>115 serviços/mês</b>. A plataforma não tem frota nem camiões: cada empresa nova é receita incremental com custo marginal quase zero.</p>
+</section>
+
+<!-- 10 · MARKETING -->
+<section class="slide">
+  <div class="tag">09 · Marketing e aquisição</div>
+  <h2>Como chegar a condutores e empresas</h2>
+  <div class="grade g2">
+    <div class="cartao">
+      <h3>📱 Canal do condutor</h3>
+      <p>Stickers e cartazes em oficinas, postos de combustível e paragens; <b>número de WhatsApp dedicado</b> com link directo para o app; rádios locais em horas de tráfego; grupos de bairro no WhatsApp.</p>
+    </div>
+    <div class="cartao">
+      <h3>🏢 Canal da empresa</h3>
+      <p>Visita física às empresas de reboque existentes; comissão reduzida nos 3 primeiros meses das primeiras empresas; formação de uma tarde no painel — a operação interna foi desenhada para ser simples.</p>
+    </div>
+  </div>
+  <ul class="lista" style="margin-top:18px;">
+    <li>🔁 <b>Motor de retenção:</b> as ★ e o histórico criam reputação verificável — o condutor volta ao app da próxima vez e a empresa com melhor ★ recebe mais pedidos primeiro.</li>
+    <li>🤝 <b>Parcerias:</b> <b>seguradoras e oficinas</b> podem integrar o ReboqueJá no atendimento a sinistros — o canal B2B mais rentável a longo prazo.</li>
+  </ul>
+</section>
+
+<!-- 11 · ROADMAP -->
+<section class="slide">
+  <div class="tag">10 · Roadmap</div>
+  <h2>Do protótipo ao negócio</h2>
+  <div class="grade g4">
+    <div class="cartao"><span class="icone">🔬</span><h3>Fase 0 · Feita ✅</h3><p>MVP funcional: 3 perfis, mapa, faixas de preço, dashboard, SUS. Demonstração completa de 10 minutos.</p></div>
+    <div class="cartao"><span class="icone">🧪</span><h3>Fase 1 · Piloto (t1–t3)</h3><p>Piloto na Matola com 4–6 empresas reais e utilizadores voluntários via questionário SUS. Migrar SQLite → PostgreSQL.</p></div>
+    <div class="cartao"><span class="icone">💳</span><h3>Fase 2 · Monetização (t3–t6)</h3><p><b>Integração real do M-Pesa / e-Mola</b> (pagamento intermediado + comissão), facturação e registo fiscal (NUIT) das empresas.</p></div>
+    <div class="cartao"><span class="icone">🗺️</span><h3>Fase 3 · Escala (t6+)</h3><p>Expandir o polígono: Maputo → províncias. Notificações push (substituir o polling), PWA instalável, API para seguradoras.</p></div>
+  </div>
+</section>
+
+<!-- 12 · MÉTRICAS -->
+<section class="slide">
+  <div class="tag">11 · Métricas</div>
+  <h2>O que já medimos — e o que medir</h2>
+  <div class="grade g4">
+    <div class="cartao"><span class="icone">⏱️</span><h3>Tempo de resposta</h3><p>PENDENTE→ACEITE (KPI já no dashboard do admin).</p></div>
+    <div class="cartao"><span class="icone">📍</span><h3>Tempo até à chegada</h3><p>ACEITE→NO_LOCAL (já medido).</p></div>
+    <div class="cartao"><span class="icone">⭐</span><h3>Satisfação</h3><p>★ média por empresa + SUS 0–100 com exportação CSV.</p></div>
+    <div class="cartao"><span class="icone">🏘️</span><h3>Distribuição</h3><p>Pedidos por bairro (já no dashboard) → base para escolher a expansão.</p></div>
+  </div>
+  <p class="nota">Na fase comercial, acrescentar: <b>GTV mensal</b>, <b>take rate efectivo</b>, <b>conversão pedido→concluído</b>, <b>taxa de cancelamento</b> e <b>CAC por canal</b>.</p>
+</section>
+
+<!-- 13 · SWOT -->
+<section class="slide">
+  <div class="tag">12 · Análise SWOT</div>
+  <h2>SWOT</h2>
+  <div class="grade g2" style="grid-template-rows:1fr 1fr;">
+    <div class="cartao" style="border-left:4px solid var(--verde);"><h3 style="color:var(--verde)">Forças</h3><p>Produto já construído e demonstrável · infra-estrutura de mapas gratuita · reputação baseada em ★ · custo de expansão marginal ~0 · mobile-first funciona em dados limitados (polling, não streaming).</p></div>
+    <div class="cartao" style="border-left:4px solid var(--vermelho);"><h3 style="color:var(--vermelho)">Fraquezas</h3><p>Sem pagamento real ainda · sem app nativo / push · sem produção em servidor próprio · curadoria manual das empresas · oferta inicial pequena.</p></div>
+    <div class="cartao" style="border-left:4px solid var(--azul);"><h3 style="color:var(--azul)">Oportunidades</h3><p>Nenhum player digital de reboque na praça · penetração crescente do M-Pesa/e-Mola · parcerias com seguradoras · expansão clonável por polígono geográfico.</p></div>
+    <div class="cartao" style="border-left:4px solid var(--cinza);"><h3 style="color:var(--cinza)">Ameças</h3><p>Entrada de um player financiado (apps de transporte a expandir categorias) · internet instável em algumas zonas · desconfiança de empresas informais na digitalização · custos de SMS e infra-estrutura em escala.</p></div>
+  </div>
+</section>
+
+<!-- 14 · RISCOS -->
+<section class="slide">
+  <div class="tag">13 · Riscos e mitigação</div>
+  <h2>Principais riscos</h2>
+  <table>
+    <tr><th>Risco</th><th>Mitigação</th></tr>
+    <tr><td>Os dois lados do mercado não arrancam ao mesmo tempo (problema da "fria inicial")</td><td>Lançar com 4–6 empresas contratadas a pé <b>antes</b> de divulgar ao público: a oferta vai primeiro.</td></tr>
+    <tr><td>Conflito do valor final dentro da faixa</td><td>Manter a regra actual (faixa publicada, acordo na hora) e mostrar a média dos serviços anteriores do mesmo perfil — transparência por dados.</td></tr>
+    <tr><td>Dependência de um único gateway</td><td>Suporte a múltiplos canais desde o desenho: M-Pesa <i>e</i> e-Mola <i>e</i> dinheiro confirmado pela empresa — o fluxo não bloqueia se um canal cair.</td></tr>
+    <tr><td>Fraude (pedido ou telefone falsos)</td><td>Verificação por SMS/OTP e bloqueio por número — o schema já usa telefone único como âncora de identidade.</td></tr>
+    <tr><td>Segurança de dados</td><td>JWT HttpOnly, validação Zod em todas as entradas e middleware por papel — o protótipo já nasce com os três.</td></tr>
+  </table>
+</section>
+
+<!-- 15 · FINANÇAS -->
+<section class="slide">
+  <div class="tag">14 · Viabilidade financeira (estimativa)</div>
+  <h2>Cenário do ano 1 (piloto + monetização)</h2>
+  <table>
+    <tr><th>Linha</th><th>Ano 1</th><th>Premissa</th></tr>
+    <tr><td>Serviços concluídos</td><td>≈ 6 000</td><td>crescendo de ~50/mês (piloto) para ~900/mês</td></tr>
+    <tr><td>Valor médio por serviço</td><td>1 400 MT</td><td>faixas reais do seed (500–6 500 MT)</td></tr>
+    <tr><td>GTV</td><td>≈ 8,4 milhões MT</td><td>volume bruto transacionado</td></tr>
+    <tr><td>Receita (take rate 12% + assinaturas)</td><td>≈ 1,2 milhões MT</td><td>comissão + planos das empresas</td></tr>
+    <tr><td>Custos operacionais</td><td>≈ 900 mil MT</td><td>hosting, OTP/SMS, suporte, 2 pessoas</td></tr>
+    <tr><td><b>Posição no fim do ano 1</b></td><td class="destaque"><b>≈ perto do break-even</b></td><td>investimento inicial estimado: <b>150–250 mil MT</b> (desenvolvimento, legal, marketing de arranque)</td></tr>
+  </table>
+  <p class="nota">Números ilustrativos para discussão com parceiros/investidores — baseados nas faixas reais do seed (500–6 500 MT) e premissas conservadoras. Recomenda-se validar estes cenários durante o piloto das Fases 0/1.</p>
+</section>
+
+<!-- 16 · CONCLUSÃO -->
+<section class="slide">
+  <div class="tag">15 · Próximos passos</div>
+  <h2>Conclusão</h2>
+  <ul class="lista">
+    <li>✅ O <b>protótipo já resolve o problema de ponta a ponta</b> — não é um wireframe: é um sistema com regras de negócio, segurança e métricas.</li>
+    <li>🎯 O risco real não é o produto, é a <b>operação de mercado</b>: recrutar as primeiras empresas e provar valor a condutores.</li>
+    <li>💳 O passo de maior alavanca é a <b>integração real do M-Pesa/e-Mola</b>: transforma a demo em negócio, desbloqueia a comissão e fecha o ciclo financeiro.</li>
+    <li>📈 Depois: piloto na Matola → escala para Maputo → API para seguradoras. <b>Um mesmo código, um novo polígono.</b></li>
+  </ul>
+  <p class="nota" style="font-size:1.05rem;"><b>🛻 ReboqueJá</b> — a avaria termina em minutos, não em ligações perdidas. · Matola, Moçambique · plano de negócio gerado a partir do código-fonte do MVP.</p>
+</section>
+
+<div id="progresso"></div>
+<div id="hud">
+  <span id="contador">1 / 16</span>
+  <span>ReboqueJá · Plano de Negócio — navegue com ← → ou clique</span>
+  <div class="setas">
+    <button onclick="nav(-1)">←</button>
+    <button onclick="nav(1)">→</button>
+  </div>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll(".slide")];
+  let i=0;
+  function render(){
+    slides.forEach((s,k)=>s.classList.toggle("active",k===i));
+    document.getElementById("contador").textContent=(i+1)+" / "+slides.length;
+    document.getElementById("progresso").style.width=((i+1)/slides.length*100)+"%";
+  }
+  function nav(d){i=Math.min(slides.length-1,Math.max(0,i+d));render();}
+  document.addEventListener("keydown",e=>{
+    if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" ")nav(1);
+    if(e.key==="ArrowLeft"||e.key==="PageUp")nav(-1);
+    if(e.key==="Home"){i=0;render();} if(e.key==="End"){i=slides.length-1;render();}
+  });
+  document.body.addEventListener("click",e=>{
+    if(e.target.closest(".setas,#hud"))return;
+    nav(e.clientX>innerWidth/2?1:-1);
+  });
+  render();
+</script>
+</body>
+</html>

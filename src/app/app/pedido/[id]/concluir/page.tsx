@@ -91,7 +91,7 @@ export default function ConcluirPedido() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-4 pb-24 space-y-4">
+    <div className="max-w-md mx-auto p-4 pb-[calc(9rem_+_env(safe-area-inset-bottom))] md:pb-28 space-y-4">
       <h1 className="text-2xl font-extrabold">Serviço concluído 🏁</h1>
       <Cartao className="p-4 text-sm">
         <p className="font-bold">{pedido.empresa?.nome}</p>
@@ -145,7 +145,7 @@ export default function ConcluirPedido() {
       </Cartao>
 
       <AvisoErro>{erroMsg}</AvisoErro>
-      <div className="fixed bottom-0 inset-x-0 p-4 bg-white/95 dark:bg-neutral-900/95 backdrop-blur border-t border-neutral-200 dark:border-neutral-800">
+      <div className="fixed z-30 bottom-[calc(4.5rem_+_env(safe-area-inset-bottom))] md:bottom-0 inset-x-0 p-4 bg-white/95 dark:bg-neutral-900/95 backdrop-blur border-t border-neutral-200 dark:border-neutral-800">
         <div className="max-w-md mx-auto">
           <Botao className="w-full" onClick={submeter} disabled={aEnviar}>
             {aEnviar ? "A enviar…" : "Confirmar pagamento e avaliar"}

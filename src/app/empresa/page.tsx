@@ -104,7 +104,7 @@ export default function PainelEmpresa() {
   const maxSemana = Math.max(1, ...dados.semana.map((d) => Math.max(d.concluidos, d.cancelados)));
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-neutral-50 dark:bg-neutral-950 dark:bg-[radial-gradient(ellipse_at_top,rgba(255,195,0,0.05),transparent_60%)]">
+    <div className="min-h-[calc(100dvh-3.5rem)] bg-neutral-50 dark:bg-neutral-950 dark:bg-[radial-gradient(ellipse_at_top,rgba(255,195,0,0.05),transparent_60%)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
 
       {/* ===== Cabeçalho da empresa ===== */}

@@ -96,8 +96,8 @@ export default function Precos() {
           </Selector>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Entrada rotulo="Preço mínimo (MT)" type="number" min={100} value={precoMin} onChange={(e) => setPrecoMin(e.target.value)} />
-          <Entrada rotulo="Preço máximo (MT)" type="number" min={100} value={precoMax} onChange={(e) => setPrecoMax(e.target.value)} />
+          <Entrada rotulo="Preço mínimo (MT)" type="number" inputMode="numeric" min={100} value={precoMin} onChange={(e) => setPrecoMin(e.target.value)} />
+          <Entrada rotulo="Preço máximo (MT)" type="number" inputMode="numeric" min={100} value={precoMax} onChange={(e) => setPrecoMax(e.target.value)} />
         </div>
         <AvisoErro>{erroMsg}</AvisoErro>
         <Botao className="w-full" onClick={gravar} disabled={aSalvar}>

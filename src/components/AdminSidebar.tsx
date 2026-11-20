@@ -62,23 +62,28 @@ export function BarraLateralAdmin({
   if (topo) {
     // Mobile / tablet: barra horizontal com scroll
     return (
-      <div className="h-14 flex items-center gap-2 px-3 bg-neutral-950/90 backdrop-blur-md border-b border-white/10 overflow-x-auto no-scrollbar">
+      <div className="h-14 flex items-center gap-2 px-3 pt-[env(safe-area-inset-top)] bg-neutral-950/90 backdrop-blur-md border-b border-white/10 overflow-x-auto no-scrollbar">
         <Logo compacto />
         <nav className="flex items-center gap-1">
-          {ITENS.map(({ href, rotulo, exact, icone: Icone }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ${
-                activo(href, exact)
-                  ? "bg-primary-400 text-neutral-950"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
-              }`}
-            >
-              <Icone className="w-4 h-4" />
-              {rotulo}
-            </Link>
-          ))}
+          {ITENS.map(({ href, rotulo, exact, icone: Icone }) => {
+            const a = activo(href, exact);
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={a ? "page" : undefined}
+                aria-label={rotulo}
+                className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ${
+                  a
+                    ? "bg-primary-400 text-neutral-950"
+                    : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
+                }`}
+              >
+                <Icone className="w-4 h-4 shrink-0" />
+                <span className={a ? "inline" : "hidden sm:inline"}>{rotulo}</span>
+              </Link>
+            );
+          })}
         </nav>
         <button
           onClick={sair}

@@ -315,7 +315,7 @@ export function BarraNavegacaoPublica() {
 
   return (
     <header
-      className={`${emCasa ? "fixed inset-x-0" : "sticky"} top-0 z-40 transition-all duration-300 ${
+      className={`${emCasa ? "fixed inset-x-0" : "sticky"} top-0 z-40 pt-[env(safe-area-inset-top)] transition-all duration-300 ${
         transparente
           ? "bg-transparent border-b border-transparent"
           : "bg-neutral-950/85 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20"

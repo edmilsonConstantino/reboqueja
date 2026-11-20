@@ -20,7 +20,7 @@ export default function LayoutAdmin({
         <BarraLateralAdmin variante="topo" />
       </div>
 
-      <div className="flex-1 min-w-0 flex flex-col pt-14 lg:pt-0">
+      <div className="flex-1 min-w-0 flex flex-col pt-[calc(3.5rem_+_env(safe-area-inset-top))] lg:pt-0">
         <div className="hidden lg:block">
           <BarraTopoAdmin />
         </div>

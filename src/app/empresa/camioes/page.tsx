@@ -105,9 +105,9 @@ export default function Camioes() {
           </Selector>
         </div>
         <Entrada rotulo="Capacidade (opcional)" placeholder="Ex.: Até 2 t" value={novo.capacidade || ""} onChange={(e) => setNovo({ ...novo, capacidade: e.target.value })} />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Entrada rotulo="Motorista" placeholder="Nome do motorista" value={novo.motoristaNome} onChange={(e) => setNovo({ ...novo, motoristaNome: e.target.value })} />
-          <Entrada rotulo="Telefone do motorista" placeholder="+258 87 000 0000" value={novo.motoristaTelefone} onChange={(e) => setNovo({ ...novo, motoristaTelefone: e.target.value })} />
+          <Entrada rotulo="Telefone do motorista" placeholder="+258 87 000 0000" inputMode="tel" value={novo.motoristaTelefone} onChange={(e) => setNovo({ ...novo, motoristaTelefone: e.target.value })} />
         </div>
         <AvisoErro>{erroMsg}</AvisoErro>
         <Botao className="w-full" onClick={criar} disabled={aSalvar}>

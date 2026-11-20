@@ -17,6 +17,33 @@ body {
 
 body {
   @apply bg-neutral-50 text-neutral-900 antialiased;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Em ecrãs pequenos, campos a 16px evitam o zoom automático do iOS ao focar. */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Barras horizontais sem scrollbar visível */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Folhas inferiores: o scroll não “passa” para a página por trás. */
+.rj-sheet-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .dark body {

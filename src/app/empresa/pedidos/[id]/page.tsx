@@ -227,7 +227,7 @@ export default function DetalhePedidoEmpresa() {
     : null;
 
   return (
-    <div className="fixed inset-0 pt-14 pb-[290px]">
+    <div className="fixed inset-0 pt-[calc(3.5rem_+_env(safe-area-inset-top))] pb-[290px]">
       <Mapa
         centro={posCamiao && pedido.estado === "A_CAMINHO" ? posCamiao : origem}
         zoom={13}
@@ -241,7 +241,7 @@ export default function DetalhePedidoEmpresa() {
         className="absolute inset-0"
       />
 
-      <div className="absolute z-30 inset-x-0 bottom-0 max-h-[58vh] overflow-y-auto bg-white dark:bg-neutral-900 rounded-t-3xl shadow-sheet p-4 space-y-4">
+      <div className="absolute z-30 inset-x-0 bottom-0 max-h-[58vh] overflow-y-auto rj-sheet-scroll bg-white dark:bg-neutral-900 rounded-t-3xl shadow-sheet p-4 pb-[calc(1rem_+_env(safe-area-inset-bottom))] space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-extrabold">
             {LABEL_ESTADO[pedido.estado]}

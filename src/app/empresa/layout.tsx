@@ -8,7 +8,7 @@ export default function LayoutEmpresa({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-[calc(4.5rem_+_env(safe-area-inset-bottom))] md:pb-0">
       <BarraNavegacaoApp papel="EMPRESA" />
       {children}
     </div>

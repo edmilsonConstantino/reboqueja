@@ -235,7 +235,7 @@ export default function AppCondutor() {
   const estadoInfo = activo ? TITULO_ESTADO[activo.estado] : null;
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-neutral-50 dark:bg-[radial-gradient(ellipse_at_top,rgba(255,195,0,0.06),transparent_60%)] dark:bg-neutral-950">
+    <div className="min-h-[calc(100dvh-3.5rem)] bg-neutral-50 dark:bg-[radial-gradient(ellipse_at_top,rgba(255,195,0,0.06),transparent_60%)] dark:bg-neutral-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
         {/* ===== Cartão com mapa ===== */}
         <section className="relative overflow-hidden rounded-3xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/60 shadow-card">
@@ -287,7 +287,7 @@ export default function AppCondutor() {
             </div>
 
             {/* Mapa */}
-            <div className="relative h-[300px] sm:h-[360px] lg:h-auto lg:min-h-[360px]">
+            <div className="relative h-[38vh] min-h-[220px] sm:h-[360px] lg:h-auto lg:min-h-[360px]">
               <Mapa
                 centro={posMapa}
                 zoom={14}
@@ -315,41 +315,43 @@ export default function AppCondutor() {
         >
           <div className="grid lg:grid-cols-[1.3fr_1fr] gap-5">
             {/* Etapas */}
-            <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-5 overflow-x-auto no-scrollbar">
-              <ol className="flex min-w-[520px]">
+            <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-4 sm:p-5">
+              <ol className="flex w-full">
                 {etapas.map((e, i) => {
                   const feito = i < indiceActivo;
                   const actual = i === indiceActivo;
                   const Icone = feito ? IconeCheck : e.icone;
                   return (
-                    <li key={e.rotulo} className="flex-1 relative">
+                    <li key={e.rotulo} className="relative flex-1 min-w-0">
                       {i < etapas.length - 1 && (
                         <span
                           aria-hidden
-                          className={`absolute top-6 left-14 right-2 h-0.5 rounded-full ${
+                          className={`absolute top-5 sm:top-6 left-10 sm:left-14 right-1 h-0.5 rounded-full ${
                             feito ? "bg-emerald-500" : actual ? "bg-primary-400" : "bg-neutral-200 dark:bg-white/10"
                           }`}
                         />
                       )}
                       <span
-                        className={`relative w-12 h-12 rounded-full grid place-items-center border-2 transition ${
+                        className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-full grid place-items-center border-2 transition ${
                           feito
                             ? "bg-emerald-500 border-emerald-500 text-white"
                             : actual
-                              ? "border-primary-400 text-primary-500 dark:text-primary-400 bg-primary-400/10 shadow-[0_0_0_6px_rgba(255,195,0,0.12)]"
+                              ? "border-primary-400 text-primary-500 dark:text-primary-400 bg-primary-400/10 shadow-[0_0_0_4px_rgba(255,195,0,0.12)]"
                               : "border-neutral-300 dark:border-white/15 text-neutral-400"
                         }`}
                       >
-                        <Icone className="w-5 h-5" />
+                        <Icone className="w-4 h-4 sm:w-5 sm:h-5" />
                       </span>
                       <p
-                        className={`mt-3 text-sm font-semibold pr-2 ${
+                        className={`mt-2 sm:mt-3 text-[11px] sm:text-sm font-semibold leading-tight pr-1 sm:pr-2 ${
                           feito || actual ? "" : "text-neutral-400 dark:text-neutral-500"
                         }`}
                       >
                         {e.rotulo}
                       </p>
-                      {activo && <p className="text-xs text-neutral-500 mt-0.5">{feito || actual ? e.hora : "—"}</p>}
+                      {activo && (
+                        <p className="text-[10px] sm:text-xs text-neutral-500 mt-0.5">{feito || actual ? e.hora : "—"}</p>
+                      )}
                     </li>
                   );
                 })}

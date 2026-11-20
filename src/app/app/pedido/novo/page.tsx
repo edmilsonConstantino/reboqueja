@@ -123,7 +123,7 @@ export default function NovoPedido() {
   const destino: LatLng = { lat: rascunho.destinoLat, lng: rascunho.destinoLng };
 
   return (
-    <div className="fixed inset-0 pt-14 pb-[340px]">
+    <div className="fixed inset-0 pt-[calc(3.5rem_+_env(safe-area-inset-top))] pb-[340px]">
       {/* Mapa com origem, destino e sugestões */}
       <Mapa
         centro={origem}
@@ -144,7 +144,7 @@ export default function NovoPedido() {
       />
 
       {/* Painel de escolha (desktop: lateral; mobile: inferior fixo) */}
-      <div className="absolute z-30 inset-x-0 bottom-0 top-auto md:inset-y-0 md:left-[400px] md:right-auto md:w-[400px] md:top-14 max-h-[62vh] md:max-h-none overflow-y-auto bg-white dark:bg-neutral-900 md:shadow-none shadow-sheet rounded-t-3xl md:rounded-none border-t md:border-t-0 md:border-r border-neutral-200 dark:border-neutral-800 p-4">
+      <div className="absolute z-30 inset-x-0 bottom-0 top-auto md:inset-y-0 md:left-[400px] md:right-auto md:w-[400px] md:top-14 max-h-[72vh] md:max-h-none overflow-y-auto rj-sheet-scroll bg-white dark:bg-neutral-900 md:shadow-none shadow-sheet rounded-t-3xl md:rounded-none border-t md:border-t-0 md:border-r border-neutral-200 dark:border-neutral-800 p-4 pb-[calc(1rem_+_env(safe-area-inset-bottom))]">
         <button
           onClick={() => router.push("/app")}
           className="text-sm text-neutral-500 mb-3 hover:underline"

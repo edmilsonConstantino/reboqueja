@@ -102,6 +102,11 @@ export function BarraNavegacaoApp({
     return pathname === href || pathname.startsWith(href + "/");
   };
 
+  // No telemóvel os fluxos de mapa ocupam o ecrã todo: a barra inferior sai da frente.
+  const imersiva =
+    pathname.startsWith("/app/pedido") || pathname.startsWith("/empresa/pedidos");
+  const itensMobile = itens.slice(0, 5);
+
   const primeiroNome = nome.split(" ")[0];
   const partes = nome.trim().split(/\s+/).filter(Boolean);
   const inicial = (
@@ -111,8 +116,9 @@ export function BarraNavegacaoApp({
   ).toUpperCase();
 
   return (
-    <nav className="sticky top-0 z-40 h-14 bg-neutral-950/90 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20">
-      <div className="max-w-6xl mx-auto h-full px-3 sm:px-6 flex items-center gap-2 sm:gap-4">
+    <>
+    <nav className="sticky top-0 z-40 pt-[env(safe-area-inset-top)] bg-neutral-950/95 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20">
+      <div className="max-w-6xl mx-auto h-14 px-3 sm:px-6 flex items-center gap-2 sm:gap-4">
         {/* Logo */}
         <Link href={base} className="group flex items-center gap-2.5 shrink-0" aria-label="ReboqueJá">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -126,8 +132,8 @@ export function BarraNavegacaoApp({
           </span>
         </Link>
 
-        {/* Navegação em cápsula */}
-        <div className="flex-1 min-w-0 flex justify-center">
+        {/* Navegação em cápsula (tablet/desktop) */}
+        <div className="hidden md:flex flex-1 min-w-0 justify-center">
           <div className="h-14 flex items-stretch gap-1 overflow-x-auto no-scrollbar max-w-full">
             {itens.map(({ href, rotulo, icone: Icone }) => {
               const activo = estaActivo(href);
@@ -157,7 +163,7 @@ export function BarraNavegacaoApp({
         </div>
 
         {/* Tema + utilizador */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="ml-auto flex items-center gap-1 shrink-0">
           <button
             onClick={alternar}
             aria-label="Alternar tema"
@@ -215,6 +221,14 @@ export function BarraNavegacaoApp({
                   {tema === "escuro" ? <NavIconeSol className="w-4 h-4" /> : <NavIconeLua className="w-4 h-4" />}
                   {tema === "escuro" ? "Modo claro" : "Modo escuro"}
                 </button>
+                {papel === "EMPRESA" && (
+                  <Link
+                    href="/empresa/avaliacao-prototipo"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                  >
+                    <NavIconeEstrela className="w-4 h-4" /> Avaliar o protótipo
+                  </Link>
+                )}
                 <Link
                   href="/"
                   className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white"
@@ -234,6 +248,47 @@ export function BarraNavegacaoApp({
         </div>
       </div>
     </nav>
+
+    {/* Barra de separadores inferior (telemóvel) */}
+    {!imersiva && (
+      <nav
+        aria-label="Navegação principal"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-neutral-950/95 backdrop-blur-md border-t border-white/10 pb-[env(safe-area-inset-bottom)]"
+      >
+        <ul
+          className="grid"
+          style={{ gridTemplateColumns: `repeat(${itensMobile.length}, minmax(0, 1fr))` }}
+        >
+          {itensMobile.map(({ href, rotulo, icone: Icone }) => {
+            const activo = estaActivo(href);
+            return (
+              <li key={href} className="min-w-0">
+                <Link
+                  href={href}
+                  aria-current={activo ? "page" : undefined}
+                  aria-label={rotulo}
+                  className={`flex flex-col items-center justify-center gap-0.5 min-h-[58px] px-1 transition ${
+                    activo ? "text-primary-400" : "text-neutral-400 active:text-neutral-200"
+                  }`}
+                >
+                  <span
+                    className={`grid place-items-center w-11 h-7 rounded-full transition ${
+                      activo ? "bg-primary-400/15" : ""
+                    }`}
+                  >
+                    <Icone className="w-5 h-5 shrink-0" />
+                  </span>
+                  <span className="text-[10px] font-semibold leading-none truncate w-full text-center">
+                    {rotulo.split(" ")[0]}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    )}
+    </>
   );
 }
 

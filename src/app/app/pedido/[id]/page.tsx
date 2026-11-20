@@ -111,7 +111,7 @@ export default function AcompanharPedido() {
   ];
 
   return (
-    <div className="fixed inset-0 pt-14 pb-[300px]">
+    <div className="fixed inset-0 pt-[calc(3.5rem_+_env(safe-area-inset-top))] pb-[300px]">
       <Mapa
         centro={camiao && pedido.estado === "A_CAMINHO" ? camiao : origem}
         zoom={13}
@@ -121,7 +121,7 @@ export default function AcompanharPedido() {
         className="absolute inset-0"
       />
 
-      <div className="absolute z-30 inset-x-0 bottom-0 max-h-[56vh] overflow-y-auto bg-white dark:bg-neutral-900 rounded-t-3xl shadow-sheet p-4 space-y-4">
+      <div className="absolute z-30 inset-x-0 bottom-0 max-h-[56vh] overflow-y-auto rj-sheet-scroll bg-white dark:bg-neutral-900 rounded-t-3xl shadow-sheet p-4 pb-[calc(1rem_+_env(safe-area-inset-bottom))] space-y-4">
         {/* Estado principal */}
         <div className="flex items-center justify-between">
           <div>

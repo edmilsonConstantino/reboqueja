@@ -348,13 +348,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const detalhesProblemaLimpos = dados.detalhesProblema?.trim() || "";
     const detalhesLimpos = dados.detalhesVeiculo?.trim() || "";
     const obsLimpa = dados.observacoes?.trim() || "";
-    const observacoesFinais = detalhesLimpos
-      ? obsLimpa
-        ? `Veículo (Outro): ${detalhesLimpos} · ${obsLimpa}`
-        : `Veículo (Outro): ${detalhesLimpos}`
-      : obsLimpa || null;
+    const partesObs = [
+      detalhesProblemaLimpos ? `Problema: ${detalhesProblemaLimpos}` : "",
+      detalhesLimpos ? `Veículo (Outro): ${detalhesLimpos}` : "",
+      obsLimpa,
+    ].filter(Boolean);
+    const observacoesFinais = partesObs.length > 0 ? partesObs.join(" · ") : null;
 
     const pedido = await prisma.pedido.create({
       data: {

@@ -40,6 +40,7 @@ type Rascunho = {
   destinoLng?: number | null;
   destinoEndereco?: string | null;
   tipoProblema: string;
+  detalhesProblema?: string | null;
   tipoVeiculo: string;
   detalhesVeiculo?: string | null;
   observacoes?: string | null;
@@ -261,7 +262,9 @@ export default function NovoPedido() {
 
         <h1 className="text-lg font-extrabold">Veículos de reboque disponíveis</h1>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 mb-3">
-          {LABEL_PROBLEMA[rascunho.tipoProblema]} · {LABEL_VEICULO[rascunho.tipoVeiculo] ?? rascunho.tipoVeiculo}
+          {LABEL_PROBLEMA[rascunho.tipoProblema]}
+          {rascunho.detalhesProblema ? ` (${rascunho.detalhesProblema})` : ""} ·{" "}
+          {LABEL_VEICULO[rascunho.tipoVeiculo] ?? rascunho.tipoVeiculo}
           {rascunho.detalhesVeiculo ? ` (${rascunho.detalhesVeiculo})` : ""}
           {rascunho.destinoEndereco ? ` · Destino: ${rascunho.destinoEndereco}` : " · Sem destino definido"}
         </p>
@@ -478,6 +481,12 @@ export default function NovoPedido() {
                 <span className="text-neutral-500">Recolha:</span>{" "}
                 <b>{rascunho.origemEndereco}</b>
               </p>
+              {rascunho.detalhesProblema && (
+                <p>
+                  <span className="text-neutral-500">Detalhes do problema:</span>{" "}
+                  <b>{rascunho.detalhesProblema}</b>
+                </p>
+              )}
               {rascunho.detalhesVeiculo && (
                 <p>
                   <span className="text-neutral-500">Detalhes do veículo:</span>{" "}
@@ -519,6 +528,18 @@ export default function NovoPedido() {
             </div>
 
             <AvisoErro>{erroMsg}</AvisoErro>
+            {erroMsg && rascunho && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelecionado(null);
+                  void pesquisar(rascunho, raioKm);
+                }}
+                className="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+              >
+                ↻ Actualizar lista de veículos disponíveis
+              </button>
+            )}
 
             <div className="flex gap-2">
               <Botao

@@ -713,12 +713,12 @@ function createInitialStore(): Store {
   return store;
 }
 
-function getStore(): Store {
-  if (!globalForMock.__rjMockDb) {
-    globalForMock.__rjMockDb = createInitialStore();
-  }
-  const store = globalForMock.__rjMockDb;
+let lastKeepaliveMs = 0;
+
+function refreshDemoKeepalive(store: Store): void {
   const agoraMs = Date.now();
+  if (agoraMs - lastKeepaliveMs < 5_000) return;
+  lastKeepaliveMs = agoraMs;
 
   // Mantém o sinal de GPS dos camiões demo que continuam online e a solicitação pendente demo viva
   const liveCamioes = globalForMock.__rjDemoLiveCamioes;
@@ -735,8 +735,8 @@ function getStore(): Store {
           c.localizacaoActualizadaEm instanceof Date
             ? c.localizacaoActualizadaEm.getTime()
             : 0;
-        if (agoraMs - ts > 60_000) {
-          c.localizacaoActualizadaEm = new Date(agoraMs - 10_000);
+        if (agoraMs - ts > 30_000) {
+          c.localizacaoActualizadaEm = new Date(agoraMs - 5_000);
         }
       }
     }
@@ -747,14 +747,21 @@ function getStore(): Store {
     for (const p of store.pedido) {
       if (livePedidos.has(p.id) && p.estado === "PENDENTE") {
         const ts = p.criadoEm instanceof Date ? p.criadoEm.getTime() : 0;
-        if (agoraMs - ts > 90_000) {
-          p.criadoEm = new Date(agoraMs - 25_000);
+        if (agoraMs - ts > 45_000) {
+          p.criadoEm = new Date(agoraMs - 15_000);
           p.actualizadoEm = p.criadoEm;
         }
       }
     }
   }
+}
 
+function getStore(): Store {
+  if (!globalForMock.__rjMockDb) {
+    globalForMock.__rjMockDb = createInitialStore();
+  }
+  const store = globalForMock.__rjMockDb;
+  refreshDemoKeepalive(store);
   return store;
 }
 
@@ -1413,6 +1420,7 @@ function deleteCascade(store: Store, model: ModelName, ids: Set<string>) {
 function createModelDelegate(store: Store, model: ModelName) {
   return {
     async findMany(args: QueryOpts = {}) {
+      refreshDemoKeepalive(store);
       let list = store[model].filter((r) => matchesWhere(store, model, r, args.where));
       list = sortRecords(list, args.orderBy);
       if (typeof args.take === "number") {
@@ -1422,6 +1430,7 @@ function createModelDelegate(store: Store, model: ModelName) {
     },
 
     async findFirst(args: QueryOpts = {}) {
+      refreshDemoKeepalive(store);
       let list = store[model].filter((r) => matchesWhere(store, model, r, args.where));
       list = sortRecords(list, args.orderBy);
       const hit = list[0];
@@ -1429,6 +1438,7 @@ function createModelDelegate(store: Store, model: ModelName) {
     },
 
     async findUnique(args: QueryOpts = {}) {
+      refreshDemoKeepalive(store);
       const hit = store[model].find((r) => matchesWhere(store, model, r, args.where));
       return hit ? projectRecord(store, model, hit, args) : null;
     },
@@ -1518,6 +1528,7 @@ function createModelDelegate(store: Store, model: ModelName) {
     },
 
     async count(args?: { where?: Record<string, unknown> }) {
+      refreshDemoKeepalive(store);
       return store[model].filter((r) => matchesWhere(store, model, r, args?.where)).length;
     },
 
@@ -1527,6 +1538,7 @@ function createModelDelegate(store: Store, model: ModelName) {
       _sum?: Record<string, boolean>;
       _count?: boolean | Record<string, boolean>;
     }) {
+      refreshDemoKeepalive(store);
       const matches = store[model].filter((r) => matchesWhere(store, model, r, args.where));
       const res: Record<string, unknown> = {};
 
@@ -1574,6 +1586,7 @@ function createModelDelegate(store: Store, model: ModelName) {
       where?: Record<string, unknown>;
       _count?: boolean | Record<string, boolean>;
     }) {
+      refreshDemoKeepalive(store);
       const matches = store[model].filter((r) => matchesWhere(store, model, r, args.where));
       const groups = new Map<string, { keys: Record<string, unknown>; count: number }>();
 

@@ -65,6 +65,7 @@ export const schemaLocalizacao = z
       "BATERIA",
       "OUTRO",
     ]),
+    detalhesProblema: z.string().trim().max(400).optional().nullable(),
     tipoVeiculo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO", "OUTRO"]),
     detalhesVeiculo: z.string().trim().max(300).optional().nullable(),
     observacoes: z.string().max(500).optional().nullable(),

@@ -4,6 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Mapa, type MarcadorMapa } from "@/components/Mapa";
 import { usarTema } from "@/components/ProvedorTema";
+import {
+  SolicitacaoLocalizacao,
+  type EstadoPermissaoGps,
+} from "@/components/SolicitacaoLocalizacao";
 import { AvisoErro, Botao, Cartao, Carregando, Etiqueta, Vazio } from "@/components/ui";
 import { faixaPrecoTexto, formatarDataHora, formatarKm, formatarTelefone } from "@/lib/format";
 import { LABEL_ESTADO, LABEL_PROBLEMA, LABEL_VEICULO } from "@/lib/constants-client";
@@ -67,6 +71,9 @@ export default function PainelCondutor() {
   const [dados, setDados] = useState<Painel | null>(null);
   const [erroMsg, setErroMsg] = useState("");
   const [erroGps, setErroGps] = useState("");
+  const [gpsEstado, setGpsEstado] = useState<EstadoPermissaoGps>("checking");
+  const [gpsDispositivo, setGpsDispositivo] = useState<LatLng | null>(null);
+  const [gatilhoGps, setGatilhoGps] = useState(0);
   const [aProcessar, setAProcessar] = useState(false);
   const [aAlternarDisp, setAAlternarDisp] = useState(false);
 
@@ -125,6 +132,18 @@ export default function PainelCondutor() {
       });
     } catch {}
   }, []);
+
+  const aoObterGpsInicial = useCallback(
+    (pos: LatLng) => {
+      setErroGps("");
+      setGpsDispositivo(pos);
+      if (dados?.camiao && (dados.camiao.disponivel || dados.activo)) {
+        ultimaSyncGpsRef.current = 0;
+        void enviarLocalizacao(pos.lat, pos.lng);
+      }
+    },
+    [dados?.camiao, dados?.activo, enviarLocalizacao]
+  );
 
   // Partilha periódica contínua enquanto disponível OU com serviço em execução
   const devePartilharGps = Boolean(
@@ -197,13 +216,15 @@ export default function PainelCondutor() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setGpsDispositivo(coords);
           const res = await fetch("/api/condutor/disponibilidade", {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               disponivel: true,
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
+              lat: coords.lat,
+              lng: coords.lng,
             }),
           });
           const d = await res.json();
@@ -218,8 +239,33 @@ export default function PainelCondutor() {
         }
       },
       () => {
-        setErroGps(MSG_GPS_INDISPONIVEL);
         setAAlternarDisp(false);
+        if (gpsDispositivo) {
+          void (async () => {
+            setAAlternarDisp(true);
+            try {
+              const res = await fetch("/api/condutor/disponibilidade", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  disponivel: true,
+                  lat: gpsDispositivo.lat,
+                  lng: gpsDispositivo.lng,
+                }),
+              });
+              const d = await res.json();
+              if (!res.ok) {
+                setErroMsg(d.erro || "Não foi possível activar a disponibilidade.");
+              }
+              await carregar();
+            } finally {
+              setAAlternarDisp(false);
+            }
+          })();
+          return;
+        }
+        setErroGps(MSG_GPS_INDISPONIVEL);
+        setGatilhoGps((n) => n + 1);
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -377,6 +423,12 @@ export default function PainelCondutor() {
 
   return (
     <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-100/80 dark:bg-[#070B14] transition-colors duration-200">
+      <SolicitacaoLocalizacao
+        perfil="CONDUTOR"
+        aoObterLocalizacao={aoObterGpsInicial}
+        aoAlterarEstado={setGpsEstado}
+        gatilhoAbrir={gatilhoGps}
+      />
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
         {/* Cabeçalho + Controlo de Disponibilidade */}
         <Cartao className="p-5 space-y-4">
@@ -414,8 +466,19 @@ export default function PainelCondutor() {
                           ? ` · actualizada às ${new Date(dados.camiao.localizacaoActualizadaEm).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`
                           : ""
                       }`
-                    : "Active para partilhar a localização do dispositivo e aparecer nas pesquisas."}
+                    : gpsEstado === "granted" || gpsDispositivo
+                      ? "GPS autorizado. Active para aparecer nas pesquisas dos clientes."
+                      : "Autorize o acesso à localização e active para aparecer nas pesquisas."}
                 </p>
+                {!estaDisponivel && gpsEstado !== "granted" && !gpsDispositivo && (
+                  <button
+                    type="button"
+                    onClick={() => setGatilhoGps((n) => n + 1)}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-primary-400 hover:underline pt-0.5"
+                  >
+                    📍 Autorizar acesso à localização agora
+                  </button>
+                )}
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button

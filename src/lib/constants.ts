@@ -89,7 +89,7 @@ export const VELOCIDADE_MEDIA_KMH = 30;
 export const EXPIRACAO_PEDIDO_MS = 3 * 60 * 1000; // 3 minutos
 
 /** Janela máxima de validade da última localização GPS do condutor para pesquisa. */
-export const LOCALIZACAO_TTL_MS = 2 * 60 * 1000; // 2 minutos
+export const LOCALIZACAO_TTL_MS = 5 * 60 * 1000; // 5 minutos
 
 export const RAIOS_PESQUISA_KM = [10, 15, 25, 50] as const;
 export const RAIO_PESQUISA_PADRAO_KM = 15;

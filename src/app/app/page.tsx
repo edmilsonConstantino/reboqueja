@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mapa, type MarcadorMapa } from "@/components/Mapa";
 import { usarTema } from "@/components/ProvedorTema";
+import {
+  SolicitacaoLocalizacao,
+  type EstadoPermissaoGps,
+} from "@/components/SolicitacaoLocalizacao";
 import { CENTRO_MATOLA, TIPOS_PROBLEMA, TIPOS_VEICULO_PEDIDO } from "@/lib/constants";
 import { estaNaMatola, type LatLng } from "@/lib/geo";
 
@@ -77,11 +81,13 @@ export default function AppCliente() {
   const router = useRouter();
   const { tema } = usarTema();
   const [pos, setPos] = useState<LatLng>(CENTRO_MATOLA);
-  const [origemEndereco, setOrigemEndereco] = useState("A localizar…");
+  const [origemEndereco, setOrigemEndereco] = useState("Marca o local no mapa ou autorize o GPS");
   const [buscaOrigem, setBuscaOrigem] = useState("");
   const [resultadosOrigem, setResultadosOrigem] = useState<{ lat: number; lng: number; label: string }[]>([]);
   const [gpsOk, setGpsOk] = useState<boolean | null>(null);
   const [erroGps, setErroGps] = useState("");
+  const [gpsEstado, setGpsEstado] = useState<EstadoPermissaoGps>("checking");
+  const [gatilhoGps, setGatilhoGps] = useState(0);
   const [passo, setPasso] = useState<Passo>("local");
   const [erroMsg, setErroMsg] = useState("");
   const [aBuscar, setABuscar] = useState(false);
@@ -95,6 +101,8 @@ export default function AppCliente() {
 
   // Detalhes
   const [tipoProblema, setTipoProblema] = useState("AVARIA_MECANICA");
+  const [problemaAlterado, setProblemaAlterado] = useState(false);
+  const [detalhesProblema, setDetalhesProblema] = useState("");
   const [tipoVeiculo, setTipoVeiculo] = useState("LIGEIRO");
   const [detalhesVeiculo, setDetalhesVeiculo] = useState("");
   const [observacoes, setObservacoes] = useState("");
@@ -111,35 +119,40 @@ export default function AppCliente() {
     }
   }, []);
 
+  const aplicarLocalizacaoGps = useCallback(
+    async (p: LatLng) => {
+      setErroGps("");
+      setPos(p);
+      setGpsOk(estaNaMatola(p));
+      await buscarEndereco(p);
+    },
+    [buscarEndereco]
+  );
+
   const localizar = useCallback(() => {
     setErroGps("");
+    if (gpsEstado !== "granted") {
+      setGatilhoGps((n) => n + 1);
+      return;
+    }
     if (!navigator.geolocation) {
-      setGpsOk(false);
       setErroGps(
         "Não foi possível obter a tua localização. Activa a localização do dispositivo e concede autorização à aplicação."
       );
-      setOrigemEndereco("Indica o local no mapa ou pesquisa o endereço abaixo");
       return;
     }
     navigator.geolocation.getCurrentPosition(
       async (p) => {
-        const p2 = { lat: p.coords.latitude, lng: p.coords.longitude };
-        setPos(p2);
-        setGpsOk(estaNaMatola(p2));
-        await buscarEndereco(p2);
+        await aplicarLocalizacaoGps({ lat: p.coords.latitude, lng: p.coords.longitude });
       },
       () => {
-        setGpsOk(false);
-        setErroGps(
-          "Não foi possível obter a tua localização. Activa a localização do dispositivo e concede autorização à aplicação."
-        );
-        setOrigemEndereco("Marca o local no mapa ou pesquisa o endereço");
+        setGatilhoGps((n) => n + 1);
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
-  }, [buscarEndereco]);
+  }, [gpsEstado, aplicarLocalizacaoGps]);
 
-  // Pedido activo (se existir) + GPS inicial
+  // Pedido activo (se existir)
   useEffect(() => {
     let vivo = true;
     const carregar = async () => {
@@ -155,13 +168,12 @@ export default function AppCliente() {
       }
     };
     carregar();
-    localizar();
     const t = setInterval(carregar, 5000);
     return () => {
       vivo = false;
       clearInterval(t);
     };
-  }, [localizar]);
+  }, []);
 
   // Pesquisa de endereço de origem (com debounce)
   useEffect(() => {
@@ -241,6 +253,7 @@ export default function AppCliente() {
         destinoLng: destino ? destino.lng : null,
         destinoEndereco: destino ? destino.label : null,
         tipoProblema,
+        detalhesProblema: detalhesProblema.trim(),
         tipoVeiculo,
         detalhesVeiculo: tipoVeiculo === "OUTRO" ? detalhesVeiculo.trim() : "",
         observacoes,
@@ -289,6 +302,14 @@ export default function AppCliente() {
 
   return (
     <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-100/80 dark:bg-[#070B14] dark:bg-[radial-gradient(ellipse_at_top,rgba(255,195,0,0.06),transparent_60%)] transition-colors duration-200">
+      {!aCarregar && !activo && (
+        <SolicitacaoLocalizacao
+          perfil="CLIENTE"
+          aoObterLocalizacao={aplicarLocalizacaoGps}
+          aoAlterarEstado={setGpsEstado}
+          gatilhoAbrir={gatilhoGps}
+        />
+      )}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
         {/* ===== Cartão com mapa ===== */}
         <section className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] shadow-sm dark:shadow-2xl">
@@ -558,7 +579,10 @@ export default function AppCliente() {
                 <Rotulo>Tipo de problema</Rotulo>
                 <select
                   value={tipoProblema}
-                  onChange={(e) => setTipoProblema(e.target.value)}
+                  onChange={(e) => {
+                    setTipoProblema(e.target.value);
+                    setProblemaAlterado(true);
+                  }}
                   className={campoSelect}
                   style={{ colorScheme: tema === "escuro" ? "dark" : "light" }}
                 >
@@ -584,6 +608,25 @@ export default function AppCliente() {
                   ))}
                 </select>
               </label>
+              {(tipoProblema === "OUTRO" || problemaAlterado) && (
+                <label className="block sm:col-span-2 rj-fade-up">
+                  <Rotulo>Detalhes do problema (opcional — pode adicionar qualquer detalhe)</Rotulo>
+                  <textarea
+                    rows={2}
+                    value={detalhesProblema}
+                    onChange={(e) => setDetalhesProblema(e.target.value)}
+                    placeholder={
+                      tipoProblema === "OUTRO"
+                        ? "Descreva o problema do veículo (ex.: barulho estranho no motor, fumo, travões bloqueados, não arranca…)"
+                        : "Adicione mais detalhes sobre o problema seleccionado (ex.: sintomas, rodas afectadas, se o veículo rola…)"
+                    }
+                    className={`${campo} py-3 min-h-[76px] resize-y`}
+                  />
+                  <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
+                    Estes detalhes são enviados ao condutor de reboque para preparar o equipamento adequado.
+                  </span>
+                </label>
+              )}
               {tipoVeiculo === "OUTRO" && (
                 <label className="block sm:col-span-2">
                   <Rotulo>Detalhes do veículo (opcional — pode escrever qualquer detalhe)</Rotulo>

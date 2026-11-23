@@ -19,7 +19,7 @@ export async function GET(
       where: { id: params.id },
       include: {
         empresa: {
-          select: { id: true, nome: true, bairro: true, telefone: true, estadoAprovacao: true },
+          select: { id: true, nome: true, endereco: true, telefone: true, estadoAprovacao: true },
         },
         motorista: {
           select: {
@@ -122,7 +122,15 @@ export async function GET(
         lng: gpsActivo ? camiao.lng : null,
         localizacaoActualizadaEm: camiao.localizacaoActualizadaEm ?? null,
         estadoDisponibilidade,
-        empresa: camiao.empresa,
+        empresa: {
+          id: camiao.empresa.id,
+          nome: camiao.empresa.nome,
+          bairro:
+            camiao.empresa.endereco.split(",").slice(-2, -1)[0]?.trim() ||
+            camiao.empresa.endereco,
+          telefone: camiao.empresa.telefone,
+          estadoAprovacao: camiao.empresa.estadoAprovacao,
+        },
         condutorActual: camiao.motorista,
         pedidoActivo: pedidoActivo
           ? {

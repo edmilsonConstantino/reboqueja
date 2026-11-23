@@ -8,10 +8,36 @@ export async function GET(req: NextRequest) {
     await exigirPapel("ADMIN");
 
     const csv = req.nextUrl.searchParams.get("csv") === "1";
-    const respostas = await prisma.respostaPrototipo.findMany({
-      include: { utilizador: { select: { nome: true, papel: true } } },
-      orderBy: { criadoEm: "desc" },
-    });
+    const [respostas, avaliacoes, empresas] = await Promise.all([
+      prisma.respostaPrototipo.findMany({
+        include: { utilizador: { select: { nome: true, papel: true } } },
+        orderBy: { criadoEm: "desc" },
+      }),
+      // Avaliações do serviço (estrelas + comentário) com a empresa avaliada.
+      prisma.avaliacao.findMany({
+        include: {
+          pedido: {
+            select: {
+              id: true,
+              origemEndereco: true,
+              destinoEndereco: true,
+              criadoEm: true,
+              empresa: { select: { id: true, nome: true } },
+              condutor: { select: { nome: true } },
+            },
+          },
+        },
+      }),
+      prisma.empresa.findMany({
+        select: { id: true, nome: true },
+        orderBy: { nome: "asc" },
+      }),
+    ]);
+
+    avaliacoes.sort(
+      (a, b) =>
+        new Date(b.pedido.criadoEm).getTime() - new Date(a.pedido.criadoEm).getTime()
+    );
 
     if (csv) {
       const linhas = [
@@ -44,7 +70,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    return ok({ respostas });
+    return ok({ respostas, avaliacoes, empresas });
   } catch (e) {
     return tratarErroApi(e);
   }

@@ -1,31 +1,21 @@
 
 > reboqueja@0.1.0 dev
-> next dev
+> next dev -p 3000 -H 0.0.0.0
 
   ▲ Next.js 14.2.28
-  - Local:        http://localhost:58728
+  - Local:        http://localhost:3000
+  - Network:      http://0.0.0.0:3000
   - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 12.4s
- ○ Compiling / ...
- ✓ Compiled / in 6.4s (513 modules)
- GET / 200 in 6839ms
- ○ Compiling /entrar ...
- ✓ Compiled /entrar in 3.7s (519 modules)
- GET /entrar 200 in 3941ms
- ✓ Compiled /registar in 350ms (511 modules)
- GET /registar 200 in 478ms
- ○ Compiling /registar/empresa ...
- ✓ Compiled /registar/empresa in 521ms (519 modules)
- GET /registar/empresa 200 in 636ms
- ○ Compiling /empresas ...
- ✓ Compiled /empresas in 561ms (527 modules)
- GET /empresas 200 in 988ms
- ✓ Compiled /termos in 483ms (529 modules)
- GET /termos 200 in 681ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 755ms (508 modules)
- GET /registar 404 in 996ms
- GET /registar 200 in 98ms
- GET /registar 200 in 81ms
+ ✓ Ready in 2.8s
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 976ms (152 modules)
+ ○ Compiling /admin/avaliacoes ...
+ ✓ Compiled /admin/avaliacoes in 2s (505 modules)
+ GET /admin/avaliacoes 200 in 2558ms
+ ○ Compiling /admin/empresas ...
+ ✓ Compiled /admin/empresas in 798ms (511 modules)
+ GET /admin/avaliacoes 200 in 150ms
+ ○ Compiling /api/admin/empresas ...
+ ✓ Compiled /_not-found in 1325ms (657 modules)

@@ -19,6 +19,7 @@ type Painel = {
   emCurso: {
     id: string; estado: string; origemEndereco: string; destinoEndereco: string;
     condutorNome: string; condutorTelefone: string; camiaoMatricula: string | null;
+    motoristaNome: string | null;
   }[];
   hoje: { concluidos: number; cancelados: number; ganhoMin: number; ganhoMax: number };
   resumoHoje: {
@@ -252,7 +253,7 @@ export default function PainelEmpresa() {
                             <IconeChave className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
                             <div>
                               <p className="text-xs text-neutral-500 dark:text-neutral-400">Problema</p>
-                              <p className="text-sm font-medium">{LABEL_PROBLEMA[p.tipoProblema]}{p.tipoProblema === "OUTRO" ? "" : " — não liga"}</p>
+                              <p className="text-sm font-medium">{LABEL_PROBLEMA[p.tipoProblema]}</p>
                             </div>
                           </div>
                           <div className="flex items-start gap-2.5">
@@ -356,6 +357,11 @@ export default function PainelEmpresa() {
                             <div className="min-w-0">
                               <p className="text-xs text-neutral-500 dark:text-neutral-400">Camião atribuído</p>
                               <p className="text-sm font-medium truncate">{p.camiaoMatricula || "A atribuir"}</p>
+                              {p.motoristaNome && (
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                                  Condutor: {p.motoristaNome}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>

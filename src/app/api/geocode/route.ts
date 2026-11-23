@@ -12,12 +12,13 @@ export async function GET(req: NextRequest) {
     if (!q || q.length < 3) return ok({ resultados: [] });
 
     const params = new URLSearchParams({
-      q: `${q}, Matola, Moçambique`,
+      q: `${q}, Moçambique`,
       format: "jsonv2",
       addressdetails: "1",
       limit: "6",
-      // viewbox aproximado da Matola (esq, topo, dir, baixo) + bounded
-      viewbox: "32.37,-26.12,32.59,-25.90",
+      // viewbox da área de cobertura (esq, topo, dir, baixo) + bounded:
+      // toda a Matola e Zimpeto
+      viewbox: "32.35,-26.13,32.62,-25.82",
       bounded: "1",
       "accept-language": "pt",
     });

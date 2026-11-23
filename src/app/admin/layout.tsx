@@ -8,9 +8,9 @@ export default function LayoutAdmin({
   children: React.ReactNode;
 }) {
   return (
-    // Secção admin vive sempre em tema escuro, coerente com a sidebar do mock
-    <div className="min-h-screen flex bg-neutral-950 text-neutral-100 dark">
-      {/* Sidebar fixa (desktop) */}
+    // O painel segue o tema escolhido (claro/escuro) a partir de /admin/definicoes.
+    <div className="min-h-screen flex bg-neutral-100 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+      {/* Sidebar fixa (desktop) — mantém a identidade escura da marca */}
       <aside className="hidden lg:block w-64 shrink-0 sticky top-0 h-screen">
         <BarraLateralAdmin />
       </aside>

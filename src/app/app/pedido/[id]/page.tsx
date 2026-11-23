@@ -200,7 +200,7 @@ export default function AcompanharPedido() {
               <div>
                 <p className="font-bold">{pedido.empresa.nome}</p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Motorista: {pedido.camiao.motoristaNome} · {formatarTelefone(pedido.camiao.motoristaTelefone)}
+                  Condutor: {pedido.camiao.motoristaNome} · {formatarTelefone(pedido.camiao.motoristaTelefone)}
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   Camião: {pedido.camiao.matricula} ({LABEL_VEICULO[pedido.camiao.tipo] || pedido.camiao.tipo})

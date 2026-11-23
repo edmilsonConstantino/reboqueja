@@ -5,7 +5,12 @@ import { ok } from "@/lib/api";
 export async function GET() {
   const sessao = await obterSessao();
   if (!sessao) return ok({ logado: false });
-  return ok({ logado: true, nome: sessao.nome, papel: sessao.papel });
+  return ok({
+    logado: true,
+    nome: sessao.nome,
+    telefone: sessao.telefone,
+    papel: sessao.papel,
+  });
 }
 
 export const dynamic = "force-dynamic";

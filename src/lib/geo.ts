@@ -2,19 +2,25 @@
 
 export type LatLng = { lat: number; lng: number };
 
-/** Polígono aproximado dos limites da Cidade da Matola. */
+/**
+ * Polígono aproximado da área de cobertura: todo o município da Matola
+ * (Machava, Matola Rio, Matola Gare, T3, Fomento, Liberdade, Infulene, Sungo,
+ * Marrote, Muanono, Matola A/B/C) e a zona de Zimpeto, a norte.
+ */
 export const POLIGONO_MATOLA: LatLng[] = [
-  { lat: -25.902, lng: 32.395 },
-  { lat: -25.905, lng: 32.47 },
-  { lat: -25.925, lng: 32.53 },
-  { lat: -25.962, lng: 32.575 },
-  { lat: -26.02, lng: 32.585 },
-  { lat: -26.08, lng: 32.56 },
-  { lat: -26.115, lng: 32.5 },
-  { lat: -26.1, lng: 32.44 },
-  { lat: -26.055, lng: 32.395 },
-  { lat: -25.985, lng: 32.375 },
-  { lat: -25.94, lng: 32.375 },
+  { lat: -25.875, lng: 32.385 },
+  { lat: -25.845, lng: 32.44 },
+  { lat: -25.828, lng: 32.5 },
+  { lat: -25.84, lng: 32.562 },
+  { lat: -25.9, lng: 32.568 },
+  { lat: -25.96, lng: 32.565 },
+  { lat: -26.02, lng: 32.56 },
+  { lat: -26.085, lng: 32.545 },
+  { lat: -26.125, lng: 32.5 },
+  { lat: -26.105, lng: 32.43 },
+  { lat: -26.055, lng: 32.378 },
+  { lat: -25.98, lng: 32.355 },
+  { lat: -25.92, lng: 32.362 },
 ];
 
 /** Distância em km entre dois pontos (Haversine). */
@@ -46,6 +52,7 @@ export function pontoNoPoligono(p: LatLng, poligono: LatLng[]): boolean {
   return dentro;
 }
 
+/** A área de cobertura inclui toda a Matola e Zimpeto. */
 export function estaNaMatola(p: LatLng): boolean {
   return pontoNoPoligono(p, POLIGONO_MATOLA);
 }

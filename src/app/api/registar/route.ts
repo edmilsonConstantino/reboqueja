@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         nome: dados.nome,
         telefone,
         senhaHash: await hashSenha(dados.senha),
-        papel: "CONDUTOR",
+        papel: "CLIENTE",
       },
     });
 
@@ -29,10 +29,10 @@ export async function POST(req: NextRequest) {
       id: utilizador.id,
       nome: utilizador.nome,
       telefone: utilizador.telefone,
-      papel: "CONDUTOR" as Papel,
+      papel: "CLIENTE" as Papel,
     });
 
-    return ok({ id: utilizador.id, papel: "CONDUTOR" }, 201);
+    return ok({ id: utilizador.id, papel: "CLIENTE" }, 201);
   } catch (e) {
     return tratarErroApi(e);
   }

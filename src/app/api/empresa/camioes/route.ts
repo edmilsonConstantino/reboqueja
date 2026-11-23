@@ -20,6 +20,9 @@ export async function GET() {
     const camioes = await prisma.camiao.findMany({
       where: { empresaId: id },
       orderBy: { matricula: "asc" },
+      include: {
+        motorista: { select: { id: true, nome: true, telefone: true, activo: true } },
+      },
     });
     return ok({ camioes });
   } catch (e) {

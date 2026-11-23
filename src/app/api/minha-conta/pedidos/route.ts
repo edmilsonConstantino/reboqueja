@@ -4,7 +4,7 @@ import { ok, tratarErroApi } from "@/lib/api";
 
 export async function GET() {
   try {
-    const sessao = await exigirPapel("CONDUTOR");
+    const sessao = await exigirPapel("CLIENTE");
     const pedidos = await prisma.pedido.findMany({
       where: { condutorId: sessao.id },
       orderBy: { criadoEm: "desc" },
@@ -14,6 +14,7 @@ export async function GET() {
           select: { matricula: true, motoristaNome: true, motoristaTelefone: true, lat: true, lng: true },
         },
         eventos: { select: { estado: true, criadoEm: true }, orderBy: { criadoEm: "asc" } },
+        avaliacao: { select: { estrelas: true, comentario: true } },
       },
     });
     return ok({ pedidos });

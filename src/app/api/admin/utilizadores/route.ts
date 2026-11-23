@@ -17,6 +17,15 @@ export async function GET() {
         activo: true,
         criadoEm: true,
         _count: { select: { pedidos: true } },
+        // Empresa do utilizador (papel EMPRESA) e, para condutores, o camião e
+        // a empresa a que está afecto — permite filtrar por empresa no painel.
+        empresa: { select: { id: true, nome: true } },
+        camiao: {
+          select: {
+            matricula: true,
+            empresa: { select: { id: true, nome: true } },
+          },
+        },
       },
       orderBy: { criadoEm: "desc" },
     });

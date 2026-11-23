@@ -52,7 +52,7 @@ async function main() {
           telefone: c.telefone,
           email: c.email,
           senhaHash: senha,
-          papel: "CONDUTOR",
+          papel: "CLIENTE",
           veiculos: {
             create: [
               {
@@ -253,6 +253,24 @@ async function main() {
     empresasCriadas.push({ id: empresa.id, nome: def.nome, faixas });
   }
 
+  // ---------- Contas de acesso dos motoristas (criadas pelas empresas) ----------
+  const camioesComConta = await prisma.camiao.findMany({
+    where: { empresa: { estadoAprovacao: "APROVADA" } },
+    orderBy: { matricula: "asc" },
+    take: 4,
+  });
+  for (const c of camioesComConta) {
+    await prisma.utilizador.create({
+      data: {
+        nome: c.motoristaNome,
+        telefone: c.motoristaTelefone,
+        senhaHash: senha,
+        papel: "CONDUTOR",
+        camiao: { connect: { id: c.id } },
+      },
+    });
+  }
+
   // ---------- Pedidos históricos (10) ----------
   const pontosMatola: { lat: number; lng: number; endereco: string }[] = [
     { lat: -25.958, lng: 32.457, endereco: "Av. Samora Machel, Machava, Matola" },
@@ -405,7 +423,7 @@ async function main() {
   await prisma.respostaPrototipo.create({
     data: {
       utilizadorId: condutores[0].id,
-      papel: "CONDUTOR",
+      papel: "CLIENTE",
       respostas: JSON.stringify({
         sus: [5, 1, 5, 1, 4, 2, 5, 1, 4, 1],
         extras: [5, 5, 5],
@@ -420,6 +438,7 @@ async function main() {
   console.log("   Admin: admin@reboqueja.co.mz / admin123");
   console.log("   Condutores: +258841111111 / +258842222222 / +258843333333 (senha: teste123)");
   console.log("   Empresas: +258865000001…005 (senha: teste123)");
+  console.log("   Motoristas: +258875000001 … +258875000004 (senha: teste123)");
 }
 
 main()

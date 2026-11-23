@@ -4,6 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import { Botao, Cartao, Etiqueta, Carregando, Vazio } from "@/components/ui";
 import { formatarData } from "@/lib/format";
 
+type Condutor = {
+  id: string;
+  nome: string;
+  telefone: string;
+  email: string | null;
+  activo: boolean;
+};
+
+type Camiao = {
+  matricula: string;
+  motorista: Condutor | null;
+};
+
 type Empresa = {
   id: string;
   nome: string;
@@ -16,14 +29,25 @@ type Empresa = {
   estadoAprovacao: string;
   consentimentoEm: string | null;
   utilizador: { nome: string; telefone: string; email: string };
+  camioes: Camiao[];
   _count: { camioes: number; pedidos: number };
 };
+
+function condutoresDa(e: Empresa) {
+  return e.camioes
+    .filter((c): c is Camiao & { motorista: Condutor } => Boolean(c.motorista))
+    .map((c) => ({ ...c.motorista, matricula: c.matricula }));
+}
 
 export default function AdminEmpresas() {
   const [empresas, setEmpresas] = useState<Empresa[] | null>(null);
   const [erroMsg, setErroMsg] = useState("");
   const [aProcessar, setAProcessar] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<"TODAS" | "PENDENTE" | "APROVADA" | "REJEITADA">("TODAS");
+  const [abertas, setAbertas] = useState<Record<string, boolean>>({});
+
+  const alternarCondutores = (id: string) =>
+    setAbertas((a) => ({ ...a, [id]: !a[id] }));
 
   const carregar = useCallback(async () => {
     const res = await fetch("/api/admin/empresas", { cache: "no-store" });
@@ -68,7 +92,7 @@ export default function AdminEmpresas() {
     <div className="max-w-5xl mx-auto px-4 py-6 space-y-5">
       <div>
         <h1 className="text-2xl font-extrabold">Empresas</h1>
-        <p className="text-sm text-neutral-400 mt-1">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
           Aprove ou rejeite as empresas de reboque registadas na plataforma.
         </p>
       </div>
@@ -82,7 +106,7 @@ export default function AdminEmpresas() {
             className={`px-4 py-2 rounded-xl text-sm font-semibold min-h-[44px] ${
               filtro === f
                 ? "bg-primary-400 text-neutral-900"
-                : "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700"
+                : "bg-white dark:bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700"
             }`}
           >
             {f === "TODAS" ? "Todas" : f}
@@ -105,14 +129,15 @@ export default function AdminEmpresas() {
                     <h2 className="font-bold">{e.nome}</h2>
                     <Etiqueta cor={corEstado(e.estadoAprovacao)}>{e.estadoAprovacao}</Etiqueta>
                   </div>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400 mt-1">
                     NUIT {e.nuit} · {e.endereco}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400">
                     📞 {e.telefone} · ✉ {e.email} · raio {e.raioKm} km
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    🚚 {e._count.camioes} camiões · 🧾 {e._count.pedidos} pedidos
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400">
+                    🚚 {e._count.camioes} camiões · 👷 {condutoresDa(e).length} condutores ·
+                    🧾 {e._count.pedidos} pedidos
                   </p>
                   <p className="text-xs mt-1.5">
                     {e.consentimentoEm ? (
@@ -124,6 +149,51 @@ export default function AdminEmpresas() {
                     )}
                   </p>
                 </div>
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-200 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => alternarCondutores(e.id)}
+                  aria-expanded={Boolean(abertas[e.id])}
+                  className="w-full flex items-center justify-between gap-3 min-h-[44px] text-sm font-semibold"
+                >
+                  <span>
+                    👷 Condutores desta empresa ({condutoresDa(e).length})
+                  </span>
+                  <span className="text-xs font-bold text-primary-600 dark:text-primary-400">
+                    {abertas[e.id] ? "Fechar ▲" : "Ver lista ▼"}
+                  </span>
+                </button>
+
+                {abertas[e.id] &&
+                  (condutoresDa(e).length === 0 ? (
+                    <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400 pb-2">
+                      Nenhum camião desta empresa tem condutor atribuído.
+                    </p>
+                  ) : (
+                    <ul className="space-y-2 pb-2">
+                      {condutoresDa(e).map((c) => (
+                        <li
+                          key={c.id}
+                          className="rounded-xl bg-neutral-50 dark:bg-neutral-100 dark:bg-white/[0.04] px-3 py-2"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-semibold truncate">
+                              🚚 {c.nome}
+                            </p>
+                            <Etiqueta cor={c.activo ? "verde" : "vermelho"}>
+                              {c.activo ? "Activo" : "Desactivado"}
+                            </Etiqueta>
+                          </div>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400">
+                            📞 {c.telefone}
+                            {c.email ? ` · ✉ ${c.email}` : ""} · matrícula {c.matricula}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  ))}
               </div>
 
               {e.estadoAprovacao !== "APROVADA" && (

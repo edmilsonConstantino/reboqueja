@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
 
 export async function GET() {
   try {
-    const sessao = await exigirPapel("CONDUTOR");
+    const sessao = await exigirPapel("CLIENTE");
     const utilizador = await prisma.utilizador.findUnique({
       where: { id: sessao.id },
       select: {
@@ -24,7 +24,7 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const sessao = await exigirPapel("CONDUTOR");
+    const sessao = await exigirPapel("CLIENTE");
     const dados = schemaPerfilCondutor.parse(await req.json());
 
     await prisma.utilizador.update({

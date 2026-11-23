@@ -87,7 +87,7 @@ export default function DetalhePedidoEmpresa() {
 
   const aceitar = async () => {
     if (!camiaoEscolhido) {
-      setErroMsg("Escolha o camião e o motorista antes de aceitar.");
+      setErroMsg("Escolha o camião e o condutor antes de aceitar.");
       return;
     }
     setAProcessar(true);
@@ -286,7 +286,7 @@ export default function DetalhePedidoEmpresa() {
         {pedido.estado === "PENDENTE" && (
           <Cartao className="p-4 space-y-3">
             <Selector
-              rotulo="Camião e motorista"
+              rotulo="Camião e condutor"
               value={camiaoEscolhido}
               onChange={(e) => setCamiaoEscolhido(e.target.value)}
             >

@@ -3,8 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  // Postgres alojado (Neon/Supabase/Vercel Postgres). O SQLite local não
+  // funciona em serverless (Vercel), onde o sistema de ficheiros é só leitura.
+  provider = "postgresql"
+  // Ligação usada pela aplicação em runtime (no Neon/Supabase: a URL *pooled*).
   url      = env("DATABASE_URL")
+  // Ligação directa, sem pooler, usada por `prisma db push` / migrações.
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------- Utilizadores e papéis ----------
@@ -15,13 +20,14 @@ model Utilizador {
   telefone    String    @unique
   email       String?   @unique
   senhaHash   String
-  papel       String // CONDUTOR | EMPRESA | ADMIN
+  papel       String // CLIENTE | CONDUTOR | EMPRESA | ADMIN
   activo      Boolean   @default(true)
   criadoEm    DateTime  @default(now())
 
   veiculos     Veiculo[]
   pedidos      Pedido[]  @relation("PedidosDoCondutor")
   empresa      Empresa?
+  camiao       Camiao?   // camião atribuído (papel CONDUTOR)
   respostas    RespostaPrototipo[]
 }
 
@@ -67,6 +73,7 @@ model Empresa {
 model Camiao {
   id              String  @id @default(cuid())
   empresaId       String
+  motoristaId     String? @unique
   matricula       String
   tipo            String // LIGEIRO | SUV | MINIBUS | PESADO
   capacidade      String?
@@ -77,6 +84,7 @@ model Camiao {
   activo          Boolean @default(true)
 
   empresa Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  motorista Utilizador? @relation(fields: [motoristaId], references: [id], onDelete: SetNull)
   pedidos Pedido[]
 
   @@index([empresaId])

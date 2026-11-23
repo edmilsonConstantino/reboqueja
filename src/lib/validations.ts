@@ -86,7 +86,7 @@ export const schemaCamiao = z.object({
   matricula: z.string().min(4, "Matrícula inválida."),
   tipo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]),
   capacidade: z.string().optional().nullable(),
-  motoristaNome: z.string().min(3, "Indique o nome do motorista."),
+  motoristaNome: z.string().min(3, "Indique o nome do condutor."),
   motoristaTelefone: schemaTelefone,
   activo: z.boolean().optional(),
 });
@@ -145,4 +145,26 @@ export const schemaAprovarEmpresa = z.object({
 
 export const schemaUtilizadorActivo = z.object({
   activo: z.boolean(),
+});
+
+/** Alteração da própria palavra-passe. */
+export const schemaAlterarSenha = z.object({
+  actual: z.string().min(1, "Indique a palavra-passe actual."),
+  nova: z
+    .string()
+    .min(4, "A nova palavra-passe deve ter pelo menos 4 caracteres.")
+    .max(72),
+});
+
+/** Conta de acesso do condutor, criada pela empresa. */
+export const schemaContaCondutor = z.object({
+  nome: z.string().min(3, "Indique o nome do condutor."),
+  telefone: schemaTelefone,
+  senha: z.string().min(4, "A palavra-passe deve ter pelo menos 4 caracteres.").max(72),
+  camiaoId: z.string().min(1, "Escolha o camião."),
+});
+
+/** Condutor aceita um pedido pendente. */
+export const schemaAceitarPedidoCondutor = z.object({
+  pedidoId: z.string().min(1),
 });

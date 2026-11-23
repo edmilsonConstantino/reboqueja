@@ -1,0 +1,522 @@
+REBOQUEJÁ — EXPLICAÇÃO DO SISTEMA
+
+Este documento explica o sistema, não a apresentação: o que ele faz, em que ordem, com que regras e com que dados. A última secção mostra que parte desta explicação alimenta cada slide — mas a apresentação é consequência; o conteúdo é o que está aqui.
+
+1. O QUE O SISTEMA É
+
+O ReboqueJá é uma aplicação web que liga condutores com o veículo avariado a empresas de reboque que operam na Cidade da Matola e em Zimpeto.
+
+Faz três coisas, por esta ordem: reúne a oferta de reboque num só lugar, filtra essa oferta pelo local e pelo tipo de veículo do condutor, e entrega uma lista comparável com preço, distância e tempo estimado — a partir da qual o condutor pede o reboque ou contacta directamente a empresa.
+
+O que o sistema não é: não é uma empresa de reboque, não tem camiões, não faz o transporte. É a camada de informação e de coordenação entre quem tem o problema e quem tem o camião.
+
+2. O PROBLEMA QUE JUSTIFICA O SISTEMA
+
+Na Matola, quem fica com o carro parado procura um reboque por três vias informais: recomendação de conhecidos, grupos de WhatsApp e publicações em redes sociais. Isto produz três falhas em cadeia:
+
+• A informação está dispersa — cada empresa aparece num sítio diferente, ou em nenhum.
+
+• Não há comparação — preço, distância e disponibilidade não estão lado a lado, por isso o condutor aceita o primeiro contacto que encontra.
+
+• A decisão é tomada sob pressão — a avaria é urgente, e a urgência favorece a primeira opção, não a melhor.
+
+O sistema ataca as três de uma vez: concentra a oferta, torna-a comparável e reduz o número de passos até uma decisão.
+
+3. QUEM PARTICIPA: TRÊS PAPÉIS
+
+O sistema tem três tipos de utilizador, com acessos distintos. Isto explica porque é que os dados são de confiança: quem publica não é quem se auto-promove.
+
+Papel — O que pode fazer — O que não pode
+Condutor — registar-se, marcar o local, pedir reboque, acompanhar o estado, avaliar o serviço, consultar o histórico — ver dados de outras pessoas, ver empresas não aprovadas
+Empresa — gerir camiões, definir faixas de preço por tipo de veículo e por km, receber e aceitar pedidos, actualizar o estado do serviço — publicar-se sem aprovação, ver pedidos de outras empresas
+Administrador — aprovar ou rejeitar empresas, consultar métricas, gerir utilizadores
+
+Cada um entra com telefone (ou e-mail) e senha, e a sessão fica num cookie assinado. Todas as operações verificam o papel antes de tocar nos dados.
+
+4. O PERCURSO DO CONDUTOR, ETAPA POR ETAPA
+
+ETAPA 1 — ENTRAR
+
+O condutor entra ou regista-se. A partir daqui, todas as páginas sabem quem ele é; o sistema não lhe pede outra vez os dados a cada ecrã.
+
+ETAPA 2 — MARCAR ONDE ESTÁ
+
+O local da avaria pode ser definido de três formas: GPS do telemóvel, toque no mapa ou pesquisa de endereço. As três produzem o mesmo resultado: uma latitude e uma longitude.
+
+Antes de aceitar o ponto, o sistema verifica se ele está dentro da área de cobertura — hoje, todo o município da Matola mais a zona de Zimpeto. Se estiver fora, o pedido não avança e aparece uma mensagem clara, em vez de um erro técnico. Esta verificação acontece no ecrã e outra vez no servidor: o ecrã serve para avisar cedo, o servidor serve para garantir que ninguém contorna a regra.
+
+ETAPA 3 — DESCREVER A SITUAÇÃO
+
+O condutor indica o tipo de problema (avaria mecânica, acidente, pneu furado, sem combustível, bateria, outro), o tipo de veículo (ligeiro, SUV/pick-up, mini-bus, pesado) e, se quiser, observações.
+
+Estes dois campos não são decoração: o tipo de veículo determina qual tabela de preços se aplica, porque rebocar um ligeiro e rebocar um pesado custam coisas diferentes.
+
+ETAPA 4 — ESCOLHER O DESTINO
+
+O destino é o sítio para onde o carro vai (oficina, casa, outro ponto). Também é validado contra a área de cobertura, pela mesma razão.
+
+Com origem e destino definidos, o sistema calcula a distância entre eles — é essa distância que determina a faixa de preço aplicável.
+
+ETAPA 5 — VER AS EMPRESAS E COMPARAR
+
+Aqui acontece o trabalho principal. Para o pedido em preparação, o sistema:
+
+1. Seleciona apenas empresas que cumprem todos os requisitos ao mesmo tempo: aprovadas pelo administrador, com consentimento registado, marcadas como disponíveis e com pelo menos um camião activo.
+
+2. Mede a distância de cada camião ao local da avaria e escolhe o camião mais próximo de cada empresa.
+
+3. Estima o tempo de chegada — distância a dividir por uma velocidade média urbana de 30 km/h. É uma estimativa declarada, não uma promessa.
+
+4. Aplica o preço: procura a faixa de quilómetros que contém a distância, para o tipo de veículo escolhido, e devolve o intervalo mínimo–máximo. Se a empresa não tiver aquela faixa exacta, o sistema usa a primeira como referência, em vez de mostrar zero ou nada.
+
+5. Ordena os resultados pelo tempo estimado de chegada — numa urgência o critério útil não é o preço mais baixo, é quem chega primeiro.
+
+O condutor vê então uma lista comparável: nome, distância, tempo estimado, faixa de preço e quantos camiões a empresa tem disponíveis. Pode abrir cada empresa para ver o detalhe e comparar antes de decidir.
+
+ETAPA 6 — PEDIR (OU CONTACTAR)
+
+Há dois caminhos, e isto é uma decisão de âmbito:
+
+• Pedir pela plataforma — o pedido é criado no estado PENDENTE e fica visível para as empresas elegíveis. Um condutor só pode ter um pedido activo de cada vez, para não saturar as empresas com pedidos duplicados. Se ninguém aceitar em 3 minutos, o pedido expira e o condutor tem de voltar a procurar — o que protege a empresa de responder a um pedido que já não interessa a ninguém.
+
+• Contactar directamente — telefone ou WhatsApp da empresa, sem criar pedido.
+
+ETAPA 7 — ACOMPANHAR
+
+Quando uma empresa aceita, o pedido entra num fluxo de estados com seis passos:
+
+PENDENTE → ACEITE → A_CAMINHO → NO_LOCAL → EM_TRANSPORTE → CONCLUIDO
+
+(em qualquer ponto antes do fim pode passar a CANCELADO, com registo de quem cancelou). Cada mudança fica gravada com data e hora num histórico de eventos, e o condutor vê no mapa a posição do camião e o estado actual.
+
+ETAPA 8 — AVALIAR
+
+No fim, o condutor avalia o serviço de 1 a 5 estrelas, com comentário opcional. A média das avaliações passa a aparecer nas empresas sugeridas — o sistema aprende com o histórico e distingue quem serve bem.
+
+5. O PERCURSO DA EMPRESA
+
+A empresa entra, e começa por ser registada mas não publicada: fica no estado PENDENTE até o administrador aprovar. Antes de aparecer a um condutor tem de existir consentimento registado — a informação é dela, e o sistema só a expõe com autorização.
+
+Depois de aprovada, a empresa:
+
+• Regista camiões — matrícula, tipo, capacidade, nome e telefone do motorista.
+
+• Define faixas de preço por tipo de veículo e por intervalo de quilómetros (0–5, 5–10, 10–20, mais de 20).
+
+• Recebe pedidos elegíveis, aceita um e vai actualizando o estado à medida que o serviço avança.
+
+• Liga e desliga a disponibilidade, que é o interruptor que a tira ou põe na lista dos condutores.
+
+Nada disto exige o administrador: aprovada a empresa, a operação é dela.
+
+6. O PERCURSO DO ADMINISTRADOR
+
+O administrador é o garante da qualidade do directório. Pode:
+
+• Aprovar ou rejeitar empresas candidatas;
+
+• Ver métricas do sistema (empresas, pedidos, utilizadores, distribuição por bairro);
+
+• Gerir utilizadores (activar/desactivar).
+
+Sem esta figura, o sistema seria um directório aberto onde qualquer um se publica — e a confiança, que é o activo principal, desaparecia.
+
+7. AS REGRAS QUE O SISTEMA APLICA POR DENTRO
+
+Estas regras de negócio são o que distingue o sistema de uma lista telefónica:
+
+1. Cobertura geográfica — só aceita pontos dentro da Matola e Zimpeto, validados no ecrã e no servidor.
+
+2. Elegibilidade da empresa — aprovada + com consentimento + disponível + com camião activo. Falta uma, não aparece.
+
+3. Preço por distância e por veículo — a faixa é escolhida pela distância e pelo tipo de veículo, nunca pelo momento.
+
+4. Um pedido activo por condutor — evita duplicação e mantém a oferta disponível para outros.
+
+5. Expiração aos 3 minutos — um pedido pendente que ninguém aceita não fica eternamente aberto.
+
+6. Fluxo de estados obrigatório — o serviço só avança pelos estados previstos; não há saltos arbitrários.
+
+7. Avaliação só depois do serviço — uma avaliação por pedido concluído.
+
+8. OS DADOS QUE O SISTEMA GUARDA
+
+Uma base de dados relacional (PostgreSQL, através do Prisma), com oito entidades:
+
+• Utilizador — nome, telefone, e-mail, senha (em hash), papel.
+
+• Veículo — do condutor: marca, modelo, matrícula, tipo.
+
+• Empresa — nome, NUIT, contactos, endereço, coordenadas, raio de operação, disponibilidade, estado de aprovação, data de consentimento.
+
+• Camião — matrícula, tipo, capacidade, motorista, posição, activo.
+
+• FaixaPreco — por empresa, tipo de veículo e intervalo de km, com preço mínimo e máximo.
+
+• Pedido — origem e destino (coordenadas e endereço), distância, problema, tipo de veículo, estado, preço, método de pagamento, timestamps.
+
+• PedidoEvento — histórico de cada mudança de estado.
+
+• Avaliação — estrelas e comentário, ligada a um pedido.
+
+Relacional e não uma folha de cálculo porque as entidades dependem umas das outras: uma empresa tem camiões, preços e pedidos; um pedido tem eventos e uma avaliação. A integridade é garantida pela base de dados, não pela boa vontade do código.
+
+9. ARQUITECTURA: TRÊS CAMADAS
+
+Apresentação — o que o utilizador vê: páginas do condutor, da empresa e do administrador, o mapa, as listas e a comparação. Não decide nada; mostra o que recebe e envia as escolhas.
+
+Negócio — onde vivem as regras da secção 7: validação da cobertura, elegibilidade das empresas, cálculo de distância, tempo e preço, máquina de estados do pedido, expiração e permissões por papel.
+
+Dados — a base de dados relacional e o acesso a ela. Guarda e devolve; não interpreta.
+
+O percurso de um pedido pelas três camadas:
+
+1. O condutor marca um ponto no mapa → apresentação.
+
+2. O pedido de lista de empresas é enviado ao servidor com as coordenadas e o tipo de veículo.
+
+3. Negócio: verifica cobertura → filtra empresas elegíveis → calcula distância, ETA e preço → ordena.
+
+4. Dados: lê empresas, camiões, preços e avaliações.
+
+5. O resultado sobe e é desenhado no ecrã.
+
+A vantagem prática: a mesma regra serve o site, a API e o painel do administrador. Se a regra de cobertura mudar, muda num sítio só.
+
+10. REQUISITOS DE QUALIDADE, NA PRÁTICA
+
+• Responsiva e sem instalação — abre no browser do telemóvel; não há app store pelo meio numa urgência.
+
+• Páginas leves — mapas e listas carregam sem depender de vídeo ou imagens pesadas, porque a rede na rua é fraca.
+
+• Poucos ecrãs até ao resultado — local → detalhes → empresas. O objectivo é três.
+
+• Mensagens de estado claras — «fora da área de cobertura», «sem empresas nesta zona», «informação não disponível». Um sistema que se cala numa urgência é pior do que um que diz «não há».
+
+• Dados com data — cada registo mostra quando foi verificado, para o utilizador saber quão fresco é.
+
+11. LIMITES DO SISTEMA (E PORQUE SÃO DELIBERADOS)
+
+Não faz — Porquê
+Despacho de reboques e gestão de frota — exige operação, escala e responsabilidade que não são o problema em estudo
+Processamento de pagamentos — o método é registado no pedido, mas o dinheiro não passa pelo sistema
+Garantia de tempo real — o ETA é uma estimativa com velocidade média declarada, não um rastreio contratado
+Publicar sem consentimento — princípio de privacidade: a informação é da empresa
+
+O âmbito foi cortado para proteger o essencial: encontrar, comparar e pedir/contactar com confiança.
+
+12. COMO ESTA EXPLICAÇÃO VIRA SLIDE
+
+Slide — Parte da explicação a usar
+1. Introdução — secção 1 — o que o sistema é, em três verbos
+2. Problema — secção 2 — as três falhas em cadeia
+3. Como funciona — secção 4, etapas 2 a 6 — o percurso do condutor
+4. Funcionalidades — secções 3, 4 e 5 — o que cada papel faz
+5. Requisitos de qualidade — secção 10
+6. Arquitectura — secção 9 + secção 8 — as três camadas e os dados
+7. Avaliação — mede o percurso da secção 4: tempo, passos, conclusão, aceitação
+8. Limites — secção 11
+9. Conclusão — secções 1 e 11 — o que resolve e o que fica para depois
+
+Nota sobre o teu texto original: ele descreve um MVP mais simples do que o sistema implementado (sem contas, sem ciclo de pedido, base de dados ainda por escolher). O sistema real tem três papéis com login, ciclo de pedido com estados, preços por km, avaliações e PostgreSQL. Ao apresentar, diz «o documento fixa o âmbito mínimo; a implementação foi além dele neste ponto» — assim o slide e a demonstração não se contradizem.
+
+13. PARTE II — CADA ECRÃ, UM A UM
+
+A explicação anterior descreveu o sistema por dentro. Esta parte percorre o que existe no ecrã: são 25 páginas, agrupadas em quatro áreas — pública, condutor, empresa e administração. Para cada uma: a rota, quem entra, o que vê, o que faz e que dados ou API estão por baixo. Serve tanto para demonstrar o sistema como para responder a «e este botão para que é?».
+
+14. COMO O UTILIZADOR SE ORIENTA
+
+Há três barras de navegação diferentes, uma por papel, e nenhuma delas mostra o que o papel não pode fazer:
+
+• Site público — cabeçalho com Início, Empresas e Termos; à direita, «Entrar» ou «Criar conta» (ou «Ir para o painel», se já houver sessão) e o botão de tema claro/escuro.
+
+• Condutor — barra superior com logótipo, separadores (Pedir reboque · Histórico · Perfil · Avaliar), campainha, tema e menu de conta. No telemóvel os separadores passam para uma barra inferior fixa. Nas páginas de mapa (pedido em curso) essa barra desaparece, para o mapa ocupar o ecrã.
+
+• Empresa — a mesma barra superior, com Painel · Camiões · Preços · Histórico · Perfil · Avaliar.
+
+• Administração — barra lateral escura (Dashboard · Empresas · Pedidos · Utilizadores · Avaliações) com pesquisa, e uma versão horizontal no telemóvel.
+
+Em todas, a sessão é lida de /api/sessao; o nome e o papel aparecem no canto superior direito e é daí que se termina sessão.
+
+15. ÁREA PÚBLICA (6 ECRÃS)
+
+/ — PÁGINA INICIAL
+
+Quem entra: qualquer pessoa, sem conta.
+
+O que vê: um hero com imagem de reboque ao pôr do sol e a promessa do serviço; três cartões «Como funciona» (marcar o local → comparar → acompanhar e avaliar); um bloco «Preços transparentes, em faixas» com quatro pílulas (ligeiro, SUV/pick-up, mini-bus, pesado) que trocam o exemplo de preço; uma ilustração de rota com ETA; e quatro cartões de empresas credenciadas com foto, bairro, nota e «a partir de X MT».
+
+O que faz: três chamadas à acção — «Pedir reboque» (leva a /registar), «Ver empresas» (/empresas) e «Sou empresa de reboque» (/registar/empresa) — mais o atalho para quem já tem conta.
+
+Por baixo: é uma página de apresentação; os cartões de empresa são ilustrativos e todos apontam para /empresas, onde estão os dados reais. O único estado é a pílula de veículo escolhida.
+
+/EMPRESAS — DIRECTÓRIO PÚBLICO
+
+Quem entra: qualquer pessoa.
+
+O que vê: o cabeçalho «Empresas de reboque» e uma grelha de cartões, um por empresa aprovada na base de dados. Cada cartão mostra foto, nome, endereço, nota média calculada a partir das avaliações reais, número de camiões e uma pequena tabela de preços em quatro intervalos (0–5 km, 5–10 km, 10–20 km, 20+ km).
+
+O que faz: comparar sem compromisso. Não há reserva nesta página — para pedir, o caminho é criar conta e usar /app.
+
+Por baixo: lê empresas, camiões, faixas de preço e avaliações. Se não houver nenhuma empresa aprovada, mostra um estado vazio com o convite para registar a sua.
+
+/ENTRAR — INÍCIO DE SESSÃO
+
+Quem entra: os três papéis.
+
+O que vê: painel escuro à esquerda com a marca e três cartões («Sou condutor», «Sou empresa», «Ver empresas») e, em baixo, um cartão de protótipo académico com contas de teste de um clique (condutor, empresa, admin). À direita, o formulário de telefone/e-mail e palavra-passe.
+
+O que faz: entra. O sistema lê o papel devolvido e encaminha para /app, /empresa ou /admin. Se houver um parâmetro proximo, só o respeita quando pertence à área desse papel — evita que um link leve alguém para o painel de outro.
+
+Por baixo: POST /api/entrar valida a senha contra o hash, confirma que a conta está activa e grava a sessão num cookie assinado (rj_session).
+
+/REGISTAR — CONTA DE CONDUTOR
+
+Quem entra: quem ainda não tem conta.
+
+O que vê: o mesmo esqueleto de dois painéis; à esquerda, os três passos que vai poder dar e a nota de que a conta é gratuita e o pagamento é feito ao serviço. À direita, nome completo, telefone e palavra-passe.
+
+O que faz: cria a conta e entra automaticamente, seguindo para /app.
+
+Por baixo: POST /api/registar valida os campos, impede telefone duplicado, guarda a senha em hash e abre sessão com papel CONDUTOR.
+
+/REGISTAR/EMPRESA — REGISTO DE EMPRESA
+
+Quem entra: empresas de reboque.
+
+O que vê: painel ilustrado com benefícios e a fotografia do camião; à direita, nome da empresa, NUIT, telefone, e-mail, endereço, bairro de operação (lista dos bairros da Matola), palavra-passe e uma caixa de consentimento obrigatória, com ligação aos termos.
+
+O que faz: submete o registo e entra no painel da empresa — mas em estado pendente, sem aparecer aos condutores.
+
+Por baixo: POST /api/registar/empresa exige o consentimento, grava a data em consentimentoEm e cria a empresa com estadoAprovacao = PENDENTE. Sem consentimento não há publicação, hoje ou mais tarde.
+
+/TERMOS — TERMOS DE USO E PRIVACIDADE
+
+Quem entra: qualquer pessoa (é o link da caixa de consentimento).
+
+O que vê: texto em secções: objecto do serviço, âmbito geográfico (Cidade da Matola), contas e responsabilidades, dados recolhidos, publicação de dados da empresa e consentimento, limitação de responsabilidade e contactos.
+
+Por baixo: página estática, sem API. Existe para que o consentimento do registo tenha um documento a que se referir.
+
+16. ÁREA DO CONDUTOR (7 ECRÃS)
+
+/APP — PEDIR REBOQUE (ECRÃ PRINCIPAL)
+
+Quem entra: condutor com sessão.
+
+O que vê: um cartão grande com mapa à direita e, à esquerda, «Onde está o veículo?», o endereço da avaria e o botão de continuar; por baixo, a linha de etapas (Local → Detalhes → Empresas → Acompanhar) e um painel com «Cobertura: Matola e Zimpeto» e «Preço: faixa antes de pedir».
+
+O que faz: marca o local de três formas — GPS do telemóvel, toque no mapa (a zona de cobertura está desenhada a amarelo) ou pesquisa. Se o ponto cair fora, aparece «Fora da área de cobertura» e o botão não avança. Depois preenche o destino (com pesquisa de endereço e sugestões), o tipo de problema, o tipo de veículo e observações, e confirma. Se já tiver um pedido em curso, o ecrã transforma-se em «Acompanhe o seu reboque» e mostra motorista, camião e o atalho para o acompanhamento.
+
+Por baixo: GET /api/reverse converte o ponto em endereço, GET /api/geocode procura o destino, GET /api/minha-conta/pedidos é consultado a cada 5 segundos para detectar um pedido activo. A validação de cobertura acontece aqui e outra vez no servidor. Os dados seguem para /app/pedido/novo num rascunho de sessão, para não se perderem ao mudar de página.
+
+/APP/PEDIDO/NOVO — ESCOLHER EMPRESA
+
+Quem entra: condutor que acabou de preencher o pedido.
+
+O que vê: mapa com origem, destino e os camiões das empresas sugeridas, e um painel (lateral no computador, gaveta em baixo no telemóvel) com a animação de radar «A procurar empresas…» e o tempo decorrido. Quando a lista chega, aparece primeiro «⚡ Mais próxima automaticamente» e depois um cartão por empresa: nome, nota, camiões activos, tempo estimado, faixa de preço e distância até si.
+
+O que faz: confirma numa empresa ou deixa o sistema escolher a mais próxima. Pode voltar atrás com «← Editar detalhes».
+
+Por baixo: GET /api/pedidos?origemLat=… devolve só empresas elegíveis (aprovadas, com consentimento, disponíveis e com camião activo), já com distância, ETA e faixa de preço, ordenadas pelo tempo de chegada. POST /api/pedidos cria o pedido; a resposta traz o id e o ecrã segue para o acompanhamento. Se não houver nenhuma empresa, explica porquê em vez de falhar em silêncio.
+
+/APP/PEDIDO/[ID] — ACOMPANHAR O PEDIDO
+
+Quem entra: o condutor dono do pedido.
+
+O que vê: mapa com origem, destino e, quando existe, o camião; e uma gaveta com o estado em título e etiqueta («A procurar empresa…», «A caminho», «No local», «Em transporte», «Concluído»…), radar enquanto está pendente, cartão da empresa com nome do motorista, matrícula, telefone, botões de ligar e WhatsApp, a linha do tempo dos estados e o resumo do pedido (problema, destino, distância, faixa de preço, observações, pagamento).
+
+O que faz: acompanha; quando o camião está a caminho vê a estimativa de chegada; pode cancelar (com confirmação). Se passarem 3 minutos sem ninguém aceitar, aparece um cartão com «Tentar de novo» (recria o pedido com os mesmos dados para escolher outra empresa) ou «Cancelar».
+
+Por baixo: GET /api/pedidos/[id] devolve o pedido com empresa, camião, eventos e avaliação; DELETE cancela. A posição do camião chega pelo mesmo pedido e a estimativa é distância ÷ 30 km/h.
+
+/APP/PEDIDO/[ID]/CONCLUIR — PAGAMENTO E AVALIAÇÃO
+
+Quem entra: condutor com o pedido já CONCLUIDO.
+
+O que vê: «Serviço concluído 🏁», o resumo da empresa, distância e faixa de preço; três botões de método de pagamento (dinheiro, M-Pesa, e-Mola); cinco estrelas e um campo de comentário; e o aviso de que o pagamento é acordado directamente com a empresa.
+
+O que faz: escolhe o método, avalia e confirma. Recebe depois um ecrã de agradecimento.
+
+Por baixo: POST /api/pedidos/[id]/concluir grava método, estrelas e comentário. A empresa verá o método indicado e terá de confirmar o recebimento do lado dela — o dinheiro nunca passa pelo sistema.
+
+/APP/HISTORICO — OS MEUS PEDIDOS
+
+Quem entra: condutor.
+
+O que vê: lista de todos os pedidos, cada um com origem, destino, data, distância, empresa (quando houve), etiqueta de estado e faixa de preço. Cada linha abre o acompanhamento desse pedido.
+
+Por baixo: GET /api/minha-conta/pedidos. Se estiver vazia, mostra um estado vazio com o botão «Pedir reboque».
+
+/APP/PERFIL — O MEU PERFIL
+
+Quem entra: condutor.
+
+O que vê: nome (editável), telefone (bloqueado, é o identificador da conta) e «Os meus veículos» — até cinco, cada um com marca, modelo, matrícula e tipo, com «+ Adicionar» e «Remover veículo». No fim, «Gravar dados» e o botão de terminar sessão.
+
+O que faz: mantém os dados e a garagem, para os pedidos futuros serem mais rápidos.
+
+Por baixo: GET e PATCH /api/minha-conta/perfil; os veículos são gravados em conjunto com o perfil.
+
+/APP/AVALIACAO-PROTOTIPO — QUESTIONÁRIO
+
+Quem entra: condutor.
+
+O que vê: uma página curta que explica que o questionário é anónimo e leva cerca de dois minutos, seguida do questionário (10 perguntas de escala — o modelo SUS — mais três perguntas próprias do ReboqueJá).
+
+O que faz: responde uma vez; as respostas alimentam a página de avaliações do administrador.
+
+Por baixo: POST /api/prototipo grava a resposta. É um instrumento académico, separado da avaliação do serviço (as estrelas do pedido).
+
+17. ÁREA DA EMPRESA (7 ECRÃS)
+
+/EMPRESA — PAINEL DA EMPRESA
+
+Quem entra: empresa com sessão.
+
+O que vê: no topo, o nome, a nota média com o número de avaliações, o estado Online/Offline, os camiões activos e um interruptor grande de disponibilidade. Abaixo, três números do dia (concluídos, cancelados, facturação em faixa). Depois, duas colunas: «Pedidos novos» e «Serviços em curso», cada uma com cartões que abrem o pedido; e, à direita, «Resumo de hoje» e «Atividade da semana».
+
+O que faz: liga ou desliga a disponibilidade (é isto que a põe ou tira da lista dos condutores), abre pedidos novos, escolhe um para aceitar e acompanha os que estão em curso.
+
+Por baixo: GET /api/empresa/painel a cada 5 segundos, com som e destaque quando entra um pedido novo; PATCH no mesmo endereço alterna a disponibilidade. Se a empresa ainda não estiver aprovada, aparece um aviso a explicar que pode configurar tudo mas não recebe pedidos.
+
+/EMPRESA/PEDIDOS/[ID] — GERIR UM PEDIDO
+
+Quem entra: empresa dona do pedido (o servidor recusa os restantes).
+
+O que vê: mapa com a origem, o destino e o camião; gaveta com o estado, os dados do condutor e do veículo, problema, origem, destino, distância, faixa de preço, observações e pagamento. Conforme o estado, aparecem blocos diferentes: escolher camião e Aceitar/Recusar (pendente); Avançar para o estado seguinte, Partilhar localização (GPS) e Simular trajecto (aceite a transporte); Confirmar recebimento (concluído com pagamento por confirmar); e a avaliação recebida. No fim, a linha do tempo.
+
+O que faz: aceita com um camião concreto, avança o serviço passo a passo, envia a posição real ou simula o percurso para demonstração, e confirma que recebeu o dinheiro.
+
+Por baixo: POST/DELETE /api/pedidos/[id]/aceitar, PATCH /api/pedidos/[id] para o estado seguinte, POST /api/pedidos/[id]/localizacao para o GPS e PATCH /api/pedidos/[id]/concluir para confirmar o pagamento. Cada mudança grava um evento com data e hora.
+
+/EMPRESA/CAMIOES — CAMIÕES
+
+Quem entra: empresa.
+
+O que vê: formulário «Adicionar camião» (matrícula, tipo, capacidade, nome e telefone do motorista) e, abaixo, a lista da frota com o mesmo conjunto de campos.
+
+O que faz: adiciona, edita no próprio cartão (Gravar/Cancelar), activa ou desactiva e remove. Um camião inactivo deixa de contar para a elegibilidade da empresa.
+
+Por baixo: GET/POST/PATCH/DELETE /api/empresa/camioes; os dados ficam ligados à empresa da sessão, nunca a um id enviado pelo browser.
+
+/EMPRESA/PRECOS — FAIXAS DE PREÇO
+
+Quem entra: empresa.
+
+O que vê: o formulário «Definir faixa» — tipo de veículo, intervalo de distância (0–5, 5–10, 10–20, 20+ km), preço mínimo e máximo em MT — e, abaixo, as faixas existentes agrupadas por tipo de veículo.
+
+O que faz: cria faixas, apaga as que já não quer e mantém o tarifário alinhado com o que pratica. O texto do ecrã lembra a regra: o condutor vê sempre uma faixa, nunca um valor fixo.
+
+Por baixo: GET/POST/DELETE /api/empresa/precos. É esta tabela que o servidor consulta quando calcula o preço mostrado em /app/pedido/novo.
+
+/EMPRESA/HISTORICO — HISTÓRICO DE SERVIÇOS
+
+Quem entra: empresa.
+
+O que vê: três cartões de resumo (concluídos, cancelados, avaliação média) e a lista de serviços terminados, com origem, destino, distância, condutor, camião, data, faixa de preço e, quando existe, as estrelas e o comentário recebido.
+
+O que faz: consulta o desempenho e a reputação; não altera nada.
+
+Por baixo: GET /api/empresa/historico, limitado à empresa da sessão.
+
+/EMPRESA/PERFIL — PERFIL DA EMPRESA
+
+Quem entra: empresa.
+
+O que vê: o estado de aprovação e, se estiver pendente, a explicação de que o administrador está a analisar o registo; nome e NUIT apenas de leitura; telefone, e-mail, endereço e raio de operação (km) editáveis; e o botão de terminar sessão.
+
+O que faz: mantém os contactos actualizados e ajusta o raio — que define até que distância da origem o serviço é sugerido aos condutores.
+
+Por baixo: GET/PATCH /api/empresa/perfil. Nome, NUIT e estado de aprovação não são editáveis pela empresa: são dados do registo e da decisão do administrador.
+
+/EMPRESA/AVALIACAO-PROTOTIPO — QUESTIONÁRIO
+
+Quem entra: empresa.
+
+O que vê: o mesmo questionário do condutor, adaptado a quem opera o serviço.
+
+Por baixo: POST /api/prototipo; as respostas entram na mesma análise SUS do administrador, lado a lado com as dos condutores.
+
+18. ÁREA DE ADMINISTRAÇÃO (5 ECRÃS)
+
+/ADMIN — DASHBOARD
+
+Quem entra: administrador. A barra lateral é escura e tem pesquisa.
+
+O que vê: saudação com data e hora e quatro indicadores com variação em relação ao período anterior: pedidos no total, avaliação média, tempo médio de resposta e tempo médio de chegada (os dois últimos com a indicação de que menos é melhor). Abaixo: um gráfico circular de pedidos por estado, um gráfico de pedidos por bairro, a tabela dos últimos pedidos e um cartão de resumo do negócio com a evolução mensal.
+
+O que faz: lê o estado do sistema; a tabela de últimos pedidos permite abrir o detalhe. É o ecrã de acompanhamento, não de operação.
+
+Por baixo: GET /api/admin agrega pedidos, avaliações e tempos — a partir dos eventos de mudança de estado, não de valores inventados.
+
+/ADMIN/EMPRESAS — APROVAÇÃO DE EMPRESAS
+
+Quem entra: administrador.
+
+O que vê: filtros com contagem (Todas, Pendente, Aprovada, Rejeitada) e um cartão por empresa com nome, estado, NUIT, endereço, contactos, raio, número de camiões e de pedidos, e a linha do consentimento (data, ou «sem consentimento»).
+
+O que faz: aprova ou rejeita. O botão «Aprovar» fica desactivado enquanto não houver consentimento registado — a decisão administrativa não substitui a autorização da empresa.
+
+Por baixo: GET/PATCH /api/admin/empresas. Aprovar é o que torna a empresa visível em /empresas e elegível em /app/pedido/novo.
+
+/ADMIN/PEDIDOS — TODOS OS PEDIDOS
+
+Quem entra: administrador.
+
+O que vê: filtros por estado, por empresa e por intervalo de datas; e uma lista de pedidos com origem, destino, distância, condutor, empresa, camião, data, estado, faixa de preço e avaliação, quando existe.
+
+O que faz: audita o que se passou no sistema e encontra um pedido concreto sem conhecer o id.
+
+Por baixo: GET /api/admin/pedidos com os filtros na própria consulta.
+
+/ADMIN/UTILIZADORES — UTILIZADORES
+
+Quem entra: administrador.
+
+O que vê: lista de contas com ícone do papel, nome, telefone, e-mail, data de registo, número de pedidos (condutores) e etiqueta Activo/Desactivado.
+
+O que faz: desactiva ou reactiva contas. Uma conta desactivada não consegue entrar na aplicação. A própria conta de administrador não tem esse botão — evita que o sistema fique sem administração por engano.
+
+Por baixo: GET/PATCH /api/admin/utilizadores; o bloqueio é verificado outra vez no login.
+
+/ADMIN/AVALIACOES — AVALIAÇÕES DO PROTÓTIPO
+
+Quem entra: administrador.
+
+O que vê: a pontuação SUS média (0–100) com a classificação qualitativa, as médias das três perguntas próprias, a média por pergunta SUS e a lista de respostas individuais. No topo, «Exportar CSV».
+
+O que faz: lê o resultado do instrumento académico e exporta-o para o relatório. As respostas são anónimas no relatório final.
+
+Por baixo: GET /api/admin/avaliacoes (com ?csv=1 para a exportação).
+
+19. QUADRO-RESUMO DAS ROTAS
+
+Rota — Papel — Para que serve
+/ — público — apresentar o serviço e encaminhar
+/empresas — público — comparar empresas e tarifários
+/termos — público — termos e consentimento
+/entrar — público — iniciar sessão nos três papéis
+/registar — público — criar conta de condutor
+/registar/empresa — público — candidatar uma empresa
+/app — condutor — marcar local, destino e detalhes
+/app/pedido/novo — condutor — comparar e escolher empresa
+/app/pedido/[id] — condutor — acompanhar, contactar, cancelar
+/app/pedido/[id]/concluir — condutor — pagamento e avaliação
+/app/historico — condutor — pedidos anteriores
+/app/perfil — condutor — dados e veículos
+/app/avaliacao-prototipo — condutor — questionário SUS
+/empresa — empresa — disponibilidade, pedidos, resumo
+/empresa/pedidos/[id] — empresa — aceitar, avançar, GPS, confirmar pagamento
+/empresa/camioes — empresa — frota e motoristas
+/empresa/precos — empresa — faixas por veículo e distância
+/empresa/historico — empresa — serviços terminados e reputação
+/empresa/perfil — empresa — contactos e raio de operação
+/empresa/avaliacao-prototipo — empresa — questionário SUS
+/admin — admin — indicadores e últimos pedidos
+/admin/empresas — admin — aprovar e rejeitar
+/admin/pedidos — admin — auditar com filtros
+/admin/utilizadores — admin — activar e desactivar contas
+/admin/avaliacoes — admin — resultados SUS e exportação
+
+A ideia que este mapa deve transmitir na defesa: cada ecrã tem um papel e uma acção principal, e nenhum ecrã faz mais do que isso. O condutor nunca vê ferramentas de empresa, a empresa nunca vê pedidos de outra, e o administrador não opera serviços — aprova, observa e corrige. É esta separação que mantém o sistema simples de explicar e difícil de usar mal.

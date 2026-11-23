@@ -50,8 +50,8 @@ const ETAPAS_NOVO = [
 const TITULO_ESTADO: Record<string, { titulo: string; texto: string }> = {
   PENDENTE: { titulo: "À espera de uma empresa", texto: "O seu pedido foi enviado. Aguarde a confirmação." },
   ACEITE: { titulo: "Pedido aceite", texto: "A empresa aceitou o pedido e está a preparar o camião." },
-  A_CAMINHO: { titulo: "Reboque a caminho", texto: "O motorista está a caminho do seu local." },
-  NO_LOCAL: { titulo: "Reboque no local", texto: "O motorista chegou ao local do veículo." },
+  A_CAMINHO: { titulo: "Reboque a caminho", texto: "O condutor está a caminho do seu local." },
+  NO_LOCAL: { titulo: "Reboque no local", texto: "O condutor chegou ao local do veículo." },
   EM_TRANSPORTE: { titulo: "Em transporte", texto: "O seu veículo está a ser levado ao destino." },
 };
 
@@ -168,7 +168,7 @@ export default function AppCondutor() {
   const continuar = () => {
     setErroMsg("");
     if (!estaNaMatola(pos)) {
-      setErroMsg("O local do veículo está fora dos limites da Cidade da Matola. O serviço só cobre a Matola.");
+      setErroMsg("O local do veículo está fora da área de cobertura (toda a Matola e Zimpeto).");
       return;
     }
     setPasso("detalhes");
@@ -182,7 +182,7 @@ export default function AppCondutor() {
       return;
     }
     if (!estaNaMatola(destino)) {
-      setErroMsg("O destino está fora dos limites da Cidade da Matola. Escolha um destino dentro da cidade.");
+      setErroMsg("O destino está fora da área de cobertura. Escolha um destino na Matola ou em Zimpeto.");
       return;
     }
     setABuscar(true);
@@ -281,7 +281,7 @@ export default function AppCondutor() {
 
               {!activo && gpsOk === false && (
                 <p className="text-xs font-medium text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
-                  Fora dos limites da Cidade da Matola. Toque no mapa dentro da zona amarela.
+                  Fora da área de cobertura. Toque no mapa dentro da zona amarela.
                 </p>
               )}
             </div>
@@ -384,7 +384,7 @@ export default function AppCondutor() {
                   <>
                     <InfoMini
                       icone={<IconeUtilizador className="w-5 h-5" />}
-                      rotulo="Motorista"
+                      rotulo="Condutor"
                       valor={activo.camiao?.motoristaNome ?? activo.empresa?.nome ?? "A atribuir"}
                     />
                     <InfoMini
@@ -395,7 +395,7 @@ export default function AppCondutor() {
                   </>
                 ) : (
                   <>
-                    <InfoMini icone={<IconePin className="w-5 h-5" />} rotulo="Cobertura" valor="Cidade da Matola" />
+                    <InfoMini icone={<IconePin className="w-5 h-5" />} rotulo="Cobertura" valor="Matola e Zimpeto" />
                     <InfoMini icone={<IconeEtiqueta className="w-5 h-5" />} rotulo="Preço" valor="Faixa antes de pedir" />
                   </>
                 )}
@@ -452,7 +452,12 @@ export default function AppCondutor() {
               </div>
               <label className="block">
                 <Rotulo>Tipo de problema</Rotulo>
-                <select value={tipoProblema} onChange={(e) => setTipoProblema(e.target.value)} className={campo}>
+                <select
+                  value={tipoProblema}
+                  onChange={(e) => setTipoProblema(e.target.value)}
+                  className={campoSelect}
+                  style={{ colorScheme: tema === "escuro" ? "dark" : "light" }}
+                >
                   {TIPOS_PROBLEMA.map((t) => (
                     <option key={t.value} value={t.value}>
                       {t.label}
@@ -462,7 +467,12 @@ export default function AppCondutor() {
               </label>
               <label className="block">
                 <Rotulo>Tipo de veículo</Rotulo>
-                <select value={tipoVeiculo} onChange={(e) => setTipoVeiculo(e.target.value)} className={campo}>
+                <select
+                  value={tipoVeiculo}
+                  onChange={(e) => setTipoVeiculo(e.target.value)}
+                  className={campoSelect}
+                  style={{ colorScheme: tema === "escuro" ? "dark" : "light" }}
+                >
                   {TIPOS_VEICULO.map((t) => (
                     <option key={t.value} value={t.value}>
                       {t.label}
@@ -526,6 +536,11 @@ export default function AppCondutor() {
 
 const campo =
   "w-full min-h-[48px] px-4 rounded-xl border border-neutral-300 dark:border-white/10 bg-white dark:bg-white/[0.04] text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-400/30";
+
+// Os <select> nativos pintam a lista de opções com o fundo do próprio controlo;
+// com fundo translúcido as opções ficavam brancas sobre branco. Cores explícitas
+// nas opções + color-scheme resolvem o dropdown em ambos os temas.
+const campoSelect = `${campo} dark:text-neutral-100 [&>option]:bg-white [&>option]:text-neutral-900 dark:[&>option]:bg-neutral-900 dark:[&>option]:text-neutral-100`;
 
 const botaoPrincipal =
   "w-full min-h-[52px] inline-flex items-center justify-center gap-2 rounded-full bg-primary-400 text-neutral-950 font-bold hover:bg-primary-300 active:scale-[0.99] transition shadow-[0_8px_24px_-8px_rgba(255,195,0,0.6)] disabled:opacity-50 disabled:pointer-events-none";

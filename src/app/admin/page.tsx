@@ -94,18 +94,18 @@ export default function DashboardAdmin() {
       {/* Cabeçalho */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
             Olá, Administrador!
           </h1>
-          <p className="text-sm sm:text-base text-neutral-400 mt-1.5">
+          <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 mt-1.5">
             Aqui está um resumo do que está a acontecer na sua plataforma.
           </p>
         </div>
-        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-2.5">
+        <div className="flex items-center gap-3 rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/[0.03] px-4 py-2.5">
           <IconeCalendario className="w-6 h-6 text-primary-400" />
           <div className="leading-tight">
-            <p className="text-sm font-bold text-white first-letter:uppercase">{dataHoje}</p>
-            <p className="text-xs text-neutral-400">
+            <p className="text-sm font-bold text-neutral-900 dark:text-white first-letter:uppercase">{dataHoje}</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
               {hoje.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
             </p>
           </div>
@@ -171,15 +171,15 @@ export default function DashboardAdmin() {
           ) : (
             <div className="flex flex-wrap items-center gap-8 pt-2">
               <Donut fatias={estadosDonut.map((e) => ({ cor: e.cor, valor: e.total }))} total={totalPedidos} />
-              <div className="flex-1 min-w-[220px] divide-y divide-white/[0.06]">
+              <div className="flex-1 min-w-[220px] divide-y divide-neutral-200 dark:divide-white/[0.06]">
                 {estadosDonut.map((e) => (
                   <div key={e.estado} className="flex items-center gap-3 py-2.5 text-sm">
                     <span
                       className="w-3 h-3 rounded-full shrink-0 ring-4 ring-white/[0.03]"
                       style={{ background: e.cor }}
                     />
-                    <span className="text-neutral-300 flex-1">{LABEL_ESTADO[e.estado] || e.estado}</span>
-                    <b className="text-white w-8 text-right">{e.total}</b>
+                    <span className="text-neutral-700 dark:text-neutral-300 flex-1">{LABEL_ESTADO[e.estado] || e.estado}</span>
+                    <b className="text-neutral-900 dark:text-white w-8 text-right">{e.total}</b>
                     <span className="text-neutral-500 text-xs w-10 text-right">
                       {Math.round((e.total / totalPedidos) * 100)}%
                     </span>
@@ -200,12 +200,12 @@ export default function DashboardAdmin() {
           <div className="space-y-3.5 pt-1">
             {dados.pedidosPorBairro.slice(0, 6).map((b) => (
               <div key={b.bairro} className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 gap-y-1.5">
-                <span className="text-sm text-neutral-200 font-medium">{b.bairro}</span>
-                <b className="row-span-2 text-sm text-white text-right w-6">{b.total}</b>
+                <span className="text-sm text-neutral-800 dark:text-neutral-200 font-medium">{b.bairro}</span>
+                <b className="row-span-2 text-sm text-neutral-900 dark:text-white text-right w-6">{b.total}</b>
                 <span className="row-span-2 text-xs text-neutral-500 text-right w-9">
                   {totalPedidos > 0 && `${Math.round((b.total / totalPedidos) * 100)}%`}
                 </span>
-                <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                <div className="h-2 bg-neutral-100 dark:bg-white/[0.06] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-300 transition-all duration-700"
                     style={{ width: `${(b.total / maxBairro) * 100}%` }}
@@ -244,23 +244,23 @@ export default function DashboardAdmin() {
                 {dados.ultimosPedidos.map((p) => (
                   <tr
                     key={p.id}
-                    className="border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02] transition"
+                    className="border-b border-white/[0.05] last:border-0 hover:bg-neutral-50 dark:hover:bg-white/[0.02] transition"
                   >
-                    <td className="py-3 pr-3 font-mono text-xs text-neutral-400">
+                    <td className="py-3 pr-3 font-mono text-xs text-neutral-500 dark:text-neutral-400">
                       #{p.id.slice(-5).toUpperCase()}
                     </td>
-                    <td className="py-3 pr-3 text-neutral-100 font-medium">{p.cliente}</td>
-                    <td className="py-3 pr-3 text-neutral-400">{p.bairro}</td>
+                    <td className="py-3 pr-3 text-neutral-900 dark:text-neutral-100 font-medium">{p.cliente}</td>
+                    <td className="py-3 pr-3 text-neutral-500 dark:text-neutral-400">{p.bairro}</td>
                     <td className="py-3 pr-3">
                       <span
                         className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold ring-1 ring-inset ${
-                          COR_ESTADO[p.estado] || "bg-white/5 text-neutral-300 ring-white/10"
+                          COR_ESTADO[p.estado] || "bg-white/5 text-neutral-700 dark:text-neutral-300 ring-neutral-200 dark:ring-white/10"
                         }`}
                       >
                         {LABEL_ESTADO[p.estado] || p.estado}
                       </span>
                     </td>
-                    <td className="py-3 pr-3 text-neutral-400 text-xs whitespace-nowrap">
+                    <td className="py-3 pr-3 text-neutral-500 dark:text-neutral-400 text-xs whitespace-nowrap">
                       {new Date(p.criadoEm).toLocaleDateString("pt-PT")}{" "}
                       {new Date(p.criadoEm).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
                     </td>
@@ -268,7 +268,7 @@ export default function DashboardAdmin() {
                       <Link
                         href="/admin/pedidos"
                         title="Ver pedido"
-                        className="inline-grid place-items-center w-8 h-8 rounded-lg text-neutral-400 hover:text-primary-400 hover:bg-white/[0.06] transition"
+                        className="inline-grid place-items-center w-8 h-8 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-primary-400 hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition"
                       >
                         <IconeOlho className="w-[18px] h-[18px]" />
                       </Link>
@@ -284,11 +284,11 @@ export default function DashboardAdmin() {
         </CartaoEscuro>
 
         {/* Cartão de crescimento */}
-        <div className="relative overflow-hidden rounded-2xl border border-primary-400/20 bg-gradient-to-br from-primary-400/20 via-neutral-900 to-neutral-950 p-6 flex flex-col justify-end min-h-[300px]">
+        <div className="relative overflow-hidden rounded-2xl border border-primary-400/20 bg-gradient-to-br from-primary-400/20 via-primary-50 to-white dark:via-neutral-900 dark:to-neutral-950 p-6 flex flex-col justify-end min-h-[300px]">
           <div aria-hidden className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-primary-400/10 blur-3xl" />
           <IlustracaoCrescimento className="relative mx-auto w-44 h-32 mb-4" />
-          <h2 className="relative font-bold text-lg text-white">O seu negócio está a crescer!</h2>
-          <p className="relative text-sm text-neutral-300 mt-1.5 leading-relaxed">
+          <h2 className="relative font-bold text-lg text-neutral-900 dark:text-white">O seu negócio está a crescer!</h2>
+          <p className="relative text-sm text-neutral-700 dark:text-neutral-300 mt-1.5 leading-relaxed">
             {dados.tempoMedioRespostaMin !== null
               ? `Com um tempo médio de resposta de ${formatarMin(dados.tempoMedioRespostaMin)}, está a oferecer uma excelente experiência aos seus utilizadores.`
               : "Registe pedidos para começar a acompanhar o crescimento da plataforma."}
@@ -310,7 +310,7 @@ export default function DashboardAdmin() {
 function CartaoEscuro({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
+      className={`rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
     >
       {children}
     </div>
@@ -330,7 +330,7 @@ function CabecalhoCartao({
 }) {
   return (
     <div className="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-white/[0.06]">
-      <h2 className="flex items-center gap-2.5 font-bold text-white">
+      <h2 className="flex items-center gap-2.5 font-bold text-neutral-900 dark:text-white">
         <span className="w-8 h-8 rounded-lg bg-primary-400/15 text-primary-400 grid place-items-center">
           {icone}
         </span>
@@ -341,7 +341,7 @@ function CabecalhoCartao({
         {href && (
           <Link
             href={href}
-            className="text-xs font-semibold text-neutral-400 hover:text-primary-400 inline-flex items-center gap-1 transition"
+            className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 hover:text-primary-400 inline-flex items-center gap-1 transition"
           >
             Ver todos <span aria-hidden>→</span>
           </Link>
@@ -375,7 +375,7 @@ function KpiCard({
   const desceu = variacao !== null && variacao < 0;
   const bom = variacao === null ? true : menorMelhor ? variacao <= 0 : variacao >= 0;
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-5 transition hover:border-white/20 hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.05] dark:to-white/[0.01] p-5 transition hover:border-neutral-300 dark:hover:border-white/20 hover:-translate-y-0.5">
       <div
         aria-hidden
         className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-2xl opacity-20"
@@ -388,8 +388,8 @@ function KpiCard({
           {icone}
         </span>
         <div className="min-w-0">
-          <p className="text-3xl font-extrabold text-white leading-none tracking-tight">{valor}</p>
-          <p className="text-sm text-neutral-400 mt-1.5 truncate">{titulo}</p>
+          <p className="text-3xl font-extrabold text-neutral-900 dark:text-white leading-none tracking-tight">{valor}</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5 truncate">{titulo}</p>
         </div>
       </div>
       <div className="relative mt-4 flex items-end justify-between gap-2">
@@ -452,7 +452,7 @@ function Sparkline({ valores, cor }: { valores: number[]; cor: string }) {
       </defs>
       <path d={area} fill={`url(#g${id})`} />
       <path d={d} fill="none" stroke={cor} strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx={ux} cy={uy} r="3" fill={cor} stroke="#0a0a0a" strokeWidth="1.5" />
+      <circle cx={ux} cy={uy} r="3" fill={cor} stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -466,7 +466,7 @@ function Donut({ fatias, total }: { fatias: { cor: string; valor: number }[]; to
     <div className="relative w-[180px] h-[180px] shrink-0 mx-auto">
       <div aria-hidden className="absolute inset-6 rounded-full bg-emerald-500/10 blur-2xl" />
       <svg viewBox="0 0 160 160" className="relative w-full h-full -rotate-90">
-        <circle cx="80" cy="80" r={raio} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="20" />
+        <circle cx="80" cy="80" r={raio} fill="none" stroke="rgba(148,163,184,0.22)" strokeWidth="20" />
         {fatias.map((f, i) => {
           const dash = (f.valor / total) * circ;
           const el = (
@@ -488,8 +488,8 @@ function Donut({ fatias, total }: { fatias: { cor: string; valor: number }[]; to
       </svg>
       <div className="absolute inset-0 grid place-items-center">
         <div className="text-center">
-          <p className="text-xs text-neutral-400">Total</p>
-          <p className="text-3xl font-extrabold text-white leading-tight">{total}</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">Total</p>
+          <p className="text-3xl font-extrabold text-neutral-900 dark:text-white leading-tight">{total}</p>
           <p className="text-xs text-neutral-500">pedidos</p>
         </div>
       </div>

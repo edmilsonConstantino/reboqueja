@@ -230,12 +230,14 @@ export function AvisoErro({
 }
 
 const PAINEL_POR_PAPEL: Record<string, { href: string; rotulo: string }> = {
-  CONDUTOR: { href: "/app", rotulo: "Pedir reboque" },
+  CLIENTE: { href: "/app", rotulo: "Pedir reboque" },
+  CONDUTOR: { href: "/condutor", rotulo: "Painel do condutor" },
   EMPRESA: { href: "/empresa", rotulo: "Painel da empresa" },
   ADMIN: { href: "/admin", rotulo: "Painel admin" },
 };
 
 const ROTULO_PAPEL: Record<string, string> = {
+  CLIENTE: "Cliente",
   CONDUTOR: "Condutor",
   EMPRESA: "Empresa",
   ADMIN: "Administrador",
@@ -327,14 +329,14 @@ export function BarraNavegacaoPublica() {
         }`}
       >
         {/* Logo */}
-        <Link href="/" className="group flex items-center gap-2.5 shrink-0" aria-label="ReboqueJá — início">
+        <Link href="/" className="group flex items-center gap-2 shrink-0" aria-label="ReboqueJá — início">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.svg"
             alt=""
-            className="w-9 h-9 rounded-xl shadow-[0_0_0_3px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
+            className="w-8 h-8 rounded-lg shadow-[0_0_0_2px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
           />
-          <span className="font-extrabold text-xl tracking-tight text-white">
+          <span className="font-extrabold text-lg tracking-tight text-white">
             Reboque<span className="text-primary-400">Já</span>
           </span>
         </Link>
@@ -348,7 +350,7 @@ export function BarraNavegacaoPublica() {
                 key={item.href}
                 href={item.href}
                 aria-current={activo ? "page" : undefined}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition ${
                   activo
                     ? "bg-primary-400 text-neutral-950 shadow-[0_4px_14px_-4px_rgba(255,195,0,0.6)]"
                     : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
@@ -369,7 +371,7 @@ export function BarraNavegacaoPublica() {
             <>
               <Link
                 href={painel.href}
-                className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-neutral-900 transition"
+                className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1.5 rounded-xl hover:bg-white/[0.06] transition"
                 title={`Ir para: ${painel.rotulo}`}
               >
                 <span className="w-8 h-8 rounded-full bg-primary-400 text-neutral-950 grid place-items-center text-sm font-extrabold">
@@ -383,6 +385,7 @@ export function BarraNavegacaoPublica() {
                     {ROTULO_PAPEL[sessao.papel] ?? sessao.papel}
                   </span>
                 </span>
+                <IconeChevronBaixo className="w-4 h-4 text-neutral-400 ml-0.5" />
               </Link>
               <button
                 onClick={sair}
@@ -398,7 +401,7 @@ export function BarraNavegacaoPublica() {
             <>
               {!paginaAuth && (
                 <Link
-                  href="/registar/empresa"
+                  href="/entrar?tipo=empresa"
                   className="hidden lg:inline-flex items-center px-3 py-2 rounded-full text-sm font-semibold text-neutral-300 hover:text-white transition"
                 >
                   Sou empresa
@@ -590,17 +593,37 @@ function IconeSair(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function IconeChevronBaixo(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
 export function Rodape() {
   return (
-    <footer className="border-t border-neutral-200 dark:border-neutral-800 py-8 mt-16">
-      <div className="max-w-5xl mx-auto px-4 text-center text-xs text-neutral-500 dark:text-neutral-400 space-y-1">
-        <p className="font-semibold text-neutral-700 dark:text-neutral-300">
+    <footer className="border-t border-white/10 py-10 mt-16 bg-[#060911] text-center">
+      <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-2">
+        <Link href="/" className="inline-flex items-center gap-2 group">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.svg"
+            alt=""
+            className="w-7 h-7 rounded-lg shadow-[0_0_0_2px_rgba(255,195,0,0.2)] transition group-hover:scale-105"
+          />
+          <span className="font-extrabold text-base tracking-tight text-white">
+            Reboque<span className="text-primary-400">Já</span>
+          </span>
+        </Link>
+        <p className="text-xs font-semibold text-neutral-300 mt-1">
           Reboque Já — protótipo académico
         </p>
-        <p>Cidade da Matola, Moçambique · Preços em Meticais (MT)</p>
-        <p>
-          Trabalho de fim de curso · Sem pagamento real · Dados fictícios no
-          protótipo
+        <p className="text-xs text-neutral-400">
+          Cidade da Matola, Moçambique • Preços em Meticais (MT)
+        </p>
+        <p className="text-xs text-neutral-500">
+          Trabalho de fim de curso • Sem pagamento real • Dados fictícios no protótipo
         </p>
       </div>
     </footer>

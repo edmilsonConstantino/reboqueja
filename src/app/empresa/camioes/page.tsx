@@ -13,6 +13,7 @@ type Camiao = {
   motoristaNome: string;
   motoristaTelefone: string;
   activo: boolean;
+  motorista: { id: string; nome: string; telefone: string; activo: boolean } | null;
 };
 
 const vazio = { matricula: "", tipo: "LIGEIRO", capacidade: "", motoristaNome: "", motoristaTelefone: "", activo: true };
@@ -87,6 +88,44 @@ export default function Camioes() {
     await carregar();
   };
 
+  // ---- Conta de acesso do condutor (login em /condutor) ----
+  const [acesso, setAcesso] = useState<Record<string, { telefone: string; senha: string }>>({});
+  const [aCriarAcesso, setACriarAcesso] = useState<string | null>(null);
+
+  const criarAcesso = async (c: Camiao) => {
+    const dados = acesso[c.id] || { telefone: c.motoristaTelefone, senha: "" };
+    setErroMsg("");
+    setACriarAcesso(c.id);
+    try {
+      const res = await fetch("/api/empresa/condutores", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: c.motoristaNome,
+          telefone: dados.telefone || c.motoristaTelefone,
+          senha: dados.senha,
+          camiaoId: c.id,
+        }),
+      });
+      const d = await res.json();
+      if (!res.ok) {
+        setErroMsg(d.erro || "Erro ao criar o acesso do condutor.");
+        return;
+      }
+      setAcesso((a) => ({ ...a, [c.id]: { telefone: "", senha: "" } }));
+      await carregar();
+    } finally {
+      setACriarAcesso(null);
+    }
+  };
+
+  const removerAcesso = async (motoristaId: string) => {
+    if (!confirm("Retirar o acesso deste condutor? A conta fica desactivada e o camião livre."))
+      return;
+    await fetch(`/api/empresa/condutores?id=${motoristaId}`, { method: "DELETE" });
+    await carregar();
+  };
+
   if (!camioes) return <div className="p-6"><Carregando /></div>;
 
   return (
@@ -106,8 +145,8 @@ export default function Camioes() {
         </div>
         <Entrada rotulo="Capacidade (opcional)" placeholder="Ex.: Até 2 t" value={novo.capacidade || ""} onChange={(e) => setNovo({ ...novo, capacidade: e.target.value })} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Entrada rotulo="Motorista" placeholder="Nome do motorista" value={novo.motoristaNome} onChange={(e) => setNovo({ ...novo, motoristaNome: e.target.value })} />
-          <Entrada rotulo="Telefone do motorista" placeholder="+258 87 000 0000" inputMode="tel" value={novo.motoristaTelefone} onChange={(e) => setNovo({ ...novo, motoristaTelefone: e.target.value })} />
+          <Entrada rotulo="Motorista" placeholder="Nome do condutor" value={novo.motoristaNome} onChange={(e) => setNovo({ ...novo, motoristaNome: e.target.value })} />
+          <Entrada rotulo="Telefone do condutor" placeholder="+258 87 000 0000" inputMode="tel" value={novo.motoristaTelefone} onChange={(e) => setNovo({ ...novo, motoristaTelefone: e.target.value })} />
         </div>
         <AvisoErro>{erroMsg}</AvisoErro>
         <Botao className="w-full" onClick={criar} disabled={aSalvar}>
@@ -153,6 +192,72 @@ export default function Camioes() {
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">
                       👤 {c.motoristaNome} · {c.motoristaTelefone}
                     </p>
+
+                    {c.motorista ? (
+                      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20 px-3 py-2">
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                            Acesso do condutor
+                          </p>
+                          <p className="text-xs text-neutral-600 dark:text-neutral-300 truncate">
+                            {c.motorista.nome} · {c.motorista.telefone} ·{" "}
+                            {c.motorista.activo ? "activo" : "desactivado"}
+                          </p>
+                        </div>
+                        <button
+                          className="text-xs font-bold text-red-600 dark:text-red-400 px-2 py-1 min-h-[32px]"
+                          onClick={() => removerAcesso(c.motorista!.id)}
+                        >
+                          Remover acesso
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="mt-3 rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-3 space-y-2">
+                        <p className="text-xs font-bold">Conta de acesso do condutor</p>
+                        <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                          Crie o login que o condutor usa para entrar e aguardar solicitações.
+                        </p>
+                        <div className="grid sm:grid-cols-2 gap-2">
+                          <Entrada
+                            rotulo="Telefone"
+                            inputMode="tel"
+                            placeholder="+258 87 000 0000"
+                            value={acesso[c.id]?.telefone ?? c.motoristaTelefone}
+                            onChange={(e) =>
+                              setAcesso({
+                                ...acesso,
+                                [c.id]: {
+                                  senha: acesso[c.id]?.senha ?? "",
+                                  telefone: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                          <Entrada
+                            rotulo="Palavra-passe inicial"
+                            type="password"
+                            placeholder="mínimo 4 caracteres"
+                            value={acesso[c.id]?.senha ?? ""}
+                            onChange={(e) =>
+                              setAcesso({
+                                ...acesso,
+                                [c.id]: {
+                                  telefone: acesso[c.id]?.telefone ?? c.motoristaTelefone,
+                                  senha: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                        <Botao
+                          className="w-full"
+                          onClick={() => criarAcesso(c)}
+                          disabled={aCriarAcesso === c.id}
+                        >
+                          {aCriarAcesso === c.id ? "A criar…" : "Criar acesso do condutor"}
+                        </Botao>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <button onClick={() => alternarActivo(c)}>

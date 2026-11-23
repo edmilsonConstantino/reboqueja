@@ -8,3 +8,8 @@ dist
 .env.local
 prisma/dev.db
 prisma/dev.db-journal
+
+# Base de dados Postgres local de desenvolvimento
+.localdb/
+initdb.log
+dev.log

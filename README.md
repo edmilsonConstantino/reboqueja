@@ -14,9 +14,15 @@ tempo real e avaliação final.
 
 - **Next.js 14 (App Router) + TypeScript**
 - **Tailwind CSS** (primária `#FFC300`, mobile-first, modo escuro)
-- **SQLite + Prisma** (zero configuração — não precisa de instalar PostgreSQL)
-- **Autenticação JWT** em cookie HttpOnly (jose + bcryptjs) com papéis
-  `CONDUTOR`, `EMPRESA`, `ADMIN` e middleware de protecção de rotas
+- **Postgres + Prisma** (Neon/Vercel Postgres; funciona em serverless)
+- **Autenticação JWT** em cookie HttpOnly (jose + bcryptjs) com quatro papéis e
+  middleware de protecção de rotas:
+  - `CLIENTE` — utilizador público que cria conta, pede o reboque (`/app`),
+    acompanha o serviço e avalia o condutor;
+  - `CONDUTOR` — conta de acesso **criada pela empresa** (`/condutor`), onde
+    aguarda solicitações, aceita um pedido e avança os estados do serviço;
+  - `EMPRESA` — gere camiões, contas de condutor, preços e disponibilidade;
+  - `ADMIN` — aprova empresas e supervisiona a plataforma.
 - **MapLibre GL + tiles OpenStreetMap** (sem chave paga) e **Nominatim** para
   pesquisar endereços
 - **Polling de 5 s** nas páginas de acompanhamento
@@ -29,10 +35,11 @@ tempo real e avaliação final.
 npm install
 
 # 2. Configurar o .env (ou copiar .env.example)
-#    DATABASE_URL="file:./dev.db"
+#    DATABASE_URL="postgresql://..."   (Neon, Supabase ou Vercel Postgres)
+#    DIRECT_URL="postgresql://..."     (a mesma BD, sem pooler — usada pelo db push)
 #    AUTH_SECRET="qualquer-string-secreta"
 
-# 3. Criar a base de dados e gerar o cliente
+# 3. Criar as tabelas na base de dados e gerar o cliente
 npx prisma db push
 
 # 4. Dados de exemplo (seed)
@@ -44,18 +51,41 @@ npm run dev
 
 Abra **http://localhost:3000**.
 
-> Para replicar com **PostgreSQL**: mude `provider = "postgresql"` no
-> `prisma/schema.prisma`, ajuste o `DATABASE_URL` e corra `npx prisma migrate
-> dev --name init`.
+## Publicar no Vercel
+
+O SQLite em ficheiro (`prisma/dev.db`) **não funciona no Vercel**: as funções
+serverless têm o sistema de ficheiros só de leitura e o ficheiro nem sequer é
+enviado (está no `.gitignore`). É por isso que `/api/entrar` devolve
+`500 — Erro inesperado do servidor`.
+
+1. Crie uma base de dados Postgres gratuita em <https://neon.tech> (região
+   Frankfurt) e copie **as duas** connection strings:
+   - *pooled* (host com `-pooler`, porta `6543`) → `DATABASE_URL`, com
+     `?sslmode=require&pgbouncer=true&connection_limit=1` no fim;
+   - *direct* (porta `5432`) → `DIRECT_URL`.
+2. Localmente, ponha ambas no `.env` e corra:
+   `npx prisma db push && npm run db:seed`
+3. No Vercel → **Settings → Environment Variables**, adicione `DATABASE_URL`,
+   `DIRECT_URL` e `AUTH_SECRET` (uma string longa e aleatória) nos três
+   ambientes, e faça **Redeploy**.
+
+   A URL *pooled* é obrigatória em serverless: cada função abre a sua própria
+   ligação e, sem pooling, o Postgres recusa com `too many connections`. A URL
+   *direct* serve apenas para `prisma db push`/migrações locais.
+
+   Se faltar `DATABASE_URL`, a aplicação falha imediatamente com uma mensagem
+   explícita (`src/lib/prisma.ts`) em vez de devolver dados vazios.
 
 ## Contas de teste (seed)
 
 | Perfil | Credenciais | Senha |
 |---|---|---|
 | 🛡️ Admin | `admin@reboqueja.co.mz` | `admin123` |
-| 👤 Condutor | `+258 84 111 1111` | `teste123` |
-| 👤 Condutor | `+258 84 222 2222` | `teste123` |
-| 👤 Condutor | `+258 84 333 3333` | `teste123` |
+| 👤 Cliente | `+258 84 111 1111` | `teste123` |
+| 👤 Cliente | `+258 84 222 2222` | `teste123` |
+| 👤 Cliente | `+258 84 333 3333` | `teste123` |
+| 🚚 Condutor (Machava) | `+258 87 500 0001` | `teste123` |
+| 🚚 Condutor (Matola Rio) | `+258 87 500 0003` | `teste123` |
 | 🏢 Empresa (Machava) | `+258 86 500 0001` | `teste123` |
 | 🏢 Empresa (Matola Rio) | `+258 86 500 0002` | `teste123` |
 | 🏢 Empresa (Liberdade) | `+258 86 500 0003` | `teste123` |
@@ -63,7 +93,8 @@ Abra **http://localhost:3000**.
 | 🏢 Empresa pendente (Fomento) | `+258 86 500 0005` | `teste123` |
 
 O seed cria 4 empresas aprovadas (cada uma com 2 camiões e faixas de preço
-500–6 500 MT), 1 pendente, 3 condutores com veículos e **10 pedidos históricos**
+500–6 500 MT), 1 pendente, 3 clientes com veículos, 4 contas de condutor e
+**10 pedidos históricos**
 (7 concluídos com avaliações, 1 a caminho, 1 pendente e 1 cancelado).
 
 ## Regras de negócio implementadas
@@ -85,13 +116,14 @@ O seed cria 4 empresas aprovadas (cada uma com 2 camiões e faixas de preço
 src/
   app/
     (publico)/          # landing, entrar, registar, empresas, termos
-    app/                # área do condutor (mapa Yango, pedido, histórico…)
+    app/                # área do cliente (mapa Yango, pedido, histórico…)
+    condutor/           # painel do condutor: espera, aceitar e avançar estados
     empresa/            # painel, pedidos, camiões, preços, histórico, perfil
     admin/              # dashboard, empresas, pedidos, utilizadores, avaliações
     api/                # rotas REST (auth, pedidos, empresa, admin…)
   components/           # UI base, mapa, bottom sheet, questionário SUS
   lib/                  # prisma, auth JWT, geo, validações Zod, formatos, SUS
-  middleware.ts         # protecção /app (CONDUTOR), /empresa (EMPRESA), /admin (ADMIN)
+  middleware.ts         # protecção /app (CLIENTE), /condutor (CONDUTOR), /empresa, /admin
 prisma/
   schema.prisma         # 9 modelos
   seed.ts               # dados de exemplo
@@ -101,13 +133,13 @@ prisma/
 
 ### Públicas
 - [ ] `/` — landing com como funciona (3 passos) e 2 CTAs
-- [ ] `/entrar` — login condutor/empresa/admin (botões de preenchimento rápido)
-- [ ] `/registar` — criar conta condutor → cai em `/app`
+- [ ] `/entrar` — login cliente/condutor/empresa/admin (botões de preenchimento rápido)
+- [ ] `/registar` — criar conta de cliente → cai em `/app`
 - [ ] `/registar/empresa` — registo com checkbox de consentimento → `/empresa`
 - [ ] `/empresas` — só aprovadas; faixas de preço e ★ média
 - [ ] `/termos` — termos, privacidade e nota de protótipo académico
 
-### Condutor
+### Cliente
 - [ ] `/app` — mapa ecrã inteiro + bottom sheet; pin GPS (ou toque no mapa);
       aviso vermelho se fora da Matola; destino com pesquisa Nominatim; tipo de
       problema/veículo; observações
@@ -121,12 +153,18 @@ prisma/
 - [ ] `/app/perfil` — dados e CRUD de veículos
 - [ ] `/app/avaliacao-prototipo` — SUS (10) + 3 extras + comentário; SUS 0–100
 
+### Condutor (conta dada pela empresa)
+- [ ] `/condutor` — fica disponível (empresa online + camião activo), aguarda
+      solicitações, aceita um pedido e avança A_CAMINHO → NO_LOCAL →
+      EM_TRANSPORTE → CONCLUIDO
+- [ ] `/condutor/historico` — serviços concluídos, ★ média e facturação
+
 ### Empresa
 - [ ] `/empresa` — toggle Disponível/Indisponível; pedidos novos com som e
       destaque; serviços em curso; números do dia
-- [ ] `/empresa/pedidos/[id]` — aceitar (com camião/motorista) ou recusar;
+- [ ] `/empresa/pedidos/[id]` — aceitar (com camião/condutor) ou recusar;
       avançar estado; 📍 GPS real; ▶ **simular trajecto** (o camião move-se no
-      mapa do condutor!); confirmar recebimento do pagamento
+      mapa do cliente!); confirmar recebimento do pagamento
 - [ ] `/empresa/camioes` — CRUD completo
 - [ ] `/empresa/precos` — CRUD de faixas por tipo × km
 - [ ] `/empresa/historico` — concluídos/cancelados + ★ recebidas
@@ -141,10 +179,12 @@ prisma/
 - [ ] `/admin/avaliacoes` — SUS médio, médias por pergunta, respostas individuais, **exportação CSV**
 
 ### Demonstração sugerida (10 min)
-1. Entrar como **condutor** → pedir reboque (se o PC não tiver GPS, toque no
+1. Entrar como **cliente** → pedir reboque (se o PC não tiver GPS, toque no
    mapa dentro da Matola).
 2. Noutro browser (ou janela anónima), entrar como **empresa** → aceitar o
    pedido → escolher camião → "Simular trajecto" → ver o camião a mover-se no
-   ecrã do condutor.
-3. Avançar estados até CONCLUÍDO → como condutor, pagar + avaliar.
-4. Como **admin**, ver o dashboard e as estatísticas actualizadas.
+   ecrã do cliente.
+3. Como **condutor** (`/condutor`), aceitar uma solicitação aberta e avançar os
+   estados até CONCLUÍDO.
+4. Como **cliente**, pagar + avaliar.
+5. Como **admin**, ver o dashboard e as estatísticas actualizadas.

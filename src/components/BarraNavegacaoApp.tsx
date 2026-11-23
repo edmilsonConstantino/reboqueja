@@ -7,12 +7,16 @@ import { usarTema } from "./ProvedorTema";
 
 type IconeNav = (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
 
-const ITENS_APP: Record<"CONDUTOR" | "EMPRESA" | "ADMIN", { href: string; rotulo: string; icone: IconeNav }[]> = {
-  CONDUTOR: [
+const ITENS_APP: Record<"CLIENTE" | "CONDUTOR" | "EMPRESA" | "ADMIN", { href: string; rotulo: string; icone: IconeNav }[]> = {
+  CLIENTE: [
     { href: "/app", rotulo: "Pedir reboque", icone: NavIconePin },
     { href: "/app/historico", rotulo: "Histórico", icone: NavIconeRecibo },
     { href: "/app/perfil", rotulo: "Perfil", icone: NavIconeUtilizador },
     { href: "/app/avaliacao-prototipo", rotulo: "Avaliar", icone: NavIconeEstrela },
+  ],
+  CONDUTOR: [
+    { href: "/condutor", rotulo: "À espera", icone: NavIconePainel },
+    { href: "/condutor/historico", rotulo: "Histórico", icone: NavIconeRecibo },
   ],
   EMPRESA: [
     { href: "/empresa", rotulo: "Painel", icone: NavIconePainel },
@@ -32,6 +36,7 @@ const ITENS_APP: Record<"CONDUTOR" | "EMPRESA" | "ADMIN", { href: string; rotulo
 };
 
 const ROTULO_PAPEL_APP: Record<string, string> = {
+  CLIENTE: "Cliente",
   CONDUTOR: "Condutor",
   EMPRESA: "Empresa",
   ADMIN: "Administrador",
@@ -40,7 +45,7 @@ const ROTULO_PAPEL_APP: Record<string, string> = {
 export function BarraNavegacaoApp({
   papel,
 }: {
-  papel: "CONDUTOR" | "EMPRESA" | "ADMIN";
+  papel: "CLIENTE" | "CONDUTOR" | "EMPRESA" | "ADMIN";
 }) {
   const { tema, alternar } = usarTema();
   const pathname = usePathname();
@@ -64,7 +69,7 @@ export function BarraNavegacaoApp({
   // Condutor: o sino indica um pedido em curso
   const [pedidoActivo, setPedidoActivo] = useState<string | null>(null);
   useEffect(() => {
-    if (papel !== "CONDUTOR") return;
+    if (papel !== "CLIENTE") return;
     fetch("/api/minha-conta/pedidos", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
@@ -173,7 +178,7 @@ export function BarraNavegacaoApp({
             {tema === "escuro" ? <NavIconeSol className="w-5 h-5" /> : <NavIconeLua className="w-5 h-5" />}
           </button>
 
-          {papel === "CONDUTOR" && (
+          {papel === "CLIENTE" && (
             <Link
               href={pedidoActivo ? `/app/pedido/${pedidoActivo}` : "/app/historico"}
               title={pedidoActivo ? "Tem um pedido em curso" : "Sem pedidos em curso"}

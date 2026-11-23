@@ -184,6 +184,7 @@ export async function GET() {
         condutorNome: p.condutor.nome,
         condutorTelefone: p.condutor.telefone,
         camiaoMatricula: p.camiao?.matricula,
+        motoristaNome: p.camiao?.motoristaNome ?? null,
       })),
       hoje: {
         concluidos: concluidosHoje,

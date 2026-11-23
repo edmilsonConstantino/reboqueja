@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { usarTema } from "@/components/ProvedorTema";
 
 const ITENS = [
   { href: "/admin", rotulo: "Dashboard", exact: true, icone: IconeCasa },
@@ -10,6 +11,7 @@ const ITENS = [
   { href: "/admin/pedidos", rotulo: "Pedidos", exact: false, icone: IconeCaixa },
   { href: "/admin/utilizadores", rotulo: "Utilizadores", exact: false, icone: IconePessoas },
   { href: "/admin/avaliacoes", rotulo: "Avaliações", exact: false, icone: IconeEstrela },
+  { href: "/admin/definicoes", rotulo: "Definições", exact: false, icone: IconeEngrenagem },
 ];
 
 function useSair() {
@@ -43,6 +45,22 @@ function Logo({ compacto = false }: { compacto?: boolean }) {
         </span>
       )}
     </Link>
+  );
+}
+
+/** Alterna entre modo claro e escuro (guardado em localStorage). */
+function BotaoTemaAdmin() {
+  const { tema, alternar } = usarTema();
+  const escuro = tema === "escuro";
+  return (
+    <button
+      onClick={alternar}
+      aria-label={escuro ? "Mudar para modo claro" : "Mudar para modo escuro"}
+      title={escuro ? "Modo claro" : "Modo escuro"}
+      className="w-10 h-10 grid place-items-center rounded-full text-neutral-400 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 hover:bg-white/10 dark:hover:bg-white/[0.06] transition"
+    >
+      {escuro ? <IconeSol className="w-5 h-5" /> : <IconeLua className="w-5 h-5" />}
+    </button>
   );
 }
 
@@ -85,14 +103,17 @@ export function BarraLateralAdmin({
             );
           })}
         </nav>
-        <button
-          onClick={sair}
-          disabled={aSair}
-          aria-label="Sair"
-          className="ml-auto shrink-0 w-10 h-10 grid place-items-center rounded-full text-neutral-400 hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
-        >
-          <IconeSair className="w-5 h-5" />
-        </button>
+        <div className="ml-auto flex items-center gap-1 shrink-0">
+          <BotaoTemaAdmin />
+          <button
+            onClick={sair}
+            disabled={aSair}
+            aria-label="Sair"
+            className="w-10 h-10 grid place-items-center rounded-full text-neutral-400 hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
+          >
+            <IconeSair className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     );
   }
@@ -201,7 +222,7 @@ export function BarraTopoAdmin() {
   const inicial = nome.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-neutral-950/85 backdrop-blur-md border-b border-white/10">
+    <header className="sticky top-0 z-30 h-16 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-md border-b border-neutral-200 dark:border-white/10">
       <div className="h-full px-6 lg:px-8 flex items-center gap-4">
         {/* Pesquisa */}
         <div className="relative w-full max-w-md">
@@ -215,15 +236,15 @@ export function BarraTopoAdmin() {
               if (e.key === "Enter" && resultados[0]) router.push(resultados[0].href);
             }}
             placeholder="Pesquisar no painel…"
-            className="w-full h-10 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/10 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none focus:border-primary-400/60 focus:ring-2 focus:ring-primary-400/20 transition"
+            className="w-full h-10 pl-10 pr-4 rounded-xl bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 outline-none focus:border-primary-400/60 focus:ring-2 focus:ring-primary-400/20 transition"
           />
           {focado && resultados.length > 0 && (
-            <div className="absolute mt-2 w-full rounded-xl border border-white/10 bg-neutral-900 shadow-2xl overflow-hidden">
+            <div className="absolute mt-2 w-full rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden">
               {resultados.map(({ href, rotulo, icone: Icone }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-900 dark:hover:text-white"
                 >
                   <Icone className="w-4 h-4 text-primary-400" />
                   {rotulo}
@@ -242,39 +263,45 @@ export function BarraTopoAdmin() {
                 ? `${pendentes} empresa(s) à espera de aprovação`
                 : "Sem notificações"
             }
-            className="relative w-10 h-10 grid place-items-center rounded-full text-neutral-300 hover:text-primary-400 hover:bg-white/[0.06] transition"
+            className="relative w-10 h-10 grid place-items-center rounded-full text-neutral-500 dark:text-neutral-300 hover:text-primary-400 hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition"
           >
             <IconeSino className="w-5 h-5" />
             {pendentes > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-primary-400 text-neutral-950 text-[10px] font-extrabold grid place-items-center ring-2 ring-neutral-950">
+              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-primary-400 text-neutral-950 text-[10px] font-extrabold grid place-items-center ring-2 ring-white dark:ring-neutral-950">
                 {pendentes}
               </span>
             )}
           </Link>
 
-          <span aria-hidden className="w-px h-8 bg-white/10 mx-2" />
+          <span aria-hidden className="w-px h-8 bg-neutral-200 dark:bg-white/10 mx-2" />
 
           {/* Utilizador */}
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenu((v) => !v)}
               aria-expanded={menu}
-              className="flex items-center gap-3 pl-1 pr-2 py-1 rounded-xl hover:bg-white/[0.05] transition"
+              className="flex items-center gap-3 pl-1 pr-2 py-1 rounded-xl hover:bg-neutral-100 dark:hover:bg-white/[0.05] transition"
             >
               <span className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-300 to-primary-500 text-neutral-950 grid place-items-center font-extrabold ring-2 ring-primary-400/30">
                 {inicial}
               </span>
               <span className="hidden sm:flex flex-col items-start leading-tight">
-                <span className="text-sm font-semibold text-white max-w-[140px] truncate">{nome}</span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white max-w-[140px] truncate">{nome}</span>
                 <span className="text-[11px] text-neutral-400">Admin</span>
               </span>
               <IconeSeta className={`w-4 h-4 text-neutral-400 transition ${menu ? "rotate-180" : ""}`} />
             </button>
             {menu && (
-              <div className="absolute right-0 mt-2 w-52 rounded-xl border border-white/10 bg-neutral-900 shadow-2xl p-1.5">
+              <div className="absolute right-0 mt-2 w-52 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-1.5">
+                <Link
+                  href="/admin/definicoes"
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-900 dark:hover:text-white"
+                >
+                  <IconeEngrenagem className="w-4 h-4" /> Definições
+                </Link>
                 <Link
                   href="/"
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-900 dark:hover:text-white"
                 >
                   <IconeCasa className="w-4 h-4" /> Ver site público
                 </Link>
@@ -378,6 +405,29 @@ function IconeSeta(props: P) {
   return (
     <svg {...base} {...props}>
       <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+function IconeEngrenagem(props: P) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="3.2" />
+      <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15.1 4.7a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.1c0 .68.4 1.3 1.03 1.56H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.34Z" />
+    </svg>
+  );
+}
+function IconeSol(props: P) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  );
+}
+function IconeLua(props: P) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
     </svg>
   );
 }

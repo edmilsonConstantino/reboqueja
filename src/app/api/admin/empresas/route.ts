@@ -11,6 +11,22 @@ export async function GET() {
       include: {
         utilizador: { select: { nome: true, telefone: true, email: true } },
         _count: { select: { camioes: true, pedidos: true } },
+        // Condutores da empresa: cada camião atribuído a um utilizador CONDUTOR.
+        camioes: {
+          select: {
+            matricula: true,
+            motorista: {
+              select: {
+                id: true,
+                nome: true,
+                telefone: true,
+                email: true,
+                activo: true,
+              },
+            },
+          },
+          orderBy: { matricula: "asc" },
+        },
       },
       orderBy: { estadoAprovacao: "asc" },
     });

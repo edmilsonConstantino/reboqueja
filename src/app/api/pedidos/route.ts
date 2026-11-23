@@ -22,7 +22,7 @@ export type EmpresaSugerida = {
 /** GET: empresas disponíveis para a origem/tipo indicados (ordenadas por ETA). */
 export async function GET(req: NextRequest) {
   try {
-    await exigirPapel("CONDUTOR");
+    await exigirPapel("CLIENTE");
 
     const origemLat = parseFloat(req.nextUrl.searchParams.get("origemLat") || "");
     const origemLng = parseFloat(req.nextUrl.searchParams.get("origemLng") || "");
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     const origem: LatLng = { lat: origemLat, lng: origemLng };
     if (!estaNaMatola(origem)) {
       return erro(
-        "Serviço disponível apenas na Cidade da Matola. O local indicado está fora dos limites.",
+        "Serviço disponível apenas na Matola e Zimpeto. O local indicado está fora dos limites.",
         422
       );
     }
@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
 /** POST: cria o pedido e entra no estado PENDENTE (procura de empresa). */
 export async function POST(req: NextRequest) {
   try {
-    const sessao = await exigirPapel("CONDUTOR");
+    const sessao = await exigirPapel("CLIENTE");
     const dados = schemaLocalizacao.parse(await req.json());
 
     const origem: LatLng = { lat: dados.origemLat, lng: dados.origemLng };
@@ -103,13 +103,13 @@ export async function POST(req: NextRequest) {
 
     if (!estaNaMatola(origem)) {
       return erro(
-        "O local da avaria está fora dos limites da Cidade da Matola. O serviço só está disponível na Matola.",
+        "O local da avaria está fora dos limites de cobertura (Matola e Zimpeto). O serviço só está disponível nessa zona.",
         422
       );
     }
     if (!estaNaMatola(destino)) {
       return erro(
-        "O destino escolhido está fora dos limites da Cidade da Matola. Escolha um destino na Matola.",
+        "O destino escolhido está fora dos limites de cobertura (Matola e Zimpeto). Escolha um destino nessa zona.",
         422
       );
     }

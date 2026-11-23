@@ -56,7 +56,7 @@ export default function AdminPedidos() {
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-5">
       <div>
         <h1 className="text-2xl font-extrabold">Todos os pedidos</h1>
-        <p className="text-sm text-neutral-400 mt-1">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
           Histórico completo com filtros por estado, empresa e data.
         </p>
       </div>
@@ -88,14 +88,14 @@ export default function AdminPedidos() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-bold text-sm truncate">{p.origemEndereco}</p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400 truncate">
                     → {p.destinoEndereco} · {formatarKm(p.distanciaKm)}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400 mt-1">
                     👤 {p.condutor.nome} · 🏢 {p.empresa?.nome || "—"}
                     {p.camiao ? ` · 🚚 ${p.camiao.matricula}` : ""}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400">
                     {formatarDataHora(p.criadoEm)}
                   </p>
                 </div>

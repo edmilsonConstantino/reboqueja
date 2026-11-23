@@ -8,12 +8,13 @@ import {
   useState,
 } from "react";
 
-type Tema = "claro" | "escuro";
+export type Tema = "claro" | "escuro";
 
 const TemaContext = createContext<{
   tema: Tema;
   alternar: () => void;
-}>({ tema: "claro", alternar: () => {} });
+  definir: (t: Tema) => void;
+}>({ tema: "claro", alternar: () => {}, definir: () => {} });
 
 export function ProvedorTema({ children }: { children: React.ReactNode }) {
   const [tema, setTema] = useState<Tema>("claro");
@@ -42,13 +43,21 @@ export function ProvedorTema({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const definir = useCallback((t: Tema) => {
+    localStorage.setItem("rj-tema", t);
+    aplicar(t);
+    setTema(t);
+  }, []);
+
   return (
-    <TemaContext.Provider value={{ tema, alternar }}>
+    <TemaContext.Provider value={{ tema, alternar, definir }}>
       {children}
     </TemaContext.Provider>
   );
 }
 
-export function usarTema() {
+export function useTema() {
   return useContext(TemaContext);
 }
+
+export const usarTema = useTema;

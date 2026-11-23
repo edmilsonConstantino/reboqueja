@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    await exigirPapel("CONDUTOR", "EMPRESA", "ADMIN");
+    await exigirPapel("CLIENTE", "EMPRESA", "ADMIN");
     const pedido = await prisma.pedido.findUnique({
       where: { id: params.id },
       select: { camiao: { select: { id: true, lat: true, lng: true, matricula: true } } },

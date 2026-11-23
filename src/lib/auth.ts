@@ -10,7 +10,8 @@ const secreto = new TextEncoder().encode(
 
 export const COOKIE_SESSAO = process.env.AUTH_COOKIE_NAME || "rj_session";
 
-export type Papel = "CONDUTOR" | "EMPRESA" | "ADMIN";
+/** CLIENTE = utilizador público que pede reboque · CONDUTOR = conta criada pela empresa. */
+export type Papel = "CLIENTE" | "CONDUTOR" | "EMPRESA" | "ADMIN";
 
 export type Sessao = {
   id: string;

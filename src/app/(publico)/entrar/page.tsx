@@ -17,6 +17,8 @@ export default function Entrar() {
 function FormularioEntrar() {
   const router = useRouter();
   const params = useSearchParams();
+  // ?tipo=empresa realça a entrada de empresa (ex.: botão "Sou empresa").
+  const empresa = params.get("tipo") === "empresa";
   const [contacto, setContacto] = useState("");
   const [senha, setSenha] = useState("");
   const [erroMsg, setErroMsg] = useState("");
@@ -38,7 +40,8 @@ function FormularioEntrar() {
       }
       const proximo = params.get("proximo");
       const destinos: Record<string, string> = {
-        CONDUTOR: "/app",
+        CLIENTE: "/app",
+        CONDUTOR: "/condutor",
         EMPRESA: "/empresa",
         ADMIN: "/admin",
       };
@@ -87,15 +90,17 @@ function FormularioEntrar() {
           <nav className="flex flex-col gap-3">
             <ItemLateral
               icone={<IconeCarro className="w-5 h-5" />}
-              titulo="Sou condutor"
+              titulo="Sou cliente"
               descricao="Peça um reboque em minutos"
-              activo
+              activo={!empresa}
+              href={empresa ? "/entrar" : undefined}
             />
             <ItemLateral
               icone={<IconeCamiao className="w-5 h-5" />}
               titulo="Sou empresa"
               descricao="Receba pedidos de serviço"
-              href="/registar/empresa"
+              activo={empresa}
+              href={empresa ? undefined : "/entrar?tipo=empresa"}
             />
             <ItemLateral
               icone={<IconePredio className="w-5 h-5" />}
@@ -124,7 +129,20 @@ function FormularioEntrar() {
                 }}
                 className="flex items-center gap-2 text-left rounded-lg px-2.5 py-2 hover:bg-white/[0.06] transition disabled:opacity-50"
               >
-                <span>👤</span> <b className="font-semibold">Condutor</b>
+                <span>👤</span> <b className="font-semibold">Cliente</b>
+                <span className="ml-auto text-neutral-500">teste123</span>
+              </button>
+              <button
+                type="button"
+                disabled={aEntrar}
+                onClick={() => {
+                  setContacto("+258875000001");
+                  setSenha("teste123");
+                  void entrar("+258875000001", "teste123");
+                }}
+                className="flex items-center gap-2 text-left rounded-lg px-2.5 py-2 hover:bg-white/[0.06] transition disabled:opacity-50"
+              >
+                <span>🚚</span> <b className="font-semibold">Condutor</b>
                 <span className="ml-auto text-neutral-500">teste123</span>
               </button>
               <button
@@ -218,7 +236,10 @@ function FormularioEntrar() {
             <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 mt-6">
               <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center sm:text-left">
                 Não tem conta?{" "}
-                <Link href="/registar" className="font-semibold text-primary-600 dark:text-primary-400 hover:underline">
+                <Link
+                  href={empresa ? "/registar/empresa" : "/registar"}
+                  className="font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+                >
                   Registe-se
                 </Link>
               </p>

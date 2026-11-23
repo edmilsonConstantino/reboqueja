@@ -8,7 +8,8 @@ const secreto = new TextEncoder().encode(
 
 /** Prefixo → papéis permitidos. */
 const REGRAS: { prefixo: string; papeis: string[] }[] = [
-  { prefixo: "/app", papeis: ["CONDUTOR"] },
+  { prefixo: "/app", papeis: ["CLIENTE"] },
+  { prefixo: "/condutor", papeis: ["CONDUTOR"] },
   { prefixo: "/empresa", papeis: ["EMPRESA"] },
   { prefixo: "/admin", papeis: ["ADMIN"] },
 ];
@@ -40,5 +41,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app/:path*", "/empresa/:path*", "/admin/:path*"],
+  matcher: ["/app/:path*", "/condutor/:path*", "/empresa/:path*", "/admin/:path*"],
 };

@@ -16,6 +16,7 @@ type PedidoResumo = {
   precoMax: number;
   criadoEm: string;
   empresa: { nome: string } | null;
+  avaliacao: { estrelas: number; comentario: string | null } | null;
 };
 
 export default function HistoricoCondutor() {
@@ -45,30 +46,65 @@ export default function HistoricoCondutor() {
         />
       ) : (
         <div className="space-y-3">
-          {pedidos.map((p) => (
-            <Link key={p.id} href={`/app/pedido/${p.id}`}>
-              <Cartao className="p-4 hover:border-primary-300 transition">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-bold truncate">{p.origemEndereco}</p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                      → {p.destinoEndereco}
-                    </p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                      {formatarDataHora(p.criadoEm)} · {formatarKm(p.distanciaKm)}
-                      {p.empresa ? ` · ${p.empresa.nome}` : ""}
-                    </p>
+          {pedidos.map((p) => {
+            const concluido = p.estado === "CONCLUIDO";
+            const podeAvaliar = concluido && !p.avaliacao;
+            return (
+              <Cartao key={p.id} className="p-4">
+                <Link
+                  href={`/app/pedido/${p.id}`}
+                  className="block hover:opacity-90 transition"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-bold truncate">{p.origemEndereco}</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                        → {p.destinoEndereco}
+                      </p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                        {formatarDataHora(p.criadoEm)} · {formatarKm(p.distanciaKm)}
+                        {p.empresa ? ` · ${p.empresa.nome}` : ""}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <Etiqueta cor={corEstado(p.estado)}>{LABEL_ESTADO[p.estado]}</Etiqueta>
+                      <p className="text-xs font-bold mt-2 text-primary-600 dark:text-primary-400">
+                        {faixaPrecoTexto(p.precoMin, p.precoMax)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <Etiqueta cor={corEstado(p.estado)}>{LABEL_ESTADO[p.estado]}</Etiqueta>
-                    <p className="text-xs font-bold mt-2 text-primary-600 dark:text-primary-400">
-                      {faixaPrecoTexto(p.precoMin, p.precoMax)}
-                    </p>
+                </Link>
+
+                {concluido && (
+                  <div className="mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex flex-wrap items-center justify-between gap-2">
+                    {p.avaliacao ? (
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Avaliou com{" "}
+                        <b className="text-primary-500 dark:text-primary-400">
+                          {"★".repeat(p.avaliacao.estrelas)}
+                        </b>
+                        {p.avaliacao.comentario ? " · obrigado pelo comentário" : ""}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Serviço concluído — deixe a sua avaliação.
+                      </p>
+                    )}
+                    <Link
+                      href={podeAvaliar ? `/app/pedido/${p.id}/concluir` : `/app/pedido/${p.id}`}
+                      className={`inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-xl text-xs font-bold transition ${
+                        podeAvaliar
+                          ? "bg-primary-400 text-neutral-950 hover:bg-primary-300"
+                          : "border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                      }`}
+                    >
+                      {podeAvaliar ? "⭐ Avaliar serviço" : "Ver pedido"}
+                    </Link>
                   </div>
-                </div>
+                )}
               </Cartao>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

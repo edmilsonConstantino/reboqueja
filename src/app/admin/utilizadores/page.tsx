@@ -173,7 +173,7 @@ export default function AdminUtilizadores() {
       )}
 
       {/* Painel */}
-      <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]">
+      <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]">
         {/* Barra de filtros */}
         <div className="p-4 sm:p-5 border-b border-white/[0.07] space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center gap-3">

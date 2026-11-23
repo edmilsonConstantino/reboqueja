@@ -19,3 +19,311 @@
  GET /admin/avaliacoes 200 in 150ms
  ○ Compiling /api/admin/empresas ...
  ✓ Compiled /_not-found in 1325ms (657 modules)
+ GET /_next/static/chunks/app/admin/utilizadores/page.js 404 in 1667ms
+ GET /api/admin/empresas 200 in 2612ms
+ GET /api/admin/empresas 200 in 2673ms
+ GET /api/admin/empresas 200 in 2698ms
+ ○ Compiling /entrar ...
+ ✓ Compiled /entrar in 809ms (667 modules)
+ GET /_next/static/chunks/app/admin/utilizadores/page.js 404 in 876ms
+ GET /entrar?proximo=%2Fadmin%2Favaliacoes 200 in 1005ms
+ GET /_next/static/chunks/app/admin/utilizadores/page.js 404 in 47ms
+ GET /_next/static/chunks/app/admin/utilizadores/page.js 404 in 27ms
+ GET /admin/empresas 200 in 64ms
+ ✓ Compiled /api/admin/empresas in 339ms (402 modules)
+ ✓ Compiled (405 modules)
+ GET /api/sessao 200 in 681ms
+ GET /api/sessao 200 in 694ms
+ GET /api/admin/empresas 200 in 727ms
+ GET /api/admin/empresas 200 in 734ms
+ GET /api/admin/empresas 200 in 736ms
+ GET /api/admin/empresas 200 in 777ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 637ms (524 modules)
+ ✓ Compiled /api/admin in 457ms (407 modules)
+ ✓ Compiled (409 modules)
+ GET /api/admin/empresas 200 in 3426ms
+ GET /api/admin 200 in 3478ms
+ GET /api/admin 200 in 3471ms
+ ○ Compiling /admin/avaliacoes ...
+ ✓ Compiled /admin/avaliacoes in 681ms (269 modules)
+ ✓ Compiled /api/admin/avaliacoes in 423ms (412 modules)
+ ✓ Compiled (414 modules)
+ GET /api/admin/avaliacoes 200 in 3436ms
+ GET /api/admin/empresas 200 in 3472ms
+ GET /api/admin/avaliacoes 200 in 3439ms
+ ○ Compiling /admin/utilizadores ...
+ ✓ Compiled /admin/utilizadores in 1148ms (680 modules)
+ ○ Compiling /api/admin ...
+ ✓ Compiled /api/admin in 881ms (420 modules)
+ ✓ Compiled in 0ms (420 modules)
+ GET /api/admin/empresas 200 in 1794ms
+ ✓ Compiled in 1ms (420 modules)
+ ✓ Compiled in 0ms (420 modules)
+ GET /api/admin/empresas 200 in 2256ms
+ GET /api/admin 200 in 3253ms
+ GET /api/admin 200 in 3367ms
+ GET /api/admin/avaliacoes 200 in 2798ms
+ GET /api/admin/avaliacoes 200 in 2800ms
+ GET /api/admin/empresas 200 in 134ms
+ GET /api/admin/empresas 200 in 138ms
+ GET /api/admin/empresas 200 in 134ms
+ GET /admin/empresas 200 in 431ms
+ ○ Compiling /api/sessao ...
+ ✓ Compiled /api/sessao in 1440ms (414 modules)
+ GET /api/admin/empresas 200 in 2271ms
+ GET /api/admin/empresas 200 in 2264ms
+ GET /api/admin/empresas 200 in 2270ms
+ GET /api/admin/empresas 200 in 2289ms
+ GET /api/sessao 200 in 2378ms
+ GET /api/sessao 200 in 2341ms
+ PATCH /api/admin/empresas 200 in 120ms
+ GET /api/admin/empresas 200 in 61ms
+ PATCH /api/admin/empresas 200 in 68ms
+ GET /api/admin/empresas 200 in 51ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 11.3s (690 modules)
+ GET /admin/empresas 200 in 3510ms
+ GET /entrar?proximo=%2Fadmin%2Favaliacoes 200 in 3066ms
+ GET /api/sessao 200 in 219ms
+ GET /api/admin/empresas 200 in 323ms
+ GET /api/admin/empresas 200 in 329ms
+ GET /api/sessao 200 in 302ms
+ GET /api/admin/empresas 200 in 318ms
+ GET /api/admin/empresas 200 in 324ms
+ ✓ Compiled in 7.3s (690 modules)
+ GET /api/admin/empresas 200 in 243ms
+ GET /admin/empresas 200 in 325ms
+ GET /api/sessao 200 in 137ms
+ GET /api/sessao 200 in 104ms
+ GET /api/admin/empresas 200 in 153ms
+ GET /api/admin/empresas 200 in 148ms
+ GET /api/admin/empresas 200 in 224ms
+ GET /api/admin/empresas 200 in 248ms
+ ○ Compiling /admin/pedidos ...
+ ✓ Compiled /admin/pedidos in 1544ms (684 modules)
+ GET /api/admin/empresas 200 in 262ms
+ ○ Compiling /api/admin/pedidos ...
+ ✓ Compiled /api/admin/pedidos in 954ms (421 modules)
+ GET /api/admin/pedidos? 200 in 1322ms
+ GET /api/admin/pedidos? 200 in 1322ms
+ GET /api/admin/empresas 200 in 222ms
+ GET /api/admin/empresas 200 in 243ms
+ GET /api/admin/empresas 200 in 241ms
+ GET /api/admin/empresas 200 in 201ms
+ ○ Compiling /api/admin/avaliacoes ...
+ ✓ Compiled /api/admin/avaliacoes in 672ms (423 modules)
+ GET /api/admin/avaliacoes 200 in 907ms
+ GET /api/admin/avaliacoes 200 in 961ms
+ ✓ Compiled in 1679ms (553 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ src\components\AdminSidebar.tsx (13:75) @ IconeEngrenagem
+ ⨯ ReferenceError: IconeEngrenagem is not defined
+    at eval (./src/components/AdminSidebar.tsx:51:16)
+    at (ssr)/./src/components/AdminSidebar.tsx (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\admin\avaliacoes\page.js:139:1)
+    at __webpack_require__ (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\webpack-runtime.js:33:42)
+    at eval (./src/app/admin/layout.tsx:7:82)
+    at (ssr)/./src/app/admin/layout.tsx (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\admin\avaliacoes\page.js:128:1)
+    at Object.__webpack_require__ [as require] (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\webpack-runtime.js:33:42)
+digest: "40190468"
+[0m [90m 11 |[39m   { href[33m:[39m [32m"/admin/utilizadores"[39m[33m,[39m rotulo[33m:[39m [32m"Utilizadores"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconePessoas[39m }[33m,[39m[0m
+[0m [90m 12 |[39m   { href[33m:[39m [32m"/admin/avaliacoes"[39m[33m,[39m rotulo[33m:[39m [32m"Avaliações"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconeEstrela[39m }[33m,[39m[0m
+[0m[31m[1m>[22m[39m[90m 13 |[39m   { href[33m:[39m [32m"/admin/definicoes"[39m[33m,[39m rotulo[33m:[39m [32m"Definições"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconeEngrenagem[39m }[33m,[39m[0m
+[0m [90m    |[39m                                                                           [31m[1m^[22m[39m[0m
+[0m [90m 14 |[39m ][33m;[39m[0m
+[0m [90m 15 |[39m[0m
+[0m [90m 16 |[39m [36mfunction[39m useSair() {[0m
+ GET /admin/avaliacoes 500 in 411ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 3s (553 modules)
+ ⨯ src\components\AdminSidebar.tsx (13:75) @ IconeEngrenagem
+ ⨯ ReferenceError: IconeEngrenagem is not defined
+    at eval (./src/components/AdminSidebar.tsx:51:16)
+    at (ssr)/./src/components/AdminSidebar.tsx (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\admin\avaliacoes\page.js:139:1)
+    at __webpack_require__ (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\webpack-runtime.js:33:42)
+    at eval (./src/app/admin/layout.tsx:7:82)
+    at (ssr)/./src/app/admin/layout.tsx (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\admin\avaliacoes\page.js:128:1)
+    at Object.__webpack_require__ [as require] (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\webpack-runtime.js:33:42)
+digest: "40190468"
+[0m [90m 11 |[39m   { href[33m:[39m [32m"/admin/utilizadores"[39m[33m,[39m rotulo[33m:[39m [32m"Utilizadores"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconePessoas[39m }[33m,[39m[0m
+[0m [90m 12 |[39m   { href[33m:[39m [32m"/admin/avaliacoes"[39m[33m,[39m rotulo[33m:[39m [32m"Avaliações"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconeEstrela[39m }[33m,[39m[0m
+[0m[31m[1m>[22m[39m[90m 13 |[39m   { href[33m:[39m [32m"/admin/definicoes"[39m[33m,[39m rotulo[33m:[39m [32m"Definições"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconeEngrenagem[39m }[33m,[39m[0m
+[0m [90m    |[39m                                                                           [31m[1m^[22m[39m[0m
+[0m [90m 14 |[39m ][33m;[39m[0m
+[0m [90m 15 |[39m[0m
+[0m [90m 16 |[39m [36mfunction[39m useSair() {[0m
+ GET /admin/avaliacoes 500 in 1884ms
+ ✓ Compiled in 1206ms (553 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ src\components\AdminSidebar.tsx (14:75) @ IconeEngrenagem
+ ⨯ ReferenceError: IconeEngrenagem is not defined
+    at eval (./src/components/AdminSidebar.tsx:51:16)
+    at (ssr)/./src/components/AdminSidebar.tsx (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\admin\avaliacoes\page.js:139:1)
+    at __webpack_require__ (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\webpack-runtime.js:33:42)
+    at eval (./src/app/admin/layout.tsx:7:82)
+    at (ssr)/./src/app/admin/layout.tsx (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\app\admin\avaliacoes\page.js:128:1)
+    at Object.__webpack_require__ [as require] (C:\Users\Dell Latitude 5520\Desktop\reboqueja\.next\server\webpack-runtime.js:33:42)
+digest: "40190468"
+[0m [90m 12 |[39m   { href[33m:[39m [32m"/admin/utilizadores"[39m[33m,[39m rotulo[33m:[39m [32m"Utilizadores"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconePessoas[39m }[33m,[39m[0m
+[0m [90m 13 |[39m   { href[33m:[39m [32m"/admin/avaliacoes"[39m[33m,[39m rotulo[33m:[39m [32m"Avaliações"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconeEstrela[39m }[33m,[39m[0m
+[0m[31m[1m>[22m[39m[90m 14 |[39m   { href[33m:[39m [32m"/admin/definicoes"[39m[33m,[39m rotulo[33m:[39m [32m"Definições"[39m[33m,[39m exact[33m:[39m [36mfalse[39m[33m,[39m icone[33m:[39m [33mIconeEngrenagem[39m }[33m,[39m[0m
+[0m [90m    |[39m                                                                           [31m[1m^[22m[39m[0m
+[0m [90m 15 |[39m ][33m;[39m[0m
+[0m [90m 16 |[39m[0m
+[0m [90m 17 |[39m [36mfunction[39m useSair() {[0m
+ GET /admin/avaliacoes 500 in 187ms
+ ✓ Compiled in 1508ms (553 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /admin/avaliacoes 200 in 858ms
+ ✓ Compiled in 3.3s (705 modules)
+ ○ Compiling /api/admin/avaliacoes ...
+ ✓ Compiled /api/admin/avaliacoes in 1056ms (416 modules)
+ ✓ Compiled (421 modules)
+ GET /api/sessao 200 in 3964ms
+ GET /api/sessao 200 in 3995ms
+ GET /api/admin/empresas 200 in 4028ms
+ GET /api/admin/empresas 200 in 4117ms
+ GET /api/admin/avaliacoes 200 in 4075ms
+ GET /api/admin/avaliacoes 200 in 4109ms
+ ✓ Compiled in 746ms (700 modules)
+ ✓ Compiled in 1094ms (700 modules)
+ GET /admin/avaliacoes 200 in 555ms
+ GET /api/sessao 200 in 236ms
+ GET /api/sessao 200 in 341ms
+ GET /api/admin/empresas 200 in 345ms
+ GET /api/admin/empresas 200 in 361ms
+ GET /api/admin/avaliacoes 200 in 364ms
+ GET /api/admin/avaliacoes 200 in 394ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1673ms (689 modules)
+ GET /admin/definicoes 404 in 262ms
+ ○ Compiling /admin/definicoes ...
+ ✓ Compiled /admin/definicoes in 5.1s (847 modules)
+ GET /api/sessao 200 in 287ms
+ GET /api/sessao 200 in 272ms
+ GET /api/sessao 200 in 266ms
+ GET /api/sessao 200 in 264ms
+ GET /api/admin/empresas 200 in 392ms
+ GET /api/admin/empresas 200 in 439ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1959ms (692 modules)
+ GET / 200 in 2939ms
+ ○ Compiling /api/entrar ...
+ ✓ Compiled /api/entrar in 728ms (425 modules)
+ POST /api/entrar 200 in 1325ms
+ ○ Compiling /api/minha-conta/senha ...
+ ✓ Compiled /api/minha-conta/senha in 764ms (427 modules)
+ PATCH /api/minha-conta/senha 400 in 1444ms
+ PATCH /api/minha-conta/senha 200 in 821ms
+ POST /api/entrar 200 in 463ms
+ PATCH /api/minha-conta/senha 200 in 854ms
+ GET /api/admin/empresas 200 in 188ms
+ ○ Compiling /api/admin ...
+ ✓ Compiled /api/admin in 722ms (427 modules)
+ GET /api/admin 200 in 1105ms
+ GET /api/admin 200 in 1094ms
+ GET /api/admin/empresas 200 in 222ms
+ ○ Compiling /api/admin/pedidos ...
+ ✓ Compiled /api/admin/pedidos in 579ms (429 modules)
+ GET /api/admin/pedidos? 200 in 883ms
+ GET /api/admin/pedidos? 200 in 912ms
+ ○ Compiling /admin/utilizadores ...
+ ✓ Compiled /admin/utilizadores in 1507ms (433 modules)
+ GET /api/admin/empresas 200 in 449ms
+ ○ Compiling /api/admin/utilizadores ...
+ ✓ Compiled /api/admin/utilizadores in 1113ms (435 modules)
+ GET /api/admin/utilizadores 200 in 1449ms
+ GET /api/admin/utilizadores 200 in 1461ms
+ POST /api/entrar 200 in 911ms
+ GET /admin 200 in 453ms
+ ○ Compiling /admin/empresas ...
+ ✓ Compiled /admin/empresas in 1670ms (439 modules)
+ GET /admin/empresas 200 in 2017ms
+ GET /admin/pedidos 200 in 163ms
+ GET /admin/utilizadores 200 in 158ms
+ GET /admin/avaliacoes 200 in 156ms
+ GET /admin/definicoes 200 in 144ms
+ ○ Compiling /api/sessao ...
+ ✓ Compiled /api/sessao in 1320ms (441 modules)
+ GET /api/sessao 200 in 1524ms
+ GET /api/admin/empresas 200 in 312ms
+ ○ Compiling /api/admin/avaliacoes ...
+ ✓ Compiled /api/admin/avaliacoes in 1188ms (443 modules)
+ GET /api/admin/avaliacoes 200 in 1478ms
+ GET /api/admin/avaliacoes 200 in 1505ms
+ GET /entrar?proximo=%2Fadmin%2Fdefinicoes 200 in 276ms
+ GET /api/sessao 200 in 242ms
+ GET /api/sessao 200 in 238ms
+ GET /api/admin/empresas 200 in 307ms
+ ✓ Compiled in 5.4s (718 modules)
+ GET /admin 200 in 150ms
+ GET /admin/definicoes 200 in 211ms
+ GET /api/sessao 200 in 284ms
+ GET /api/sessao 200 in 230ms
+ GET /api/sessao 200 in 228ms
+ GET /api/sessao 200 in 206ms
+ GET /api/admin/empresas 200 in 295ms
+ GET /api/admin/empresas 200 in 276ms
+ GET /api/admin/empresas 200 in 163ms
+ GET /api/admin/avaliacoes 200 in 155ms
+ GET /api/admin/avaliacoes 200 in 162ms
+ GET /api/sessao 200 in 245ms
+ GET /api/sessao 200 in 223ms
+ GET /api/admin/empresas 200 in 282ms
+ GET /admin/definicoes 200 in 153ms
+ GET /api/sessao 200 in 190ms
+ GET /api/sessao 200 in 152ms
+ GET /api/sessao 200 in 151ms
+ GET /api/sessao 200 in 148ms
+ GET /api/admin/empresas 200 in 219ms
+ GET /api/admin/empresas 200 in 212ms
+ GET /admin/definicoes 200 in 147ms
+ GET /api/sessao 200 in 188ms
+ GET /api/sessao 200 in 160ms
+ GET /api/sessao 200 in 144ms
+ GET /api/sessao 200 in 140ms
+ GET /api/admin/empresas 200 in 199ms
+ GET /api/admin/empresas 200 in 181ms
+ ✓ Compiled in 5.2s (702 modules)
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 813ms (278 modules)
+ ○ Compiling /api/admin ...
+ ✓ Compiled /api/admin in 991ms (421 modules)
+ ✓ Compiled (423 modules)
+ GET /api/admin/empresas 200 in 4843ms
+ GET /api/admin 200 in 4932ms
+ GET /api/admin 200 in 4957ms
+ ○ Compiling /admin/empresas ...
+ ✓ Compiled /admin/empresas in 648ms (422 modules)
+ GET /api/admin/empresas 200 in 372ms
+ GET /api/admin/empresas 200 in 349ms
+ GET /api/admin/empresas 200 in 364ms
+ GET /api/admin/empresas 200 in 137ms
+ ✓ Compiled /api/admin/pedidos in 368ms (424 modules)
+ GET /api/admin/pedidos? 200 in 532ms
+ GET /api/admin/pedidos? 200 in 542ms
+ GET /api/admin/empresas 200 in 163ms
+ ✓ Compiled /api/admin/utilizadores in 494ms (426 modules)
+ GET /api/admin/utilizadores 200 in 662ms
+ GET /api/admin/utilizadores 200 in 664ms
+ PATCH /api/admin/utilizadores 200 in 99ms
+ GET /api/admin/utilizadores 200 in 56ms
+ PATCH /api/admin/utilizadores 200 in 73ms
+ GET /api/admin/utilizadores 200 in 51ms
+ GET /api/admin/empresas 200 in 173ms
+ ○ Compiling /api/sessao ...
+ ✓ Compiled /api/sessao in 532ms (426 modules)
+ GET /api/sessao 200 in 702ms
+ GET /api/sessao 200 in 713ms
+ GET /api/admin/empresas 200 in 187ms
+ ✓ Compiled /api/admin in 436ms (428 modules)
+ GET /api/admin 200 in 615ms
+ GET /api/admin 200 in 614ms
+ GET /api/admin/empresas 200 in 143ms
+ GET /api/admin/empresas 200 in 193ms
+ GET /api/admin/empresas 200 in 187ms
+ GET /api/admin/empresas 200 in 155ms
+ GET /api/admin 200 in 145ms
+ GET /api/admin 200 in 146ms

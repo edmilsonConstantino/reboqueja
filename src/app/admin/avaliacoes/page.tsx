@@ -405,7 +405,7 @@ export default function AdminAvaliacoes() {
 function Painel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
+      className={`rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
     >
       {children}
     </div>

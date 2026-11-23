@@ -9,7 +9,9 @@ export async function GET() {
     await exigirPapel("ADMIN");
     const empresas = await prisma.empresa.findMany({
       include: {
-        utilizador: { select: { nome: true, telefone: true, email: true } },
+        utilizador: {
+          select: { nome: true, telefone: true, email: true, criadoEm: true },
+        },
         _count: { select: { camioes: true, pedidos: true } },
         // Condutores da empresa: cada camião atribuído a um utilizador CONDUTOR.
         camioes: {

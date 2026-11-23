@@ -112,7 +112,7 @@ export default function AdminDefinicoes() {
       </div>
 
       {/* Aparência */}
-      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] p-5">
+      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-5">
         <h2 className="font-bold">Aparência</h2>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
           Escolha o tema do painel. A preferência fica guardada neste dispositivo.
@@ -161,7 +161,7 @@ export default function AdminDefinicoes() {
       </section>
 
       {/* Conta */}
-      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] p-5">
+      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-5">
         <h2 className="font-bold">A minha conta</h2>
         <dl className="mt-4 grid sm:grid-cols-2 gap-4 text-sm">
           <Campo rotulo="Nome" valor={sessao?.nome || "…"} />
@@ -172,7 +172,7 @@ export default function AdminDefinicoes() {
       </section>
 
       {/* Segurança */}
-      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] p-5">
+      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-5">
         <h2 className="font-bold">Alterar palavra-passe</h2>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
           Use pelo menos 4 caracteres. A nova palavra-passe passa a valer no próximo início de sessão.
@@ -222,7 +222,7 @@ export default function AdminDefinicoes() {
       </section>
 
       {/* Sessão */}
-      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] p-5 flex flex-wrap items-center justify-between gap-3">
+      <section className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-5 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-bold">Sessão</h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">

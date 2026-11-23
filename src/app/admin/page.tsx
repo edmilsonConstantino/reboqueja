@@ -310,7 +310,7 @@ export default function DashboardAdmin() {
 function CartaoEscuro({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-white/[0.01] p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
+      className={`rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
     >
       {children}
     </div>
@@ -375,7 +375,7 @@ function KpiCard({
   const desceu = variacao !== null && variacao < 0;
   const bom = variacao === null ? true : menorMelhor ? variacao <= 0 : variacao >= 0;
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-white/[0.05] dark:to-white/[0.01] p-5 transition hover:border-neutral-300 dark:hover:border-white/20 hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.05] p-5 transition hover:border-neutral-300 dark:hover:border-white/20 hover:-translate-y-0.5">
       <div
         aria-hidden
         className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-2xl opacity-20"

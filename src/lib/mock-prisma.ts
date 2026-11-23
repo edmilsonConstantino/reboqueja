@@ -33,6 +33,8 @@ type Store = {
 const globalForMock = globalThis as unknown as {
   __rjMockDb?: Store;
   __rjMockPrisma?: PrismaClient;
+  __rjDemoLiveCamioes?: Set<string>;
+  __rjDemoLivePedidos?: Set<string>;
 };
 
 function nextId(store: Store, prefix: string): string {
@@ -84,13 +86,37 @@ function createInitialStore(): Store {
     criadoEm: diasAtras(45),
   });
 
-  // ---------- Clientes ----------
+  // ---------- Clientes e seus veículos ----------
   const condutoresDef = [
-    { nome: "João Macuácua", telefone: "+258841111111", email: "joao@teste.mz" },
-    { nome: "Ana Sitoe", telefone: "+258842222222", email: "ana@teste.mz" },
-    { nome: "Carlos Chissano", telefone: "+258843333333", email: "carlos@teste.mz" },
+    {
+      nome: "João Macuácua",
+      telefone: "+258841111111",
+      email: "joao@teste.mz",
+      veiculos: [
+        { marca: "Toyota", modelo: "Corolla", matricula: "ABM-123-MC", tipo: "LIGEIRO" },
+        { marca: "Nissan", modelo: "NP200", matricula: "KLM-789-MC", tipo: "SUV" },
+      ],
+    },
+    {
+      nome: "Ana Sitoe",
+      telefone: "+258842222222",
+      email: "ana@teste.mz",
+      veiculos: [
+        { marca: "Toyota", modelo: "Hilux", matricula: "GHN-456-MC", tipo: "SUV" },
+        { marca: "Suzuki", modelo: "Swift", matricula: "MPT-214-MC", tipo: "LIGEIRO" },
+      ],
+    },
+    {
+      nome: "Carlos Chissano",
+      telefone: "+258843333333",
+      email: "carlos@teste.mz",
+      veiculos: [
+        { marca: "Mitsubishi", modelo: "Pajero", matricula: "ACX-809-MC", tipo: "MINIBUS" },
+      ],
+    },
   ];
   const condutores: Rec[] = [];
+  const veiculosPorCondutor = new Map<string, Rec[]>();
   for (let idx = 0; idx < condutoresDef.length; idx++) {
     const c = condutoresDef[idx];
     const u: Rec = {
@@ -106,33 +132,22 @@ function createInitialStore(): Store {
     };
     store.utilizador.push(u);
     condutores.push(u);
-    store.veiculo.push(
-      {
+
+    const listaVeiculos: Rec[] = [];
+    for (const v of c.veiculos) {
+      const vei: Rec = {
         id: nextId(store, "vei"),
         condutorId: u.id,
-        marca: "Toyota",
-        modelo: "Corolla",
-        matricula: "ABM-123-MC",
-        tipo: "LIGEIRO",
-      },
-      {
-        id: nextId(store, "vei"),
-        condutorId: u.id,
-        marca: "Toyota",
-        modelo: "Hilux",
-        matricula: "GHN-456-MC",
-        tipo: "SUV",
-      }
-    );
+        marca: v.marca,
+        modelo: v.modelo,
+        matricula: v.matricula,
+        tipo: v.tipo,
+      };
+      store.veiculo.push(vei);
+      listaVeiculos.push(vei);
+    }
+    veiculosPorCondutor.set(u.id, listaVeiculos);
   }
-  store.veiculo.push({
-    id: nextId(store, "vei"),
-    condutorId: condutores[0].id,
-    marca: "Nissan",
-    modelo: "NP200",
-    matricula: "KLM-789-MC",
-    tipo: "SUV",
-  });
 
   // ---------- Empresas ----------
   const BAIRROS: Record<string, { lat: number; lng: number; endereco: string }> = {
@@ -143,6 +158,20 @@ function createInitialStore(): Store {
     Fomento: { lat: -25.95, lng: 32.48, endereco: "Bairro Fomento, Matola" },
   };
 
+  type DefCamiao = {
+    matricula: string;
+    marca: string;
+    modelo: string;
+    tipo: string;
+    motorista: string;
+    tel: string;
+    email: string;
+    disponivel: boolean;
+    lat?: number;
+    lng?: number;
+    semCondutor?: boolean;
+  };
+
   type DefEmpresa = {
     nome: string;
     nuit: string;
@@ -151,7 +180,7 @@ function createInitialStore(): Store {
     bairro: keyof typeof BAIRROS;
     aprovada: boolean;
     disponivel: boolean;
-    camioes: { matricula: string; marca: string; modelo: string; tipo: string; motorista: string; tel: string }[];
+    camioes: DefCamiao[];
     faixas: Record<string, [number, number][]>;
   };
 
@@ -165,8 +194,30 @@ function createInitialStore(): Store {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "RBM-001-MC", marca: "Volvo", modelo: "FH 460", tipo: "PESADO", motorista: "Alberto Nhaca", tel: "+258875000001" },
-        { matricula: "RBM-002-MC", marca: "Isuzu", modelo: "NQR 500", tipo: "LIGEIRO", motorista: "Ernesto Cuna", tel: "+258875000002" },
+        {
+          matricula: "RBM-001-MC",
+          marca: "Volvo",
+          modelo: "FH 460",
+          tipo: "PESADO",
+          motorista: "Alberto Nhaca",
+          tel: "+258875000001",
+          email: "alberto.nhaca@reboqueja.co.mz",
+          disponivel: true,
+          lat: -25.955,
+          lng: 32.46,
+        },
+        {
+          matricula: "RBM-002-MC",
+          marca: "Isuzu",
+          modelo: "NQR 500",
+          tipo: "LIGEIRO",
+          motorista: "Ernesto Cuna",
+          tel: "+258875000002",
+          email: "ernesto.cuna@reboqueja.co.mz",
+          disponivel: true,
+          lat: -25.959,
+          lng: 32.463,
+        },
       ],
       faixas: {
         LIGEIRO: [[500, 1000], [1000, 2000], [2000, 3000], [3500, 5000]],
@@ -184,8 +235,30 @@ function createInitialStore(): Store {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "MRA-010-MC", marca: "Toyota", modelo: "Dyna 200", tipo: "LIGEIRO", motorista: "Domingos Chirindza", tel: "+258875000003" },
-        { matricula: "MRA-011-MC", marca: "Scania", modelo: "P310", tipo: "PESADO", motorista: "Salomão Mabjaia", tel: "+258875000004" },
+        {
+          matricula: "MRA-010-MC",
+          marca: "Toyota",
+          modelo: "Dyna 200",
+          tipo: "LIGEIRO",
+          motorista: "Domingos Chirindza",
+          tel: "+258875000003",
+          email: "domingos.chirindza@reboqueja.co.mz",
+          disponivel: true,
+          lat: -25.984,
+          lng: 32.468,
+        },
+        {
+          matricula: "MRA-011-MC",
+          marca: "Scania",
+          modelo: "P310",
+          tipo: "PESADO",
+          motorista: "Salomão Mabjaia",
+          tel: "+258875000004",
+          email: "salomao.mabjaia@reboqueja.co.mz",
+          disponivel: true,
+          lat: -25.978,
+          lng: 32.472,
+        },
       ],
       faixas: {
         LIGEIRO: [[600, 1100], [1100, 2200], [2200, 3200], [3200, 4800]],
@@ -203,8 +276,28 @@ function createInitialStore(): Store {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "SRL-020-MC", marca: "Mitsubishi", modelo: "Canter FE85", tipo: "LIGEIRO", motorista: "Tomás Bila", tel: "+258875000005" },
-        { matricula: "SRL-021-MC", marca: "Mercedes-Benz", modelo: "Atego 1218", tipo: "MINIBUS", motorista: "Nelson Macassa", tel: "+258875000006" },
+        {
+          matricula: "SRL-020-MC",
+          marca: "Mitsubishi",
+          modelo: "Canter FE85",
+          tipo: "LIGEIRO",
+          motorista: "Tomás Bila",
+          tel: "+258875000005",
+          email: "tomas.bila@reboqueja.co.mz",
+          disponivel: true,
+          lat: -25.967,
+          lng: 32.482,
+        },
+        {
+          matricula: "SRL-021-MC",
+          marca: "Mercedes-Benz",
+          modelo: "Atego 1218",
+          tipo: "MINIBUS",
+          motorista: "Nelson Macassa",
+          tel: "+258875000006",
+          email: "nelson.macassa@reboqueja.co.mz",
+          disponivel: false,
+        },
       ],
       faixas: {
         LIGEIRO: [[500, 950], [950, 1900], [1900, 2900], [2900, 4500]],
@@ -222,8 +315,29 @@ function createInitialStore(): Store {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "T3R-030-MC", marca: "Hino", modelo: "300 Series", tipo: "LIGEIRO", motorista: "Paulo Muianga", tel: "+258875000007" },
-        { matricula: "T3R-031-MC", marca: "Ford", modelo: "Cargo 816", tipo: "SUV", motorista: "Rogério Tembe", tel: "+258875000008" },
+        {
+          matricula: "T3R-030-MC",
+          marca: "Hino",
+          modelo: "300 Series",
+          tipo: "LIGEIRO",
+          motorista: "Paulo Muianga",
+          tel: "+258875000007",
+          email: "paulo.muianga@reboqueja.co.mz",
+          disponivel: true,
+          lat: -25.963,
+          lng: 32.444,
+        },
+        {
+          matricula: "T3R-031-MC",
+          marca: "Ford",
+          modelo: "Cargo 816",
+          tipo: "SUV",
+          motorista: "Rogério Tembe",
+          tel: "+258875000008",
+          email: "rogerio.tembe@reboqueja.co.mz",
+          disponivel: false,
+          semCondutor: true,
+        },
       ],
       faixas: {
         LIGEIRO: [[550, 1050], [1050, 2100], [2100, 3100], [3100, 4700]],
@@ -241,7 +355,16 @@ function createInitialStore(): Store {
       aprovada: false,
       disponivel: false,
       camioes: [
-        { matricula: "RFA-040-MC", marca: "Hyundai", modelo: "HD65", tipo: "LIGEIRO", motorista: "Hélder Zandamela", tel: "+258875000009" },
+        {
+          matricula: "RFA-040-MC",
+          marca: "Hyundai",
+          modelo: "HD65",
+          tipo: "LIGEIRO",
+          motorista: "Hélder Zandamela",
+          tel: "+258875000009",
+          email: "helder.zandamela@reboqueja.co.mz",
+          disponivel: false,
+        },
       ],
       faixas: {
         LIGEIRO: [[500, 1000], [1000, 2000], [2000, 3000], [3000, 4500]],
@@ -249,7 +372,16 @@ function createInitialStore(): Store {
     },
   ];
 
-  const empresasCriadas: { id: string; nome: string; faixas: Record<string, [number, number][]> }[] = [];
+  const empresasCriadas: {
+    id: string;
+    nome: string;
+    faixas: Record<string, [number, number][]>;
+    userId: string;
+  }[] = [];
+
+  const demoLiveCamioes = new Set<string>();
+  const demoLivePedidos = new Set<string>();
+  const camiaoPorMatricula = new Map<string, Rec>();
 
   for (let idx = 0; idx < empresasDef.length; idx++) {
     const def = empresasDef[idx];
@@ -287,24 +419,68 @@ function createInitialStore(): Store {
 
     for (let ci = 0; ci < def.camioes.length; ci++) {
       const c = def.camioes[ci];
-      store.camiao.push({
-        id: nextId(store, "cam"),
+      const condUserId = nextId(store, "usr");
+      store.utilizador.push({
+        id: condUserId,
+        nome: c.motorista,
+        telefone: c.tel,
+        email: c.email,
+        senhaHash: senhaPadrao,
+        papel: "CONDUTOR",
+        activo: true,
+        empresaCondutorId: empId,
+        criadoEm: diasAtras(22 - ci),
+      });
+
+      const camId = nextId(store, "cam");
+      const temGps = Boolean(c.disponivel && c.lat !== undefined && c.lng !== undefined);
+      const camRec: Rec = {
+        id: camId,
         empresaId: empId,
-        motoristaId: null,
+        motoristaId: c.semCondutor ? null : condUserId,
         matricula: c.matricula,
         marca: c.marca,
         modelo: c.modelo,
         tipo: c.tipo,
         capacidade: c.tipo === "PESADO" ? "Até 5 t" : "Até 2 t",
-        motoristaNome: c.motorista,
-        motoristaTelefone: c.tel,
-        lat: 0,
-        lng: 0,
+        motoristaNome: c.semCondutor ? "" : c.motorista,
+        motoristaTelefone: c.semCondutor ? "" : c.tel,
+        lat: temGps ? c.lat! : 0,
+        lng: temGps ? c.lng! : 0,
         activo: true,
-        disponivel: false,
-        partilhaLocalizacao: false,
-        localizacaoActualizadaEm: null,
-      });
+        disponivel: temGps,
+        partilhaLocalizacao: temGps,
+        localizacaoActualizadaEm: temGps ? new Date(agora - 15_000) : null,
+      };
+      store.camiao.push(camRec);
+      camiaoPorMatricula.set(c.matricula, camRec);
+
+      if (temGps) {
+        demoLiveCamioes.add(camId);
+      }
+
+      if (c.semCondutor) {
+        // Histórico encerrado preservando os dados do condutor anterior
+        store.atribuicaoCamiao.push({
+          id: nextId(store, "atr"),
+          camiaoId: camId,
+          motoristaId: condUserId,
+          atribuidoPorId: userEmpId,
+          inicioEm: diasAtras(18),
+          fimEm: diasAtras(3),
+          motivo: "Fim de turno — veículo aguarda nova escala",
+        });
+      } else {
+        store.atribuicaoCamiao.push({
+          id: nextId(store, "atr"),
+          camiaoId: camId,
+          motoristaId: condUserId,
+          atribuidoPorId: userEmpId,
+          inicioEm: diasAtras(20),
+          fimEm: null,
+          motivo: "Associação inicial da frota",
+        });
+      }
     }
 
     const kms: [number, number][] = [[0, 5], [5, 10], [10, 20], [20, 9999]];
@@ -327,63 +503,30 @@ function createInitialStore(): Store {
       }
     }
 
-    empresasCriadas.push({ id: empId, nome: def.nome, faixas });
+    empresasCriadas.push({ id: empId, nome: def.nome, faixas, userId: userEmpId });
   }
 
-  // ---------- Contas de acesso dos motoristas (CONDUTOR) ----------
-  const empresasAprovadasIds = new Set(
-    store.empresa.filter((e) => e.estadoAprovacao === "APROVADA").map((e) => e.id)
-  );
-  const camioesComConta = store.camiao
-    .filter((c) => empresasAprovadasIds.has(String(c.empresaId)))
-    .sort((a, b) => String(a.matricula).localeCompare(String(b.matricula)))
-    .slice(0, 4);
-
-  const idsComConta = new Set(camioesComConta.map((c) => c.id));
-  for (const c of store.camiao) {
-    if (!idsComConta.has(c.id)) {
-      // Camiões ainda sem conta de condutor associada ficam explicitamente sem motorista
-      c.motoristaNome = "";
-      c.motoristaTelefone = "";
-    }
-  }
-
-  for (const c of camioesComConta) {
-    const condUserId = nextId(store, "usr");
-    store.utilizador.push({
-      id: condUserId,
-      nome: c.motoristaNome,
-      telefone: c.motoristaTelefone,
-      email: null,
-      senhaHash: senhaPadrao,
-      papel: "CONDUTOR",
-      activo: true,
-      empresaCondutorId: c.empresaId,
-      criadoEm: diasAtras(20),
-    });
-    c.motoristaId = condUserId;
-    store.atribuicaoCamiao.push({
-      id: nextId(store, "atr"),
-      camiaoId: c.id,
-      motoristaId: condUserId,
-      atribuidoPorId: adminId,
-      inicioEm: diasAtras(20),
-      fimEm: null,
-      motivo: "Associação inicial",
-    });
-  }
-
-  // Condutores adicionais livres (sem camião atribuído) para selecção imediata no painel
+  // Condutores adicionais livres (sem camião atribuído) para selecção imediata no modal
   const condutoresLivres = [
-    { nome: "Mateus Mondlane", telefone: "+258875000010", empresaId: empresasCriadas[0].id },
-    { nome: "Sérgio Guambe", telefone: "+258875000011", empresaId: empresasCriadas[1].id },
+    {
+      nome: "Mateus Mondlane",
+      telefone: "+258875000010",
+      email: "mateus.mondlane@reboqueja.co.mz",
+      empresaId: empresasCriadas[0].id,
+    },
+    {
+      nome: "Sérgio Guambe",
+      telefone: "+258875000011",
+      email: "sergio.guambe@reboqueja.co.mz",
+      empresaId: empresasCriadas[1].id,
+    },
   ];
   for (const cl of condutoresLivres) {
     store.utilizador.push({
       id: nextId(store, "usr"),
       nome: cl.nome,
       telefone: cl.telefone,
-      email: null,
+      email: cl.email,
       senhaHash: senhaPadrao,
       papel: "CONDUTOR",
       activo: true,
@@ -392,7 +535,7 @@ function createInitialStore(): Store {
     });
   }
 
-  // ---------- Pedidos históricos (10) ----------
+  // ---------- Pedidos interligados (históricos + hoje + em curso + pendente) ----------
   const pontosMatola = [
     { lat: -25.958, lng: 32.457, endereco: "Av. Samora Machel, Machava, Matola" },
     { lat: -25.992, lng: 32.471, endereco: "Rua da Namaacha, Matola Rio, Matola" },
@@ -404,6 +547,8 @@ function createInitialStore(): Store {
     { lat: -25.972, lng: 32.465, endereco: "Av. das FPLM, Matola" },
     { lat: -25.947, lng: 32.444, endereco: "Zimpeto, Matola" },
     { lat: -25.983, lng: 32.438, endereco: "Marrote, Matola" },
+    { lat: -25.956, lng: 32.461, endereco: "Rotunda da Machava, Matola" },
+    { lat: -25.961, lng: 32.458, endereco: "Av. das Indústrias, Machava, Matola" },
   ];
 
   const destinos = [
@@ -417,27 +562,46 @@ function createInitialStore(): Store {
   const tiposVeiculo = ["LIGEIRO", "SUV", "MINIBUS", "PESADO"];
   const pagamentos = ["DINHEIRO", "MPESA", "EMOLA"];
 
-  const cenarios = [
-    { estado: "CONCLUIDO", haDias: 9, estrelas: 5, comentario: "Chegaram em 15 minutos! Excelente serviço.", empresa: 0 },
-    { estado: "CONCLUIDO", haDias: 8, estrelas: 4, comentario: "Bom atendimento, preço justo.", empresa: 1 },
-    { estado: "CONCLUIDO", haDias: 6, estrelas: 5, comentario: "O motorista foi muito profissional.", empresa: 2 },
-    { estado: "CONCLUIDO", haDias: 5, estrelas: 3, comentario: "Demorou um pouco, mas resolveu.", empresa: 0 },
-    { estado: "CONCLUIDO", haDias: 4, estrelas: 4, comentario: null, empresa: 3 },
-    { estado: "CONCLUIDO", haDias: 3, estrelas: 5, comentario: "Muito rápido e preço dentro da faixa.", empresa: 1 },
-    { estado: "CONCLUIDO", haDias: 2, estrelas: 4, comentario: null, empresa: 2 },
-    { estado: "CONCLUIDO", haDias: 1, estrelas: 5, comentario: "Reboque pontual e cuidadoso.", empresa: 0 },
-    { estado: "RECUSADO", haDias: 1, estrelas: null, comentario: null, empresa: 1 },
-    { estado: "CANCELADO", haDias: 1, estrelas: null, comentario: null, empresa: null },
+  // Nota: Cliente 0 (João +258841111111) não tem pedido activo bloqueante para poder testar "Pedir reboque" imediatamente.
+  // Cliente 1 (Ana +258842222222) tem pedido A_CAMINHO com Matola Rio (MRA-010-MC).
+  // Cliente 2 (Carlos +258843333333) tem pedido PENDENTE dirigido ao Condutor Demo (Alberto Nhaca / RBM-001-MC).
+  const cenarios: {
+    estado: string;
+    haDias: number;
+    minAtras?: number;
+    estrelas: number | null;
+    comentario: string | null;
+    empresa: number | null;
+    camiaoMatricula: string | null;
+    clienteIdx: number;
+  }[] = [
+    { estado: "CONCLUIDO", haDias: 6, estrelas: 5, comentario: "Chegaram em 15 minutos! Excelente serviço.", empresa: 0, camiaoMatricula: "RBM-001-MC", clienteIdx: 0 },
+    { estado: "CONCLUIDO", haDias: 5, estrelas: 4, comentario: "Bom atendimento, preço justo.", empresa: 1, camiaoMatricula: "MRA-010-MC", clienteIdx: 1 },
+    { estado: "CONCLUIDO", haDias: 4, estrelas: 5, comentario: "O motorista foi muito profissional.", empresa: 2, camiaoMatricula: "SRL-020-MC", clienteIdx: 0 },
+    { estado: "CONCLUIDO", haDias: 3, estrelas: 4, comentario: "Atendimento atencioso na via principal.", empresa: 0, camiaoMatricula: "RBM-002-MC", clienteIdx: 2 },
+    { estado: "CONCLUIDO", haDias: 3, estrelas: 4, comentario: "Muito rápido dentro da faixa de T3.", empresa: 3, camiaoMatricula: "T3R-030-MC", clienteIdx: 1 },
+    { estado: "CONCLUIDO", haDias: 2, estrelas: 5, comentario: "Muito rápido e preço dentro da faixa.", empresa: 1, camiaoMatricula: "MRA-011-MC", clienteIdx: 0 },
+    { estado: "CONCLUIDO", haDias: 1, estrelas: 4, comentario: "Sem complicações no pagamento M-Pesa.", empresa: 2, camiaoMatricula: "SRL-020-MC", clienteIdx: 2 },
+    { estado: "CONCLUIDO", haDias: 0, minAtras: 180, estrelas: 5, comentario: "Reboque pontual e cuidadoso hoje de manhã.", empresa: 0, camiaoMatricula: "RBM-001-MC", clienteIdx: 0 },
+    { estado: "CONCLUIDO", haDias: 0, minAtras: 95, estrelas: 5, comentario: "Socorro eficiente na Zona da Liberdade.", empresa: 2, camiaoMatricula: "SRL-020-MC", clienteIdx: 1 },
+    { estado: "RECUSADO", haDias: 1, estrelas: null, comentario: null, empresa: 1, camiaoMatricula: "MRA-011-MC", clienteIdx: 2 },
+    { estado: "CANCELADO", haDias: 2, estrelas: null, comentario: null, empresa: null, camiaoMatricula: null, clienteIdx: 1 },
+    { estado: "A_CAMINHO", haDias: 0, minAtras: 12, estrelas: null, comentario: null, empresa: 1, camiaoMatricula: "MRA-010-MC", clienteIdx: 1 },
+    { estado: "PENDENTE", haDias: 0, minAtras: 1, estrelas: null, comentario: null, empresa: 0, camiaoMatricula: "RBM-001-MC", clienteIdx: 2 },
   ];
 
   for (let i = 0; i < cenarios.length; i++) {
     const c = cenarios[i];
-    const condutor = condutores[i % condutores.length];
-    const origem = pontosMatola[i];
+    const cliente = condutores[c.clienteIdx % condutores.length];
+    const veiculosCliente = veiculosPorCondutor.get(cliente.id) ?? [];
+    const veiculoCliente = veiculosCliente[i % Math.max(1, veiculosCliente.length)] ?? null;
+    const origem = pontosMatola[i % pontosMatola.length];
     const destino = destinos[i % destinos.length];
     const distancia = haversine(origem, destino);
-    const tipoVeiculo = tiposVeiculo[i % 4];
-    const criadoEm = new Date(agora - (c.haDias || 0) * 24 * 3600 * 1000);
+    const tipoVeiculo = (veiculoCliente?.tipo as string | undefined) || tiposVeiculo[i % 4];
+    const criadoEm = new Date(
+      agora - (c.haDias || 0) * 24 * 3600 * 1000 - (c.minAtras || 0) * 60 * 1000
+    );
 
     const empresaId = c.empresa !== null ? empresasCriadas[c.empresa].id : null;
     const faixasEmp = c.empresa !== null ? empresasCriadas[c.empresa].faixas[tipoVeiculo] : null;
@@ -445,18 +609,20 @@ function createInitialStore(): Store {
     const intervalo =
       faixasEmp?.find((_, idx) => distancia >= kms[idx][0] && distancia <= kms[idx][1]) || [500, 2000];
 
-    const camiao =
-      c.empresa !== null
+    const camiao = c.camiaoMatricula
+      ? camiaoPorMatricula.get(c.camiaoMatricula) ?? null
+      : c.empresa !== null
         ? store.camiao.find((cm) => cm.empresaId === empresasCriadas[c.empresa!].id) ?? null
         : null;
 
     const pedidoId = nextId(store, "ped");
+    const duracaoMin = c.estado === "CONCLUIDO" ? 32 : c.estado === "A_CAMINHO" ? 6 : 0;
     store.pedido.push({
       id: pedidoId,
-      condutorId: condutor.id,
+      condutorId: cliente.id,
       empresaId,
       camiaoId: camiao?.id ?? null,
-      veiculoId: null,
+      veiculoId: veiculoCliente?.id ?? null,
       origemLat: origem.lat,
       origemLng: origem.lng,
       origemEndereco: origem.endereco,
@@ -466,7 +632,7 @@ function createInitialStore(): Store {
       distanciaKm: Math.round(distancia * 10) / 10,
       tipoProblema: problemas[i % problemas.length],
       tipoVeiculo,
-      observacoes: i % 3 === 0 ? "Veículo bloqueado na berma direita." : null,
+      observacoes: i % 3 === 0 ? "Veículo estacionado na berma direita com os quatro piscas." : null,
       estado: c.estado,
       motivoRecusa: c.estado === "RECUSADO" ? "Veículo em manutenção programada" : null,
       precoMin: intervalo[0],
@@ -475,8 +641,12 @@ function createInitialStore(): Store {
       pagamentoConfirmado: c.estado === "CONCLUIDO" && i % 2 === 0,
       canceladoPor: c.estado === "CANCELADO" ? "CLIENTE" : null,
       criadoEm,
-      actualizadoEm: new Date(criadoEm.getTime() + 40 * 60 * 1000),
+      actualizadoEm: new Date(criadoEm.getTime() + duracaoMin * 60 * 1000),
     });
+
+    if (c.estado === "PENDENTE") {
+      demoLivePedidos.add(pedidoId);
+    }
 
     const eventos: { estado: string; nota: string | null; minutosDepois: number }[] = [
       { estado: "PENDENTE", nota: "Pedido criado", minutosDepois: 0 },
@@ -492,10 +662,10 @@ function createInitialStore(): Store {
         eventos.push({ estado: "NO_LOCAL", nota: null, minutosDepois: 12 });
       }
       if (["EM_TRANSPORTE", "CONCLUIDO"].includes(c.estado)) {
-        eventos.push({ estado: "EM_TRANSPORTE", nota: null, minutosDepois: 20 });
+        eventos.push({ estado: "EM_TRANSPORTE", nota: null, minutosDepois: 18 });
       }
       if (c.estado === "CONCLUIDO") {
-        eventos.push({ estado: "CONCLUIDO", nota: null, minutosDepois: 35 });
+        eventos.push({ estado: "CONCLUIDO", nota: null, minutosDepois: 32 });
       }
     }
     if (c.estado === "CANCELADO") {
@@ -537,6 +707,9 @@ function createInitialStore(): Store {
     criadoEm: diasAtras(2),
   });
 
+  globalForMock.__rjDemoLiveCamioes = demoLiveCamioes;
+  globalForMock.__rjDemoLivePedidos = demoLivePedidos;
+
   return store;
 }
 
@@ -544,7 +717,45 @@ function getStore(): Store {
   if (!globalForMock.__rjMockDb) {
     globalForMock.__rjMockDb = createInitialStore();
   }
-  return globalForMock.__rjMockDb;
+  const store = globalForMock.__rjMockDb;
+  const agoraMs = Date.now();
+
+  // Mantém o sinal de GPS dos camiões demo que continuam online e a solicitação pendente demo viva
+  const liveCamioes = globalForMock.__rjDemoLiveCamioes;
+  if (liveCamioes) {
+    for (const c of store.camiao) {
+      if (
+        liveCamioes.has(c.id) &&
+        c.activo === true &&
+        c.disponivel === true &&
+        c.partilhaLocalizacao === true &&
+        c.motoristaId
+      ) {
+        const ts =
+          c.localizacaoActualizadaEm instanceof Date
+            ? c.localizacaoActualizadaEm.getTime()
+            : 0;
+        if (agoraMs - ts > 60_000) {
+          c.localizacaoActualizadaEm = new Date(agoraMs - 10_000);
+        }
+      }
+    }
+  }
+
+  const livePedidos = globalForMock.__rjDemoLivePedidos;
+  if (livePedidos) {
+    for (const p of store.pedido) {
+      if (livePedidos.has(p.id) && p.estado === "PENDENTE") {
+        const ts = p.criadoEm instanceof Date ? p.criadoEm.getTime() : 0;
+        if (agoraMs - ts > 90_000) {
+          p.criadoEm = new Date(agoraMs - 25_000);
+          p.actualizadoEm = p.criadoEm;
+        }
+      }
+    }
+  }
+
+  return store;
 }
 
 type RelationMeta = {

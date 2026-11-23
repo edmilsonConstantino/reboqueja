@@ -41,6 +41,7 @@ type Rascunho = {
   destinoEndereco?: string | null;
   tipoProblema: string;
   tipoVeiculo: string;
+  detalhesVeiculo?: string | null;
   observacoes?: string | null;
 };
 
@@ -260,7 +261,8 @@ export default function NovoPedido() {
 
         <h1 className="text-lg font-extrabold">Veículos de reboque disponíveis</h1>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 mb-3">
-          {LABEL_PROBLEMA[rascunho.tipoProblema]} · {LABEL_VEICULO[rascunho.tipoVeiculo]}
+          {LABEL_PROBLEMA[rascunho.tipoProblema]} · {LABEL_VEICULO[rascunho.tipoVeiculo] ?? rascunho.tipoVeiculo}
+          {rascunho.detalhesVeiculo ? ` (${rascunho.detalhesVeiculo})` : ""}
           {rascunho.destinoEndereco ? ` · Destino: ${rascunho.destinoEndereco}` : " · Sem destino definido"}
         </p>
 
@@ -476,6 +478,12 @@ export default function NovoPedido() {
                 <span className="text-neutral-500">Recolha:</span>{" "}
                 <b>{rascunho.origemEndereco}</b>
               </p>
+              {rascunho.detalhesVeiculo && (
+                <p>
+                  <span className="text-neutral-500">Detalhes do veículo:</span>{" "}
+                  <b>{rascunho.detalhesVeiculo}</b>
+                </p>
+              )}
               <p>
                 <span className="text-neutral-500">Destino:</span>{" "}
                 <b>{rascunho.destinoEndereco || "Não indicado"}</b>

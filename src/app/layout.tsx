@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ProvedorTema } from "@/components/ProvedorTema";
+import { ChatAssistente } from "@/components/ChatAssistente";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -58,7 +59,10 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: temaScript }} />
       </head>
       <body className="font-sans">
-        <ProvedorTema>{children}</ProvedorTema>
+        <ProvedorTema>
+          {children}
+          <ChatAssistente />
+        </ProvedorTema>
       </body>
     </html>
   );

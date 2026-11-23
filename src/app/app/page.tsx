@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mapa, type MarcadorMapa } from "@/components/Mapa";
 import { usarTema } from "@/components/ProvedorTema";
-import { CENTRO_MATOLA, TIPOS_PROBLEMA, TIPOS_VEICULO } from "@/lib/constants";
+import { CENTRO_MATOLA, TIPOS_PROBLEMA, TIPOS_VEICULO_PEDIDO } from "@/lib/constants";
 import { estaNaMatola, type LatLng } from "@/lib/geo";
 
 type Passo = "local" | "detalhes";
@@ -96,6 +96,7 @@ export default function AppCliente() {
   // Detalhes
   const [tipoProblema, setTipoProblema] = useState("AVARIA_MECANICA");
   const [tipoVeiculo, setTipoVeiculo] = useState("LIGEIRO");
+  const [detalhesVeiculo, setDetalhesVeiculo] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
   const formRef = useRef<HTMLDivElement>(null);
@@ -241,6 +242,7 @@ export default function AppCliente() {
         destinoEndereco: destino ? destino.label : null,
         tipoProblema,
         tipoVeiculo,
+        detalhesVeiculo: tipoVeiculo === "OUTRO" ? detalhesVeiculo.trim() : "",
         observacoes,
       })
     );
@@ -575,13 +577,28 @@ export default function AppCliente() {
                   className={campoSelect}
                   style={{ colorScheme: tema === "escuro" ? "dark" : "light" }}
                 >
-                  {TIPOS_VEICULO.map((t) => (
+                  {TIPOS_VEICULO_PEDIDO.map((t) => (
                     <option key={t.value} value={t.value}>
                       {t.label}
                     </option>
                   ))}
                 </select>
               </label>
+              {tipoVeiculo === "OUTRO" && (
+                <label className="block sm:col-span-2">
+                  <Rotulo>Detalhes do veículo (opcional — pode escrever qualquer detalhe)</Rotulo>
+                  <textarea
+                    rows={2}
+                    value={detalhesVeiculo}
+                    onChange={(e) => setDetalhesVeiculo(e.target.value)}
+                    placeholder="Não tem a certeza da categoria? Descreva aqui (ex.: marca, cor, carrinha de caixa aberta, mota de carga, tamanho aproximado…)"
+                    className={`${campo} py-3 min-h-[76px] resize-y`}
+                  />
+                  <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
+                    Mesmo que não saiba o tipo técnico, esta descrição ajuda a empresa a enviar o reboque certo.
+                  </span>
+                </label>
+              )}
               <label className="block sm:col-span-2">
                 <Rotulo>Observações (opcional)</Rotulo>
                 <input

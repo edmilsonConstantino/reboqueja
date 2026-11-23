@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { exigirPapel } from "@/lib/auth";
 import { ok, erro, tratarErroApi } from "@/lib/api";
+import { ESTADOS_EM_CURSO } from "@/lib/condutor";
 import { schemaUtilizadorActivo } from "@/lib/validations";
 import type { NextRequest } from "next/server";
 
@@ -44,6 +45,25 @@ export async function PATCH(req: NextRequest) {
 
     if (id === sessao.id) {
       return erro("Não pode desactivar a sua própria conta.", 409);
+    }
+
+    if (!activo) {
+      const camiaoDoCondutor = await prisma.camiao.findFirst({
+        where: { motoristaId: id },
+        select: { id: true },
+      });
+      if (camiaoDoCondutor) {
+        const emCurso = await prisma.pedido.findFirst({
+          where: { camiaoId: camiaoDoCondutor.id, estado: { in: [...ESTADOS_EM_CURSO] } },
+          select: { id: true },
+        });
+        if (emCurso) {
+          return erro(
+            "Não é possível desactivar este condutor enquanto executa um serviço em curso.",
+            409
+          );
+        }
+      }
     }
 
     await prisma.utilizador.update({ where: { id }, data: { activo } });

@@ -27,7 +27,9 @@ export async function GET(req: NextRequest) {
       prisma.camiao.findMany({
         where: { empresaId: empresaId || undefined },
         include: {
-          empresa: { select: { id: true, nome: true, estadoAprovacao: true } },
+          empresa: {
+            select: { id: true, nome: true, estadoAprovacao: true, consentimentoEm: true },
+          },
           motorista: { select: { id: true, nome: true, telefone: true, email: true, activo: true } },
           _count: { select: { atribuicoes: true } },
           pedidos: {
@@ -66,6 +68,7 @@ export async function GET(req: NextRequest) {
           lng: c.lng,
           motoristaId: c.motoristaId,
           motorista: c.motorista,
+          empresa: c.empresa,
         },
         Boolean(pedidoEmCurso)
       );

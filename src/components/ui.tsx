@@ -333,7 +333,7 @@ export function BarraNavegacaoPublica() {
 
   const accaoAuth =
     pathname === "/entrar"
-      ? { href: "/registar", rotulo: "Criar conta" }
+      ? { href: "/registar", rotulo: "Registar-se" }
       : { href: "/entrar", rotulo: "Entrar" };
 
   return (

@@ -1,11 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Botao, Cartao, Entrada, Etiqueta, AvisoErro, Selector, Carregando } from "@/components/ui";
-import { LABEL_VEICULO } from "@/lib/constants-client";
-import { TIPOS_VEICULO } from "@/lib/constants";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Eye,
+  Plus,
+  Power,
+  RefreshCw,
+  Trash2,
+  Truck,
+  User,
+  UserX,
+} from "lucide-react";
+import {
+  ModalAdicionarCamiao,
+  ModalDetalhesCamiao,
+  type EmpresaResumo,
+} from "@/components/AdminGestaoCamioesModal";
+import {
+  AvisoErro,
+  Botao,
+  Carregando,
+  Cartao,
+  Etiqueta,
+  Vazio,
+} from "@/components/ui";
+import { LABEL_ESTADO, LABEL_VEICULO } from "@/lib/constants-client";
+import { formatarDataHora, formatarTelefone } from "@/lib/format";
 
-type Camiao = {
+type CamiaoEmpresa = {
   id: string;
   matricula: string;
   marca: string | null;
@@ -15,429 +37,378 @@ type Camiao = {
   motoristaNome: string;
   motoristaTelefone: string;
   activo: boolean;
-  motorista: { id: string; nome: string; telefone: string; activo: boolean } | null;
+  disponivel: boolean;
+  localizacaoValida: boolean;
+  gpsActivo: boolean;
+  localizacaoActualizadaEm: string | null;
+  estadoDisponibilidade:
+    | "DISPONIVEL"
+    | "EM_SERVICO"
+    | "INDISPONIVEL"
+    | "GPS_EXPIRADO"
+    | "SEM_CONDUTOR"
+    | "INACTIVO";
+  totalAtribuicoes: number;
+  pedidoActivo: {
+    id: string;
+    estado: string;
+    clienteNome: string;
+  } | null;
+  motorista: {
+    id: string;
+    nome: string;
+    telefone: string;
+    email: string | null;
+    activo: boolean;
+  } | null;
 };
 
-const vazio = {
-  matricula: "",
-  marca: "",
-  modelo: "",
-  tipo: "LIGEIRO",
-  capacidade: "",
-  motoristaNome: "",
-  motoristaTelefone: "",
-  activo: true,
+const LABEL_DISPONIBILIDADE: Record<
+  CamiaoEmpresa["estadoDisponibilidade"],
+  { texto: string; cor: "verde" | "azul" | "amarelo" | "cinza" | "vermelho" }
+> = {
+  DISPONIVEL: { texto: "Disponível", cor: "verde" },
+  EM_SERVICO: { texto: "Em serviço", cor: "azul" },
+  SEM_CONDUTOR: { texto: "Sem condutor", cor: "amarelo" },
+  GPS_EXPIRADO: { texto: "GPS expirado", cor: "amarelo" },
+  INDISPONIVEL: { texto: "Indisponível", cor: "cinza" },
+  INACTIVO: { texto: "Inactivo", cor: "vermelho" },
 };
 
 export default function Camioes() {
-  const [camioes, setCamioes] = useState<Camiao[] | null>(null);
-  const [novo, setNovo] = useState({ ...vazio });
+  const [empresa, setEmpresa] = useState<EmpresaResumo | null>(null);
+  const [camioes, setCamioes] = useState<CamiaoEmpresa[] | null>(null);
   const [erroMsg, setErroMsg] = useState("");
-  const [aSalvar, setASalvar] = useState(false);
-  const [editando, setEditando] = useState<string | null>(null);
-  const [edicao, setEdicao] = useState({ ...vazio });
+  const [modalAdicionarAberto, setModalAdicionarAberto] = useState(false);
+  const [camiaoDetalhesId, setCamiaoDetalhesId] = useState<string | null>(null);
+  const [aAlternarId, setAAlternarId] = useState<string | null>(null);
   const [confirmarEliminarId, setConfirmarEliminarId] = useState<string | null>(null);
-  const [confirmarRemoverId, setConfirmarRemoverId] = useState<string | null>(null);
+  const [aEliminarId, setAEliminarId] = useState<string | null>(null);
 
-  const carregar = async () => {
-    const res = await fetch("/api/empresa/camioes", { cache: "no-store" });
-    const d = await res.json();
-    setCamioes(d.camioes || []);
-  };
+  const carregar = useCallback(async () => {
+    try {
+      const res = await fetch("/api/empresa/camioes", { cache: "no-store" });
+      const d = await res.json();
+      if (!res.ok) {
+        setErroMsg(d.erro || "Não foi possível carregar os camiões.");
+        return;
+      }
+      setEmpresa(d.empresa ?? null);
+      setCamioes(d.camioes || []);
+    } catch {
+      setErroMsg("Erro de rede ao carregar camiões.");
+    }
+  }, []);
 
   useEffect(() => {
     carregar();
-  }, []);
+    if (modalAdicionarAberto || camiaoDetalhesId || confirmarEliminarId) return;
+    const t = setInterval(carregar, 12000);
+    return () => clearInterval(t);
+  }, [carregar, modalAdicionarAberto, camiaoDetalhesId, confirmarEliminarId]);
 
-  const criar = async () => {
-    setASalvar(true);
+  const alternarActivo = async (c: CamiaoEmpresa) => {
     setErroMsg("");
+    setAAlternarId(c.id);
     try {
       const res = await fetch("/api/empresa/camioes", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(novo),
+        body: JSON.stringify({ id: c.id, activo: !c.activo }),
       });
       const d = await res.json();
       if (!res.ok) {
-        setErroMsg(d.erro || "Erro ao criar camião.");
+        setErroMsg(d.erro || "Não foi possível alterar o estado do camião.");
         return;
       }
-      setNovo({ ...vazio });
       await carregar();
+    } catch {
+      setErroMsg("Erro de rede ao actualizar estado do camião.");
     } finally {
-      setASalvar(false);
+      setAAlternarId(null);
     }
-  };
-
-  const gravarEdicao = async (id: string) => {
-    setErroMsg("");
-    const res = await fetch("/api/empresa/camioes", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, ...edicao }),
-    });
-    const d = await res.json();
-    if (!res.ok) {
-      setErroMsg(d.erro || "Erro ao gravar.");
-      return;
-    }
-    setEditando(null);
-    await carregar();
-  };
-
-  const alternarActivo = async (c: Camiao) => {
-    await fetch("/api/empresa/camioes", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: c.id, activo: !c.activo }),
-    });
-    await carregar();
   };
 
   const eliminar = async (id: string) => {
-    await fetch(`/api/empresa/camioes?id=${id}`, { method: "DELETE" });
-    setConfirmarEliminarId(null);
-    await carregar();
-  };
-
-  // ---- Conta de acesso do condutor (login em /condutor) ----
-  const [acesso, setAcesso] = useState<Record<string, { nome: string; telefone: string; senha: string }>>({});
-  const [aCriarAcesso, setACriarAcesso] = useState<string | null>(null);
-
-  const criarAcesso = async (c: Camiao) => {
-    const dados = acesso[c.id] || {
-      nome: c.motoristaNome,
-      telefone: c.motoristaTelefone,
-      senha: "",
-    };
     setErroMsg("");
-    setACriarAcesso(c.id);
+    setAEliminarId(id);
     try {
-      const res = await fetch("/api/empresa/condutores", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome: dados.nome || c.motoristaNome,
-          telefone: dados.telefone || c.motoristaTelefone,
-          senha: dados.senha,
-          camiaoId: c.id,
-        }),
+      const res = await fetch(`/api/empresa/camioes?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
       });
       const d = await res.json();
       if (!res.ok) {
-        setErroMsg(d.erro || "Erro ao criar o acesso do condutor.");
+        setErroMsg(d.erro || "Não foi possível eliminar o camião.");
         return;
       }
-      setAcesso((a) => ({ ...a, [c.id]: { nome: "", telefone: "", senha: "" } }));
+      setConfirmarEliminarId(null);
       await carregar();
+    } catch {
+      setErroMsg("Erro de rede ao eliminar camião.");
     } finally {
-      setACriarAcesso(null);
+      setAEliminarId(null);
     }
   };
 
-  const removerAcesso = async (motoristaId: string) => {
-    await fetch(`/api/empresa/condutores?id=${motoristaId}`, { method: "DELETE" });
-    setConfirmarRemoverId(null);
-    await carregar();
-  };
-
-  if (!camioes) return <div className="p-6"><Carregando /></div>;
+  if (!camioes) {
+    return (
+      <div className="p-6">
+        {erroMsg ? <AvisoErro>{erroMsg}</AvisoErro> : <Carregando />}
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
-      <h1 className="text-2xl font-extrabold">Camiões</h1>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      {/* Cabeçalho com botão Adicionar Camião */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <span className="w-11 h-11 shrink-0 rounded-2xl bg-primary-400/15 text-amber-700 dark:text-primary-400 grid place-items-center ring-1 ring-primary-400/25">
+            <Truck className="w-5 h-5" />
+          </span>
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Camiões
+            </h1>
+            <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+              {empresa?.nome ? `${empresa.nome} · ` : ""}
+              {camioes.length} camião(ões) registado(s) na frota.
+            </p>
+          </div>
+        </div>
 
-      {/* Novo camião */}
-      <Cartao className="p-4 space-y-3">
-        <h2 className="font-bold">Adicionar camião</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <Entrada
-            rotulo="Matrícula"
-            placeholder="RBM-001-MC"
-            value={novo.matricula}
-            onChange={(e) => setNovo({ ...novo, matricula: e.target.value.toUpperCase() })}
-          />
-          <Selector
-            rotulo="Tipo"
-            value={novo.tipo}
-            onChange={(e) => setNovo({ ...novo, tipo: e.target.value })}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={carregar}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] text-sm font-semibold hover:border-amber-400 transition"
           >
-            {TIPOS_VEICULO.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
-            ))}
-          </Selector>
-          <Entrada
-            rotulo="Marca"
-            placeholder="Ex.: Volvo, Isuzu"
-            value={novo.marca}
-            onChange={(e) => setNovo({ ...novo, marca: e.target.value })}
-          />
-          <Entrada
-            rotulo="Modelo"
-            placeholder="Ex.: FH 460"
-            value={novo.modelo}
-            onChange={(e) => setNovo({ ...novo, modelo: e.target.value })}
-          />
-        </div>
-        <Entrada
-          rotulo="Capacidade (opcional)"
-          placeholder="Ex.: Até 2 t"
-          value={novo.capacidade || ""}
-          onChange={(e) => setNovo({ ...novo, capacidade: e.target.value })}
-        />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Entrada
-            rotulo="Motorista (opcional)"
-            placeholder="Nome do condutor"
-            value={novo.motoristaNome}
-            onChange={(e) => setNovo({ ...novo, motoristaNome: e.target.value })}
-          />
-          <Entrada
-            rotulo="Telefone do condutor (opcional)"
-            placeholder="+258 87 000 0000"
-            inputMode="tel"
-            value={novo.motoristaTelefone}
-            onChange={(e) => setNovo({ ...novo, motoristaTelefone: e.target.value })}
-          />
-        </div>
-        <AvisoErro>{erroMsg}</AvisoErro>
-        <Botao className="w-full" onClick={criar} disabled={aSalvar}>
-          {aSalvar ? "A adicionar…" : "+ Adicionar camião"}
-        </Botao>
-      </Cartao>
+            <RefreshCw className="w-4 h-4" />
+            <span className="hidden sm:inline">Actualizar</span>
+          </button>
 
-      {/* Lista */}
-      {camioes.length === 0 ? (
-        <Cartao className="p-4 text-sm text-neutral-500">
-          Ainda não tem camiões. Adicione o primeiro acima — sem camiões activos com condutor a
-          empresa não recebe pedidos.
-        </Cartao>
-      ) : (
-        <div className="space-y-3">
-          {camioes.map((c) => {
-            const marcaModelo = [c.marca, c.modelo].filter(Boolean).join(" ");
-            return (
-              <Cartao key={c.id} className="p-4">
-                {editando === c.id ? (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <Entrada
-                        rotulo="Matrícula"
-                        value={edicao.matricula}
-                        onChange={(e) => setEdicao({ ...edicao, matricula: e.target.value.toUpperCase() })}
-                      />
-                      <Selector
-                        rotulo="Tipo"
-                        value={edicao.tipo}
-                        onChange={(e) => setEdicao({ ...edicao, tipo: e.target.value })}
-                      >
-                        {TIPOS_VEICULO.map((t) => (
-                          <option key={t.value} value={t.value}>{t.label}</option>
-                        ))}
-                      </Selector>
-                      <Entrada
-                        rotulo="Marca"
-                        value={edicao.marca}
-                        onChange={(e) => setEdicao({ ...edicao, marca: e.target.value })}
-                      />
-                      <Entrada
-                        rotulo="Modelo"
-                        value={edicao.modelo}
-                        onChange={(e) => setEdicao({ ...edicao, modelo: e.target.value })}
-                      />
-                    </div>
-                    <Entrada
-                      rotulo="Motorista"
-                      value={edicao.motoristaNome}
-                      onChange={(e) => setEdicao({ ...edicao, motoristaNome: e.target.value })}
-                    />
-                    <Entrada
-                      rotulo="Telefone"
-                      value={edicao.motoristaTelefone}
-                      onChange={(e) => setEdicao({ ...edicao, motoristaTelefone: e.target.value })}
-                    />
-                    <div className="flex gap-2">
-                      <Botao className="flex-1" onClick={() => gravarEdicao(c.id)}>Gravar</Botao>
-                      <Botao variante="contorno" className="flex-1" onClick={() => setEditando(null)}>Cancelar</Botao>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold">
+          <Botao
+            type="button"
+            onClick={() => {
+              setErroMsg("");
+              setModalAdicionarAberto(true);
+            }}
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>Adicionar Camião</span>
+          </Botao>
+        </div>
+      </div>
+
+      <AvisoErro>{erroMsg}</AvisoErro>
+
+      {/* Listagem */}
+      <Cartao className="overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-2">
+          <p className="font-bold text-sm text-slate-900 dark:text-white">
+            Frota da empresa ({camioes.length})
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Clique em <b>Detalhes</b> para gerir o condutor, consultar o histórico de atribuições ou editar o veículo.
+          </p>
+        </div>
+
+        {camioes.length === 0 ? (
+          <Vazio
+            titulo="Ainda não tem camiões registados"
+            descricao="Adicione o primeiro camião da sua empresa e associe um condutor activo para começar a receber pedidos."
+            accao={
+              <Botao
+                type="button"
+                onClick={() => {
+                  setErroMsg("");
+                  setModalAdicionarAberto(true);
+                }}
+              >
+                <Plus className="w-4 h-4" />
+                Adicionar Camião
+              </Botao>
+            }
+          />
+        ) : (
+          <>
+            {/* Cabeçalho desktop */}
+            <div className="hidden md:grid grid-cols-[minmax(0,1.2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.6fr)_auto] gap-4 px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/[0.07]">
+              <span>Matrícula</span>
+              <span>Marca e modelo</span>
+              <span>Estado</span>
+              <span>Condutor associado</span>
+              <span className="text-right">Acções</span>
+            </div>
+
+            <div className="divide-y divide-slate-200 dark:divide-white/[0.07]">
+              {camioes.map((c) => {
+                const disp = LABEL_DISPONIBILIDADE[c.estadoDisponibilidade];
+                const marcaModelo = [c.marca, c.modelo].filter(Boolean).join(" ");
+                const temPedidoActivo = Boolean(c.pedidoActivo);
+
+                return (
+                  <div
+                    key={c.id}
+                    className="grid md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.6fr)_auto] gap-x-4 gap-y-3 items-center px-5 py-4 hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition"
+                  >
+                    {/* Matrícula e tipo */}
+                    <div className="min-w-0">
+                      <p className="font-extrabold text-base text-slate-900 dark:text-white truncate">
                         {c.matricula}
-                        {marcaModelo ? ` · ${marcaModelo}` : ""}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         {LABEL_VEICULO[c.tipo] || c.tipo}
                         {c.capacidade ? ` · ${c.capacidade}` : ""}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {c.motorista
-                          ? `👤 ${c.motorista.nome} · ${c.motorista.telefone}`
-                          : c.motoristaNome
-                            ? `👤 ${c.motoristaNome} · ${c.motoristaTelefone}`
-                            : "Sem condutor associado"}
-                      </p>
+                    </div>
 
-                      {c.motorista ? (
-                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20 px-3 py-2">
-                          <div className="min-w-0">
-                            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                              Acesso do condutor
-                            </p>
-                            <p className="text-xs text-neutral-600 dark:text-neutral-300 truncate">
-                              {c.motorista.nome} · {c.motorista.telefone} ·{" "}
-                              {c.motorista.activo ? "activo" : "desactivado"}
-                            </p>
-                          </div>
-                          {confirmarRemoverId === c.motorista.id ? (
-                            <div className="flex items-center gap-1.5">
-                              <button
-                                className="text-xs font-bold bg-red-600 text-white rounded-lg px-2.5 py-1"
-                                onClick={() => removerAcesso(c.motorista!.id)}
-                              >
-                                Confirmar
-                              </button>
-                              <button
-                                className="text-xs font-semibold px-2 py-1"
-                                onClick={() => setConfirmarRemoverId(null)}
-                              >
-                                Cancelar
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              className="text-xs font-bold text-red-600 dark:text-red-400 px-2 py-1 min-h-[32px]"
-                              onClick={() => setConfirmarRemoverId(c.motorista!.id)}
-                            >
-                              Remover acesso
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="mt-3 rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-3 space-y-2">
-                          <p className="text-xs font-bold">Conta de acesso do condutor</p>
-                          <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                            Crie o login que o condutor usa para entrar e aguardar solicitações.
-                          </p>
-                          <div className="grid sm:grid-cols-3 gap-2">
-                            <Entrada
-                              rotulo="Nome"
-                              placeholder="Nome completo"
-                              value={acesso[c.id]?.nome ?? c.motoristaNome}
-                              onChange={(e) =>
-                                setAcesso({
-                                  ...acesso,
-                                  [c.id]: {
-                                    telefone: acesso[c.id]?.telefone ?? c.motoristaTelefone,
-                                    senha: acesso[c.id]?.senha ?? "",
-                                    nome: e.target.value,
-                                  },
-                                })
-                              }
-                            />
-                            <Entrada
-                              rotulo="Telefone"
-                              inputMode="tel"
-                              placeholder="+258 87 000 0000"
-                              value={acesso[c.id]?.telefone ?? c.motoristaTelefone}
-                              onChange={(e) =>
-                                setAcesso({
-                                  ...acesso,
-                                  [c.id]: {
-                                    nome: acesso[c.id]?.nome ?? c.motoristaNome,
-                                    senha: acesso[c.id]?.senha ?? "",
-                                    telefone: e.target.value,
-                                  },
-                                })
-                              }
-                            />
-                            <Entrada
-                              rotulo="Palavra-passe inicial"
-                              type="password"
-                              placeholder="mínimo 4 caracteres"
-                              value={acesso[c.id]?.senha ?? ""}
-                              onChange={(e) =>
-                                setAcesso({
-                                  ...acesso,
-                                  [c.id]: {
-                                    nome: acesso[c.id]?.nome ?? c.motoristaNome,
-                                    telefone: acesso[c.id]?.telefone ?? c.motoristaTelefone,
-                                    senha: e.target.value,
-                                  },
-                                })
-                              }
-                            />
-                          </div>
-                          <Botao
-                            className="w-full"
-                            onClick={() => criarAcesso(c)}
-                            disabled={aCriarAcesso === c.id}
-                          >
-                            {aCriarAcesso === c.id ? "A criar…" : "Criar acesso do condutor"}
-                          </Botao>
-                        </div>
+                    {/* Marca e modelo */}
+                    <div className="min-w-0">
+                      <span className="md:hidden text-[11px] uppercase tracking-wide text-slate-400 block">
+                        Marca e modelo
+                      </span>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                        {marcaModelo || "Marca/modelo por definir"}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                        {c.gpsActivo
+                          ? `GPS activo${c.localizacaoActualizadaEm ? ` · ${formatarDataHora(c.localizacaoActualizadaEm)}` : ""}`
+                          : "Sem GPS activo"}
+                      </p>
+                    </div>
+
+                    {/* Estado */}
+                    <div>
+                      <span className="md:hidden text-[11px] uppercase tracking-wide text-slate-400 block mb-1">
+                        Estado
+                      </span>
+                      <Etiqueta cor={disp.cor}>{disp.texto}</Etiqueta>
+                      {c.pedidoActivo && (
+                        <p className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 mt-1 truncate">
+                          {LABEL_ESTADO[c.pedidoActivo.estado] || c.pedidoActivo.estado}:{" "}
+                          {c.pedidoActivo.clienteNome}
+                        </p>
                       )}
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <button onClick={() => alternarActivo(c)}>
-                        <Etiqueta cor={c.activo ? "verde" : "cinza"}>
-                          {c.activo ? "Activo" : "Inactivo"}
-                        </Etiqueta>
+
+                    {/* Condutor actualmente associado */}
+                    <div className="min-w-0">
+                      <span className="md:hidden text-[11px] uppercase tracking-wide text-slate-400 block">
+                        Condutor associado
+                      </span>
+                      {c.motorista ? (
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white inline-flex items-center gap-1.5 truncate max-w-full">
+                            <User className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            <span className="truncate">{c.motorista.nome}</span>
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                            {formatarTelefone(c.motorista.telefone)}
+                            {!c.motorista.activo
+                              ? " · Conta inactiva"
+                              : c.estadoDisponibilidade === "EM_SERVICO"
+                                ? " · Em serviço"
+                                : c.disponivel && c.localizacaoValida
+                                  ? " · Disponível"
+                                  : c.disponivel
+                                    ? " · GPS expirado"
+                                    : " · Indisponível"}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 inline-flex items-center gap-1.5">
+                          <UserX className="w-3.5 h-3.5 shrink-0" />
+                          <span>Sem condutor associado</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Acções */}
+                    <div className="flex flex-wrap items-center justify-start md:justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCamiaoDetalhesId(c.id)}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-[#0B1120] hover:border-amber-400 text-xs font-bold text-slate-800 dark:text-slate-100 transition"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-amber-600 dark:text-primary-400" />
+                        <span>Detalhes</span>
                       </button>
-                      <div className="flex gap-1 text-xs font-semibold">
-                        <button
-                          className="text-primary-600 px-2 py-1"
-                          onClick={() => {
-                            setEditando(c.id);
-                            setEdicao({
-                              matricula: c.matricula,
-                              marca: c.marca || "",
-                              modelo: c.modelo || "",
-                              tipo: c.tipo,
-                              capacidade: c.capacidade || "",
-                              motoristaNome: c.motoristaNome,
-                              motoristaTelefone: c.motoristaTelefone,
-                              activo: c.activo,
-                            });
-                          }}
-                        >
-                          Editar
-                        </button>
-                        {confirmarEliminarId === c.id ? (
-                          <div className="flex items-center gap-1">
-                            <button
-                              className="text-white bg-red-600 rounded px-2 py-0.5"
-                              onClick={() => eliminar(c.id)}
-                            >
-                              Sim
-                            </button>
-                            <button
-                              className="px-1.5 py-0.5"
-                              onClick={() => setConfirmarEliminarId(null)}
-                            >
-                              Não
-                            </button>
-                          </div>
-                        ) : (
+
+                      <button
+                        type="button"
+                        onClick={() => alternarActivo(c)}
+                        disabled={
+                          aAlternarId === c.id ||
+                          c.estadoDisponibilidade === "EM_SERVICO" ||
+                          (c.activo && temPedidoActivo)
+                        }
+                        title={c.activo ? "Desactivar camião" : "Activar camião"}
+                        aria-label={c.activo ? "Desactivar camião" : "Activar camião"}
+                        className={`w-9 h-9 rounded-xl grid place-items-center border transition disabled:opacity-40 ${
+                          c.activo
+                            ? "border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10"
+                            : "border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
+                        }`}
+                      >
+                        <Power className="w-4 h-4" />
+                      </button>
+
+                      {confirmarEliminarId === c.id ? (
+                        <div className="flex items-center gap-1">
                           <button
-                            className="text-red-500 px-2 py-1"
-                            onClick={() => setConfirmarEliminarId(c.id)}
+                            type="button"
+                            onClick={() => eliminar(c.id)}
+                            disabled={aEliminarId === c.id}
+                            className="px-2.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition disabled:opacity-50"
                           >
-                            Eliminar
+                            {aEliminarId === c.id ? "…" : "Confirmar"}
                           </button>
-                        )}
-                      </div>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmarEliminarId(null)}
+                            className="px-2 py-1.5 rounded-xl border border-slate-200 dark:border-white/15 text-xs font-semibold"
+                          >
+                            Não
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmarEliminarId(c.id)}
+                          disabled={temPedidoActivo}
+                          title="Eliminar camião"
+                          aria-label="Eliminar camião"
+                          className="w-9 h-9 rounded-xl grid place-items-center border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-40 transition"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
-                )}
-              </Cartao>
-            );
-          })}
-        </div>
-      )}
+                );
+              })}
+            </div>
+          </>
+        )}
+      </Cartao>
+
+      {/* Modal Adicionar Camião */}
+      <ModalAdicionarCamiao
+        aberto={modalAdicionarAberto}
+        empresaFixa={empresa}
+        apiBase="/api/empresa"
+        aoFechar={() => setModalAdicionarAberto(false)}
+        aoGuardar={carregar}
+      />
+
+      {/* Modal Detalhes, Condutor e Histórico */}
+      <ModalDetalhesCamiao
+        camiaoId={camiaoDetalhesId}
+        apiBase="/api/empresa"
+        aoFechar={() => setCamiaoDetalhesId(null)}
+        aoActualizarLista={carregar}
+      />
     </div>
   );
 }

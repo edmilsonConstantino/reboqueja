@@ -231,6 +231,7 @@ export async function GET() {
         tipo: c.tipo,
         motoristaNome: c.motorista?.nome ?? (c.motoristaNome || ""),
         temContaCondutor: Boolean(c.motoristaId),
+        motoristaActivo: Boolean(c.motorista?.activo),
         activo: c.activo,
         disponivel: Boolean(c.disponivel),
         localizacaoValida: localizacaoActualizada(c),

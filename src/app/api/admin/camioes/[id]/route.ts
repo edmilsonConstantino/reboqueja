@@ -19,7 +19,14 @@ export async function GET(
       where: { id: params.id },
       include: {
         empresa: {
-          select: { id: true, nome: true, endereco: true, telefone: true, estadoAprovacao: true },
+          select: {
+            id: true,
+            nome: true,
+            endereco: true,
+            telefone: true,
+            estadoAprovacao: true,
+            consentimentoEm: true,
+          },
         },
         motorista: {
           select: {
@@ -100,6 +107,7 @@ export async function GET(
         lng: camiao.lng,
         motoristaId: camiao.motoristaId,
         motorista: camiao.motorista,
+        empresa: camiao.empresa,
       },
       Boolean(pedidoEmCurso)
     );
@@ -185,6 +193,25 @@ export async function PATCH(
       });
       if (duplicada) {
         return erro(`Já existe outro camião com a matrícula ${normalizada}.`, 409);
+      }
+    }
+
+    if (dados.activo === false) {
+      const pedidoEmCurso = await prisma.pedido.findFirst({
+        where: {
+          camiaoId: existente.id,
+          OR: [
+            { estado: { in: [...ESTADOS_EM_CURSO] } },
+            { estado: "PENDENTE", criadoEm: { gte: new Date(Date.now() - EXPIRACAO_PEDIDO_MS) } },
+          ],
+        },
+        select: { id: true },
+      });
+      if (pedidoEmCurso) {
+        return erro(
+          "Não é possível desactivar este camião enquanto tem um serviço em curso ou solicitação pendente.",
+          409
+        );
       }
     }
 

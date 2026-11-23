@@ -22,6 +22,10 @@ export function estadoOperacionalCamiao(
     lng: number;
     motoristaId?: string | null;
     motorista?: { id: string; activo: boolean } | null;
+    empresa?: {
+      estadoAprovacao: string;
+      consentimentoEm?: Date | string | null;
+    } | null;
   },
   emCurso: boolean
 ): EstadoFrota {
@@ -29,6 +33,12 @@ export function estadoOperacionalCamiao(
   if (!camiao.activo) return "INACTIVO";
   if (!camiao.motoristaId || !camiao.motorista) return "SEM_CONDUTOR";
   if (!camiao.motorista.activo) return "INACTIVO";
+  if (
+    camiao.empresa &&
+    (camiao.empresa.estadoAprovacao !== "APROVADA" || !camiao.empresa.consentimentoEm)
+  ) {
+    return "INDISPONIVEL";
+  }
   if (camiao.disponivel && localizacaoActualizada(camiao)) return "DISPONIVEL";
   if (camiao.disponivel) return "GPS_EXPIRADO";
   return "INDISPONIVEL";
@@ -56,7 +66,9 @@ export async function atribuirCondutorAoCamiao(params: {
   return prisma.$transaction(async (tx) => {
     const camiao = await tx.camiao.findUnique({
       where: { id: camiaoId },
-      include: { motorista: { select: { id: true, nome: true } } },
+      include: {
+        motorista: { select: { id: true, nome: true, empresaCondutorId: true } },
+      },
     });
     if (!camiao) {
       throw new ErroApi("Camião não encontrado.", 404);
@@ -135,6 +147,14 @@ export async function atribuirCondutorAoCamiao(params: {
       }
 
       novoMotorista = condutor;
+    }
+
+    // Garante que o condutor anterior mantém o vínculo à empresa antes de ser desassociado
+    if (camiao.motorista && !camiao.motorista.empresaCondutorId) {
+      await tx.utilizador.update({
+        where: { id: camiao.motorista.id },
+        data: { empresaCondutorId: camiao.empresaId },
+      });
     }
 
     // Encerra qualquer atribuição aberta mantendo o registo histórico e os dados do condutor anterior

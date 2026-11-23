@@ -130,9 +130,10 @@ export default function AdminFrota() {
 
   useEffect(() => {
     carregar();
+    if (modalAdicionarAberto || camiaoDetalhesId) return;
     const t = setInterval(carregar, 10000);
     return () => clearInterval(t);
-  }, [carregar]);
+  }, [carregar, modalAdicionarAberto, camiaoDetalhesId]);
 
   const veiculosVisiveis = useMemo(() => {
     const lista = dados?.veiculos ?? [];
@@ -445,7 +446,15 @@ export default function AdminFrota() {
                           </p>
                           <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                             {formatarTelefone(v.condutor.telefone)}
-                            {!v.condutor.activo ? " · Conta inactiva" : ""}
+                            {!v.condutor.activo
+                              ? " · Conta inactiva"
+                              : v.estadoDisponibilidade === "EM_SERVICO"
+                                ? " · Em serviço"
+                                : v.disponivel && v.localizacaoValida
+                                  ? " · Disponível"
+                                  : v.disponivel
+                                    ? " · GPS expirado"
+                                    : " · Indisponível"}
                           </p>
                         </div>
                       ) : (

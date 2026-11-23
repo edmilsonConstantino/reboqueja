@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   Building2,
@@ -127,17 +127,23 @@ const LABEL_ESTADO_CAMIAO: Record<
   INACTIVO: { texto: "Inactivo", cor: "vermelho" },
 };
 
+export type ApiBaseGestaoCamioes = "/api/admin" | "/api/empresa";
+
+const EMPRESAS_VAZIO: EmpresaResumo[] = [];
+
 /* ============================================================================
  * Sub-formulário reutilizável para criar novo condutor sem perder dados do camião
  * ========================================================================== */
 function SubFormularioNovoCondutor({
   empresaId,
   empresaNome,
+  apiBase = "/api/admin",
   aoCriar,
   aoCancelar,
 }: {
   empresaId: string;
   empresaNome?: string;
+  apiBase?: ApiBaseGestaoCamioes;
   aoCriar: (novo: CondutorEmpresa) => void;
   aoCancelar: () => void;
 }) {
@@ -152,16 +158,26 @@ function SubFormularioNovoCondutor({
     setErroMsg("");
     setAGuardar(true);
     try {
-      const res = await fetch("/api/admin/condutores", {
+      const payload =
+        apiBase === "/api/admin"
+          ? {
+              empresaId,
+              nome,
+              telefone,
+              email: email.trim() || null,
+              senha,
+            }
+          : {
+              nome,
+              telefone,
+              email: email.trim() || null,
+              senha,
+            };
+
+      const res = await fetch(`${apiBase}/condutores`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresaId,
-          nome,
-          telefone,
-          email: email.trim() || null,
-          senha,
-        }),
+        body: JSON.stringify(payload),
       });
       const d = await res.json();
       if (!res.ok) {
@@ -262,14 +278,18 @@ function SubFormularioNovoCondutor({
  * ========================================================================== */
 export function ModalAdicionarCamiao({
   aberto,
-  empresas,
+  empresas = EMPRESAS_VAZIO,
   empresaInicialId,
+  empresaFixa = null,
+  apiBase = "/api/admin",
   aoFechar,
   aoGuardar,
 }: {
   aberto: boolean;
-  empresas: EmpresaResumo[];
+  empresas?: EmpresaResumo[];
   empresaInicialId?: string;
+  empresaFixa?: EmpresaResumo | null;
+  apiBase?: ApiBaseGestaoCamioes;
   aoFechar: () => void;
   aoGuardar: () => Promise<void> | void;
 }) {
@@ -290,10 +310,16 @@ export function ModalAdicionarCamiao({
   const [erroMsg, setErroMsg] = useState("");
   const [aGuardar, setAGuardar] = useState(false);
 
-  // Inicializa formulário quando o modal abre
+  const abertoAnteriorRef = useRef(false);
+
+  // Inicializa formulário apenas na transição de fechado -> aberto (não limpa dados ao actualizar lista)
   useEffect(() => {
-    if (!aberto) return;
+    const acabouDeAbrir = aberto && !abertoAnteriorRef.current;
+    abertoAnteriorRef.current = aberto;
+    if (!acabouDeAbrir) return;
+
     const inicial =
+      empresaFixa?.id ||
       empresaInicialId ||
       empresas.find((e) => e.estadoAprovacao === "APROVADA")?.id ||
       empresas[0]?.id ||
@@ -310,55 +336,63 @@ export function ModalAdicionarCamiao({
     setMostrarNovoCondutor(false);
     setSucessoCondutorMsg("");
     setErroMsg("");
-  }, [aberto, empresaInicialId, empresas]);
+  }, [aberto, empresaFixa, empresaInicialId, empresas]);
 
-  const carregarCondutoresEmpresa = useCallback(async (empId: string) => {
-    if (!empId) {
-      setCondutores([]);
-      return;
-    }
-    setACarregarCondutores(true);
-    try {
-      const res = await fetch(
-        `/api/admin/condutores?empresaId=${encodeURIComponent(empId)}`,
-        { cache: "no-store" }
-      );
-      const d = await res.json();
-      if (res.ok) setCondutores(d.condutores || []);
-    } finally {
-      setACarregarCondutores(false);
-    }
-  }, []);
+  const carregarCondutoresEmpresa = useCallback(
+    async (empId: string) => {
+      if (!empId && apiBase === "/api/admin") {
+        setCondutores([]);
+        return;
+      }
+      setACarregarCondutores(true);
+      try {
+        const url =
+          apiBase === "/api/admin"
+            ? `/api/admin/condutores?empresaId=${encodeURIComponent(empId)}`
+            : `/api/empresa/condutores`;
+        const res = await fetch(url, { cache: "no-store" });
+        const d = await res.json();
+        if (res.ok) setCondutores(d.condutores || []);
+      } finally {
+        setACarregarCondutores(false);
+      }
+    },
+    [apiBase]
+  );
 
   useEffect(() => {
-    if (aberto && empresaId) {
+    if (aberto && (empresaId || apiBase === "/api/empresa")) {
       carregarCondutoresEmpresa(empresaId);
     }
-  }, [aberto, empresaId, carregarCondutoresEmpresa]);
+  }, [aberto, empresaId, apiBase, carregarCondutoresEmpresa]);
 
   if (!aberto) return null;
 
-  const empresaSeleccionada = empresas.find((e) => e.id === empresaId);
+  const empresaSeleccionada =
+    empresaFixa ?? empresas.find((e) => e.id === empresaId);
+  const empresaEfectivaId = empresaFixa?.id || empresaId;
 
   const submeter = async (e: React.FormEvent) => {
     e.preventDefault();
     setErroMsg("");
     setAGuardar(true);
     try {
-      const res = await fetch("/api/admin/camioes", {
+      const payload = {
+        ...(apiBase === "/api/admin" ? { empresaId: empresaEfectivaId } : {}),
+        matricula,
+        marca,
+        modelo,
+        tipo,
+        capacidade: capacidade.trim() || null,
+        activo,
+        motoristaId: motoristaId || null,
+        motivo: motivo.trim() || null,
+      };
+
+      const res = await fetch(`${apiBase}/camioes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresaId,
-          matricula,
-          marca,
-          modelo,
-          tipo,
-          capacidade: capacidade.trim() || null,
-          activo,
-          motoristaId: motoristaId || null,
-          motivo: motivo.trim() || null,
-        }),
+        body: JSON.stringify(payload),
       });
       const d = await res.json();
       if (!res.ok) {
@@ -393,7 +427,9 @@ export function ModalAdicionarCamiao({
                 Adicionar Camião
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Registe os dados do veículo e associe um condutor da mesma empresa.
+                {empresaFixa
+                  ? `${empresaFixa.nome} · Registe os dados do veículo e associe um condutor.`
+                  : "Registe os dados do veículo e associe um condutor da mesma empresa."}
               </p>
             </div>
           </div>
@@ -414,25 +450,27 @@ export function ModalAdicionarCamiao({
               1. Dados do camião
             </p>
 
-            <Selector
-              rotulo="Empresa proprietária *"
-              value={empresaId}
-              onChange={(e) => {
-                setEmpresaId(e.target.value);
-                setMotoristaId("");
-                setMostrarNovoCondutor(false);
-                setSucessoCondutorMsg("");
-              }}
-              required
-            >
-              <option value="">— Seleccionar empresa —</option>
-              {empresas.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.nome}
-                  {emp.estadoAprovacao !== "APROVADA" ? ` (${emp.estadoAprovacao})` : ""}
-                </option>
-              ))}
-            </Selector>
+            {!empresaFixa && (
+              <Selector
+                rotulo="Empresa proprietária *"
+                value={empresaId}
+                onChange={(e) => {
+                  setEmpresaId(e.target.value);
+                  setMotoristaId("");
+                  setMostrarNovoCondutor(false);
+                  setSucessoCondutorMsg("");
+                }}
+                required
+              >
+                <option value="">— Seleccionar empresa —</option>
+                {empresas.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.nome}
+                    {emp.estadoAprovacao !== "APROVADA" ? ` (${emp.estadoAprovacao})` : ""}
+                  </option>
+                ))}
+              </Selector>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Entrada
@@ -500,7 +538,7 @@ export function ModalAdicionarCamiao({
                   Apenas condutores activos da empresa seleccionada e livres de outro camião podem ser atribuídos.
                 </p>
               </div>
-              {empresaId && (
+              {(empresaEfectivaId || apiBase === "/api/empresa") && (
                 <button
                   type="button"
                   onClick={() => setMostrarNovoCondutor((v) => !v)}
@@ -520,8 +558,15 @@ export function ModalAdicionarCamiao({
                     : "Condutor associado (opcional)"
                 }
                 value={motoristaId}
-                onChange={(e) => setMotoristaId(e.target.value)}
-                disabled={!empresaId || aCarregarCondutores}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "__NOVO__") {
+                    setMostrarNovoCondutor(true);
+                    return;
+                  }
+                  setMotoristaId(val);
+                }}
+                disabled={(!empresaEfectivaId && apiBase === "/api/admin") || aCarregarCondutores}
               >
                 <option value="">— Sem condutor por agora —</option>
                 {condutores.map((c) => {
@@ -537,6 +582,9 @@ export function ModalAdicionarCamiao({
                     </option>
                   );
                 })}
+                {(empresaEfectivaId || apiBase === "/api/empresa") && (
+                  <option value="__NOVO__">+ Adicionar novo condutor…</option>
+                )}
               </Selector>
 
               <Entrada
@@ -555,14 +603,17 @@ export function ModalAdicionarCamiao({
               </div>
             )}
 
-            {mostrarNovoCondutor && empresaId && (
+            {mostrarNovoCondutor && (empresaEfectivaId || apiBase === "/api/empresa") && (
               <SubFormularioNovoCondutor
-                empresaId={empresaId}
+                empresaId={empresaEfectivaId}
                 empresaNome={empresaSeleccionada?.nome}
+                apiBase={apiBase}
                 aoCancelar={() => setMostrarNovoCondutor(false)}
                 aoCriar={(novoCondutor) => {
                   setCondutores((prev) =>
-                    [...prev, novoCondutor].sort((a, b) => a.nome.localeCompare(b.nome))
+                    [...prev.filter((item) => item.id !== novoCondutor.id), novoCondutor].sort(
+                      (a, b) => a.nome.localeCompare(b.nome)
+                    )
                   );
                   setMotoristaId(novoCondutor.id);
                   setMostrarNovoCondutor(false);
@@ -594,7 +645,7 @@ export function ModalAdicionarCamiao({
             <Botao type="button" variante="contorno" onClick={aoFechar}>
               Cancelar
             </Botao>
-            <Botao type="submit" disabled={aGuardar || !empresaId}>
+            <Botao type="submit" disabled={aGuardar || (apiBase === "/api/admin" && !empresaEfectivaId)}>
               <Plus className="w-4 h-4" />
               {aGuardar ? "A registar…" : "Guardar Camião"}
             </Botao>
@@ -610,10 +661,12 @@ export function ModalAdicionarCamiao({
  * ========================================================================== */
 export function ModalDetalhesCamiao({
   camiaoId,
+  apiBase = "/api/admin",
   aoFechar,
   aoActualizarLista,
 }: {
   camiaoId: string | null;
+  apiBase?: ApiBaseGestaoCamioes;
   aoFechar: () => void;
   aoActualizarLista: () => Promise<void> | void;
 }) {
@@ -644,7 +697,7 @@ export function ModalDetalhesCamiao({
     setCarregando(true);
     setErroMsg("");
     try {
-      const res = await fetch(`/api/admin/camioes/${camiaoId}`, { cache: "no-store" });
+      const res = await fetch(`${apiBase}/camioes/${camiaoId}`, { cache: "no-store" });
       const d = (await res.json()) as DetalheCamiaoResposta & { erro?: string };
       if (!res.ok) {
         setErroMsg(d.erro || "Erro ao carregar os detalhes do camião.");
@@ -664,7 +717,7 @@ export function ModalDetalhesCamiao({
     } finally {
       setCarregando(false);
     }
-  }, [camiaoId]);
+  }, [camiaoId, apiBase]);
 
   useEffect(() => {
     if (!camiaoId) {
@@ -686,7 +739,7 @@ export function ModalDetalhesCamiao({
     setSucessoMsg("");
     setAGuardarTecnicos(true);
     try {
-      const res = await fetch(`/api/admin/camioes/${camiaoId}`, {
+      const res = await fetch(`${apiBase}/camioes/${camiaoId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -715,7 +768,7 @@ export function ModalDetalhesCamiao({
     setSucessoMsg("");
     setAAtribuir(true);
     try {
-      const res = await fetch(`/api/admin/camioes/${camiaoId}`, {
+      const res = await fetch(`${apiBase}/camioes/${camiaoId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -877,10 +930,23 @@ export function ModalDetalhesCamiao({
                             </div>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-1">
                               Conta criada em {formatarData(c.condutorActual.criadoEm)} ·{" "}
-                              {c.disponivel
-                                ? "Disponibilidade do condutor ligada"
-                                : "Disponibilidade do condutor desligada"}
+                              {c.estadoDisponibilidade === "EM_SERVICO"
+                                ? "Em serviço activo neste momento"
+                                : c.disponivel && c.localizacaoValida
+                                  ? "Disponível para serviços (GPS activo)"
+                                  : c.disponivel
+                                    ? "Disponível com GPS expirado (aguarda actualização)"
+                                    : "Disponibilidade do condutor desligada"}
                             </p>
+                            {(!c.activo || !c.condutorActual.activo || c.empresa.estadoAprovacao !== "APROVADA") && (
+                              <p className="text-[11px] font-semibold text-red-600 dark:text-red-400">
+                                {!c.activo
+                                  ? "Camião desactivado na frota — não recebe solicitações."
+                                  : !c.condutorActual.activo
+                                    ? "Conta do condutor desactivada — não pode operar."
+                                    : "Empresa sem aprovação activa — não recebe solicitações."}
+                              </p>
+                            )}
                           </div>
 
                           {!confirmarDesassociar ? (
@@ -956,7 +1022,14 @@ export function ModalDetalhesCamiao({
                       <Selector
                         rotulo="Seleccionar condutor da empresa"
                         value={motoristaEscolhidoId}
-                        onChange={(e) => setMotoristaEscolhidoId(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "__NOVO__") {
+                            setMostrarNovoCondutor(true);
+                            return;
+                          }
+                          setMotoristaEscolhidoId(val);
+                        }}
                         disabled={Boolean(c.pedidoActivo)}
                       >
                         <option value="">— Seleccionar condutor —</option>
@@ -978,6 +1051,7 @@ export function ModalDetalhesCamiao({
                             </option>
                           );
                         })}
+                        <option value="__NOVO__">+ Adicionar novo condutor…</option>
                       </Selector>
 
                       <Entrada
@@ -993,15 +1067,17 @@ export function ModalDetalhesCamiao({
                       <SubFormularioNovoCondutor
                         empresaId={c.empresaId}
                         empresaNome={c.empresa.nome}
+                        apiBase={apiBase}
                         aoCancelar={() => setMostrarNovoCondutor(false)}
                         aoCriar={(novoCondutor) => {
                           setDetalhes((prev) =>
                             prev
                               ? {
                                   ...prev,
-                                  condutoresEmpresa: [...prev.condutoresEmpresa, novoCondutor].sort(
-                                    (a, b) => a.nome.localeCompare(b.nome)
-                                  ),
+                                  condutoresEmpresa: [
+                                    ...prev.condutoresEmpresa.filter((item) => item.id !== novoCondutor.id),
+                                    novoCondutor,
+                                  ].sort((a, b) => a.nome.localeCompare(b.nome)),
                                 }
                               : prev
                           );
@@ -1076,18 +1152,28 @@ export function ModalDetalhesCamiao({
                       onChange={(e) => setCapacidade(e.target.value)}
                       placeholder="Ex.: Até 3,5 t"
                     />
-                    <div className="flex items-end pb-1">
-                      <label className="w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-[#0B1120] flex items-center justify-between gap-3 cursor-pointer">
+                    <div className="flex flex-col justify-end pb-1 gap-1">
+                      <label
+                        className={`w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-[#0B1120] flex items-center justify-between gap-3 ${
+                          c.pedidoActivo ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                        }`}
+                      >
                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                           Camião activo
                         </span>
                         <input
                           type="checkbox"
                           checked={activo}
+                          disabled={Boolean(c.pedidoActivo && activo)}
                           onChange={(e) => setActivo(e.target.checked)}
                           className="w-4 h-4 accent-amber-500"
                         />
                       </label>
+                      {c.pedidoActivo && activo && (
+                        <span className="text-[11px] text-sky-600 dark:text-sky-400">
+                          Não pode desactivar enquanto há um pedido activo ({c.pedidoActivo.estado}).
+                        </span>
+                      )}
                     </div>
                   </div>
 

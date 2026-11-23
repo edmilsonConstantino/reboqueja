@@ -2,9 +2,16 @@ import { z } from "zod";
 
 const telefoneRegex = /^(\+?258)?\s?8[2-7]\d{7}$/;
 
+export function normalizarTelefone(valor: string): string {
+  const limpo = valor.replace(/[^\d+]/g, "");
+  if (/^8[2-7]\d{7}$/.test(limpo)) return `+258${limpo}`;
+  if (/^2588[2-7]\d{7}$/.test(limpo)) return `+${limpo}`;
+  return limpo;
+}
+
 export const schemaTelefone = z
   .string()
-  .transform((v) => v.replace(/[^\d+]/g, ""))
+  .transform((v) => normalizarTelefone(v))
   .refine((v) => telefoneRegex.test(v.replace(/\s/g, "")), {
     message: "Use um número moçambicano (ex.: +258 84 123 4567).",
   });
@@ -58,7 +65,8 @@ export const schemaLocalizacao = z
       "BATERIA",
       "OUTRO",
     ]),
-    tipoVeiculo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]),
+    tipoVeiculo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO", "OUTRO"]),
+    detalhesVeiculo: z.string().trim().max(300).optional().nullable(),
     observacoes: z.string().max(500).optional().nullable(),
   })
   .refine(
@@ -109,10 +117,12 @@ export const schemaCamiao = z.object({
     .string()
     .trim()
     .optional()
-    .transform((v) => (v ? v.replace(/[^\d+]/g, "") : ""))
+    .transform((v) => (v ? normalizarTelefone(v) : ""))
     .refine((v) => v.length === 0 || telefoneRegex.test(v.replace(/\s/g, "")), {
       message: "Use um número moçambicano (ex.: +258 84 123 4567).",
     }),
+  motoristaId: z.string().min(1).optional().nullable(),
+  motivo: z.string().trim().max(240).optional().nullable(),
   activo: z.boolean().optional(),
 });
 
@@ -184,7 +194,7 @@ export const schemaPerfilCondutor = z.object({
         marca: z.string().min(2),
         modelo: z.string().min(1),
         matricula: z.string().min(4),
-        tipo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]),
+        tipo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO", "OUTRO"]),
       })
     )
     .max(5),
@@ -225,10 +235,19 @@ export const schemaAlterarSenha = z.object({
 
 /** Conta de acesso do condutor, criada pela empresa. */
 export const schemaContaCondutor = z.object({
-  nome: z.string().min(3, "Indique o nome do condutor."),
+  nome: z.string().trim().min(3, "Indique o nome do condutor."),
   telefone: schemaTelefone,
+  email: z
+    .string()
+    .trim()
+    .optional()
+    .nullable()
+    .transform((v) => (v && v.length > 0 ? v : null))
+    .refine((v) => v === null || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), {
+      message: "Email inválido.",
+    }),
   senha: z.string().min(4, "A palavra-passe deve ter pelo menos 4 caracteres.").max(72),
-  camiaoId: z.string().min(1, "Escolha o camião."),
+  camiaoId: z.string().min(1).optional().nullable(),
 });
 
 /** Condutor aceita um pedido pendente. */

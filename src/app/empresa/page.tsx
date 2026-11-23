@@ -30,7 +30,7 @@ type Painel = {
   semana: { dia: string; dataIso: string; concluidos: number; cancelados: number }[];
   camioes: {
     id: string; matricula: string; marca?: string | null; modelo?: string | null;
-    tipo: string; motoristaNome: string; temContaCondutor?: boolean;
+    tipo: string; motoristaNome: string; temContaCondutor?: boolean; motoristaActivo?: boolean;
     activo: boolean; disponivel?: boolean; localizacaoValida?: boolean; emServico: boolean;
   }[];
 };
@@ -504,7 +504,7 @@ export default function PainelEmpresa() {
                       cor={
                         c.emServico
                           ? "azul"
-                          : !c.activo
+                          : !c.activo || (c.temContaCondutor && c.motoristaActivo === false)
                             ? "cinza"
                             : !c.temContaCondutor
                               ? "amarelo"
@@ -517,7 +517,7 @@ export default function PainelEmpresa() {
                     >
                       {c.emServico
                         ? "Em serviço"
-                        : !c.activo
+                        : !c.activo || (c.temContaCondutor && c.motoristaActivo === false)
                           ? "Inactivo"
                           : !c.temContaCondutor
                             ? "Sem condutor"

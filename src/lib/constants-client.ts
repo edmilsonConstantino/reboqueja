@@ -5,6 +5,7 @@ export const LABEL_VEICULO: Record<string, string> = {
   SUV: "SUV/Pick-up",
   MINIBUS: "Mini-bus",
   PESADO: "Pesado",
+  OUTRO: "Outro",
 };
 
 export const LABEL_PROBLEMA: Record<string, string> = {

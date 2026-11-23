@@ -14,6 +14,11 @@ export const TIPOS_VEICULO = [
   { value: "PESADO", label: "Pesado" },
 ] as const;
 
+export const TIPOS_VEICULO_PEDIDO = [
+  ...TIPOS_VEICULO,
+  { value: "OUTRO", label: "Outro" },
+] as const;
+
 export const ESTADOS_PEDIDO = [
   "PENDENTE",
   "ACEITE",

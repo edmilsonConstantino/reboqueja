@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
           motorista: { select: { id: true, nome: true, activo: true, empresaCondutorId: true } },
           empresa: {
             include: {
-              precos: { where: { tipoVeiculo } },
+              precos: tipoVeiculo === "OUTRO" ? true : { where: { tipoVeiculo } },
               pedidos: {
                 where: { avaliacao: { isNot: null } },
                 select: { avaliacao: { select: { estrelas: true } } },
@@ -155,7 +155,15 @@ export async function GET(req: NextRequest) {
         const distanciaLinhaRetaKm =
           Math.round(haversineKm({ lat: c.lat, lng: c.lng }, origem) * 100) / 100;
         const distRef = distanciaServicoKm ?? distanciaLinhaRetaKm;
-        const faixa = escolherFaixaPreco(c.empresa.precos, distRef);
+        const precosElegiveis =
+          tipoVeiculo === "OUTRO"
+            ? c.empresa.precos.filter((p) => p.tipoVeiculo === "LIGEIRO").length > 0
+              ? c.empresa.precos.filter((p) => p.tipoVeiculo === "LIGEIRO")
+              : c.empresa.precos.filter((p) => p.tipoVeiculo === c.tipo).length > 0
+                ? c.empresa.precos.filter((p) => p.tipoVeiculo === c.tipo)
+                : c.empresa.precos
+            : c.empresa.precos;
+        const faixa = escolherFaixaPreco(precosElegiveis, distRef);
         const totalAvaliacoes = c.empresa.pedidos.length;
         const media =
           totalAvaliacoes > 0
@@ -268,7 +276,7 @@ export async function POST(req: NextRequest) {
         motorista: { select: { id: true, nome: true, activo: true, empresaCondutorId: true } },
         empresa: {
           include: {
-            precos: { where: { tipoVeiculo: dados.tipoVeiculo } },
+            precos: dados.tipoVeiculo === "OUTRO" ? true : { where: { tipoVeiculo: dados.tipoVeiculo } },
           },
         },
       },
@@ -323,13 +331,30 @@ export async function POST(req: NextRequest) {
         ? Math.round(haversineKm({ lat: camiao.lat, lng: camiao.lng }, origem) * 100) / 100
         : 0;
 
-    const faixa = escolherFaixaPreco(camiao.empresa.precos, distanciaKm);
+    const precosElegiveis =
+      dados.tipoVeiculo === "OUTRO"
+        ? camiao.empresa.precos.filter((p) => p.tipoVeiculo === "LIGEIRO").length > 0
+          ? camiao.empresa.precos.filter((p) => p.tipoVeiculo === "LIGEIRO")
+          : camiao.empresa.precos.filter((p) => p.tipoVeiculo === camiao.tipo).length > 0
+            ? camiao.empresa.precos.filter((p) => p.tipoVeiculo === camiao.tipo)
+            : camiao.empresa.precos
+        : camiao.empresa.precos;
+
+    const faixa = escolherFaixaPreco(precosElegiveis, distanciaKm);
     if (!faixa) {
       return erro(
         "A empresa seleccionada não tem tabela de preços configurada para este tipo de veículo.",
         422
       );
     }
+
+    const detalhesLimpos = dados.detalhesVeiculo?.trim() || "";
+    const obsLimpa = dados.observacoes?.trim() || "";
+    const observacoesFinais = detalhesLimpos
+      ? obsLimpa
+        ? `Veículo (Outro): ${detalhesLimpos} · ${obsLimpa}`
+        : `Veículo (Outro): ${detalhesLimpos}`
+      : obsLimpa || null;
 
     const pedido = await prisma.pedido.create({
       data: {
@@ -346,7 +371,7 @@ export async function POST(req: NextRequest) {
         distanciaKm,
         tipoProblema: dados.tipoProblema,
         tipoVeiculo: dados.tipoVeiculo,
-        observacoes: dados.observacoes || null,
+        observacoes: observacoesFinais,
         estado: "PENDENTE",
         precoMin: faixa.precoMin,
         precoMax: faixa.precoMax,

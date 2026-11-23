@@ -327,3 +327,32 @@ digest: "40190468"
  GET /api/admin/empresas 200 in 155ms
  GET /api/admin 200 in 145ms
  GET /api/admin 200 in 146ms
+ GET /api/sessao 200 in 130ms
+ GET /api/sessao 200 in 124ms
+ GET /api/admin/empresas 200 in 230ms
+ GET /api/admin/empresas 200 in 257ms
+ GET /api/admin 200 in 385ms
+ GET /api/admin 200 in 388ms
+ ✓ Compiled in 3.8s (703 modules)
+ ✓ Compiled in 4.1s (703 modules)
+ GET /api/admin/empresas 200 in 197ms
+ GET /admin/empresas 200 in 288ms
+ GET /admin/definicoes 200 in 103ms
+ GET /api/admin/empresas 200 in 127ms
+ GET /api/admin/empresas 200 in 178ms
+ GET /api/admin/empresas 200 in 165ms
+ GET /entrar?proximo=%2Fadmin%2Fempresas 200 in 92ms
+ PATCH /api/admin/empresas 200 in 67ms
+ GET /api/admin/empresas 200 in 45ms
+ GET /api/admin/empresas 200 in 160ms
+ ✓ Compiled /api/admin/pedidos in 477ms (418 modules)
+ GET /api/admin/pedidos? 200 in 729ms
+ GET /api/admin/pedidos? 200 in 775ms
+ ○ Compiling /api/sair ...
+ ✓ Compiled /api/sair in 721ms (420 modules)
+ POST /api/sair 200 in 835ms
+ ✓ Compiled / in 481ms (424 modules)
+ ○ Compiling /api/sessao ...
+ ✓ Compiled /api/sessao in 654ms (426 modules)
+ GET /api/sessao 200 in 953ms
+ GET /api/sessao 200 in 956ms

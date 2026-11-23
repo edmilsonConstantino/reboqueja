@@ -323,9 +323,10 @@ export function BarraNavegacaoPublica() {
     return pathname.startsWith(href);
   };
 
-  // Na página inicial a barra fica translúcida sobre o hero até rolar.
+  // No topo da página a barra fica transparente no modo escuro (e translúcida no hero em modo claro).
   const emCasa = pathname === "/";
-  const transparente = emCasa && !rolou && !menuAberto;
+  const noTopo = !rolou && !menuAberto;
+  const transparente = emCasa && noTopo;
 
   const painel = sessao ? PAINEL_POR_PAPEL[sessao.papel] : null;
   const primeiroNome = sessao?.nome.split(" ")[0] ?? "";
@@ -341,7 +342,9 @@ export function BarraNavegacaoPublica() {
       className={`${emCasa ? "fixed inset-x-0" : "sticky"} top-0 z-40 pt-[env(safe-area-inset-top)] transition-all duration-300 ${
         transparente
           ? "bg-[#FAF7F2]/70 dark:bg-transparent backdrop-blur-md dark:backdrop-blur-none border-b border-[#E5D6C3]/60 dark:border-transparent"
-          : "bg-[#FAF7F2]/95 dark:bg-[#0D0704]/92 backdrop-blur-md border-b border-[#E5D6C3] dark:border-[#3A2212]/80 shadow-sm dark:shadow-lg dark:shadow-black/30"
+          : noTopo
+            ? "bg-[#FAF7F2]/95 dark:bg-transparent backdrop-blur-md dark:backdrop-blur-none border-b border-[#E5D6C3] dark:border-transparent"
+            : "bg-[#FAF7F2]/95 dark:bg-[#0C0603]/75 backdrop-blur-md border-b border-[#E5D6C3] dark:border-[#3A2212]/70 shadow-sm dark:shadow-lg dark:shadow-black/30"
       }`}
     >
       <div

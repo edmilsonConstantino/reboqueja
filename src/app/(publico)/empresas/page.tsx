@@ -322,7 +322,7 @@ export default async function PaginaEmpresas() {
         {/* Degradês adaptativos claro/escuro */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/95 sm:via-[#FAF7F2]/88 to-[#FAF7F2]/20 dark:from-[#0C0603] dark:via-[#0C0603]/92 sm:dark:via-[#0C0603]/84 dark:to-transparent pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/95 sm:via-[#FAF7F2]/90 to-[#FAF7F2]/20 dark:from-[#0C0603] dark:via-[#0C0603]/90 sm:dark:via-[#0C0603]/85 dark:to-transparent pointer-events-none"
         />
         <div
           aria-hidden

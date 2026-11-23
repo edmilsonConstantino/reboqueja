@@ -107,7 +107,7 @@ export default function Landing() {
         {/* Scrim direcional de contraste (claro: creme-marfim; escuro: expresso profundo) */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/94 sm:via-[#FAF7F2]/85 to-[#FAF7F2]/10 dark:from-[#0C0603] dark:via-[#0C0603]/92 sm:dark:via-[#0C0603]/82 dark:to-transparent pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/95 sm:via-[#FAF7F2]/85 to-[#FAF7F2]/10 dark:from-[#0C0603] dark:via-[#0C0603]/90 sm:dark:via-[#0C0603]/80 dark:to-transparent pointer-events-none"
         />
         <div
           aria-hidden

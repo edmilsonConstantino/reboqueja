@@ -167,7 +167,7 @@ export default function AdminAvaliacoes() {
           <select
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}
-            className="h-10 px-3 rounded-xl bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm text-neutral-800 dark:text-neutral-200 outline-none focus:border-primary-400/60"
+            className="h-10 px-3 rounded-xl bg-white dark:bg-[#0E1629] border border-slate-200 dark:border-white/10 text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 dark:focus:border-primary-400/60 [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#0B1120] dark:[&>option]:text-slate-100"
           >
             <option value="TODAS">Todas as empresas</option>
             {porEmpresa.map((g) => (
@@ -251,20 +251,20 @@ export default function AdminAvaliacoes() {
                     </div>
 
                     {aberto && (
-                      <ul className="mt-4 pt-4 border-t border-white/[0.07] space-y-3">
+                      <ul className="mt-4 pt-4 border-t border-slate-200 dark:border-white/[0.07] space-y-3">
                         {g.avaliacoes.map((a) => (
                           <li
                             key={a.id}
-                            className="rounded-xl bg-neutral-100 dark:bg-white/[0.03] border border-white/[0.06] p-3.5"
+                            className="rounded-xl bg-slate-50 dark:bg-[#0B1120] border border-slate-200/80 dark:border-white/[0.06] p-3.5"
                           >
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                                 {a.pedido.condutor.nome}
                               </p>
                               <div className="flex items-center gap-3">
-                                <span className="text-primary-400 text-sm tracking-tight">
+                                <span className="text-amber-500 dark:text-primary-400 text-sm tracking-tight">
                                   {"★".repeat(a.estrelas)}
-                                  <span className="text-neutral-700">
+                                  <span className="text-slate-300 dark:text-neutral-700">
                                     {"★".repeat(5 - a.estrelas)}
                                   </span>
                                 </span>
@@ -308,11 +308,11 @@ export default function AdminAvaliacoes() {
       ) : (
         <div className="grid lg:grid-cols-2 gap-4">
           <Painel className="p-5 text-center">
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wide font-bold">
+            <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-bold">
               Pontuação SUS média
             </p>
-            <p className="text-5xl font-extrabold text-primary-400 mt-2">{susMedio}</p>
-            <p className="text-xs text-neutral-500 mt-1">
+            <p className="text-5xl font-extrabold text-amber-600 dark:text-primary-400 mt-2 tabular-nums">{susMedio}</p>
+            <p className="text-xs text-slate-500 mt-1">
               {parseados.length} resposta(s) · escala 0–100
               {susMedio !== null && (
                 <>
@@ -324,7 +324,7 @@ export default function AdminAvaliacoes() {
           </Painel>
 
           <Painel className="p-5">
-            <h3 className="font-bold text-neutral-900 dark:text-white mb-3">Perguntas do ReboqueJá</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white mb-3">Perguntas do ReboqueJá</h3>
             <div className="space-y-3 text-sm">
               {[
                 { q: PERGUNTAS_EXTRAS[0], m: mediaPorPergunta(0, "extras") },
@@ -332,8 +332,8 @@ export default function AdminAvaliacoes() {
                 { q: PERGUNTAS_EXTRAS[2], m: mediaPorPergunta(2, "extras") },
               ].map((p, i) => (
                 <div key={i} className="flex items-center justify-between gap-3">
-                  <span className="flex-1 text-neutral-700 dark:text-neutral-300">{p.q}</span>
-                  <b className="text-primary-400 shrink-0">
+                  <span className="flex-1 text-slate-700 dark:text-slate-300">{p.q}</span>
+                  <b className="text-amber-700 dark:text-primary-400 shrink-0 tabular-nums">
                     {p.m !== null ? p.m.toFixed(1) : "—"} / 5
                   </b>
                 </div>
@@ -342,19 +342,19 @@ export default function AdminAvaliacoes() {
           </Painel>
 
           <Painel className="p-5">
-            <h3 className="font-bold text-neutral-900 dark:text-white mb-3">Média por pergunta SUS</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white mb-3">Média por pergunta SUS</h3>
             <div className="space-y-2 text-sm">
               {PERGUNTAS_SUS.map((q, i) => {
                 const m = mediaPorPergunta(i, "sus");
                 return (
                   <div
                     key={i}
-                    className="flex items-center justify-between gap-3 border-b border-white/[0.06] pb-1.5 last:border-0"
+                    className="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-white/[0.06] pb-1.5 last:border-0"
                   >
-                    <span className="flex-1 text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                    <span className="flex-1 text-xs text-slate-500 dark:text-slate-400 truncate">
                       {i + 1}. {q}
                     </span>
-                    <b className="shrink-0 text-neutral-800 dark:text-neutral-200">
+                    <b className="shrink-0 text-slate-800 dark:text-slate-200 tabular-nums">
                       {m !== null ? m.toFixed(1) : "—"}
                     </b>
                   </div>
@@ -364,29 +364,29 @@ export default function AdminAvaliacoes() {
           </Painel>
 
           <Painel className="p-5">
-            <h3 className="font-bold text-neutral-900 dark:text-white mb-3">Respostas individuais</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white mb-3">Respostas individuais</h3>
             <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
               {parseados.map((r) => (
-                <div key={r.id} className="rounded-xl bg-neutral-100 dark:bg-white/[0.03] border border-white/[0.06] p-3 text-sm">
+                <div key={r.id} className="rounded-xl bg-slate-50 dark:bg-[#0B1120] border border-slate-200/80 dark:border-white/[0.06] p-3 text-sm">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <p className="font-semibold text-neutral-900 dark:text-neutral-100">{r.utilizador.nome}</p>
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">{r.utilizador.nome}</p>
                     <span
-                      className={`px-2 py-0.5 rounded-md text-[11px] font-bold ring-1 ring-inset ${
+                      className={`px-2 py-0.5 rounded-md text-[11px] font-bold ring-1 ring-inset tabular-nums ${
                         r.susScore >= 68
-                          ? "bg-emerald-400/10 text-emerald-300 ring-emerald-400/25"
+                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-emerald-500/25 dark:ring-emerald-400/25"
                           : r.susScore >= 51
-                            ? "bg-primary-400/10 text-primary-300 ring-primary-400/25"
-                            : "bg-red-400/10 text-red-300 ring-red-400/25"
+                            ? "bg-amber-500/15 text-amber-800 dark:text-primary-300 ring-amber-500/30 dark:ring-primary-400/25"
+                            : "bg-red-500/15 text-red-700 dark:text-red-300 ring-red-500/25 dark:ring-red-400/25"
                       }`}
                     >
                       SUS {r.susScore}
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     {r.papel} · {formatarData(r.criadoEm)}
                   </p>
                   {r.dados.comentario && (
-                    <p className="text-xs text-neutral-700 dark:text-neutral-300 mt-2 italic">
+                    <p className="text-xs text-slate-700 dark:text-slate-300 mt-2 italic">
                       &ldquo;{r.dados.comentario}&rdquo;
                     </p>
                   )}
@@ -405,7 +405,7 @@ export default function AdminAvaliacoes() {
 function Painel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
+      className={`rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] shadow-sm dark:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
     >
       {children}
     </div>
@@ -426,15 +426,15 @@ function Indicador({
   return (
     <Painel className="p-5">
       <div className="flex items-center gap-3">
-        <span className="w-10 h-10 shrink-0 rounded-xl bg-primary-400/15 text-primary-400 grid place-items-center">
+        <span className="w-10 h-10 shrink-0 rounded-xl bg-amber-500/15 dark:bg-primary-400/15 text-amber-700 dark:text-primary-400 grid place-items-center">
           {icone}
         </span>
         <div className="min-w-0">
-          <p className="text-2xl font-extrabold text-neutral-900 dark:text-white leading-none">{valor}</p>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{titulo}</p>
+          <p className="text-2xl font-extrabold text-slate-900 dark:text-white leading-none tabular-nums">{valor}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{titulo}</p>
         </div>
       </div>
-      <p className="text-[11px] text-neutral-500 mt-3">{detalhe}</p>
+      <p className="text-[11px] text-slate-500 mt-3">{detalhe}</p>
     </Painel>
   );
 }
@@ -445,7 +445,7 @@ function EstrelasLidas({ valor }: { valor: number }) {
   return (
     <span className="text-lg tracking-tight" aria-label={`${valor.toFixed(1)} de 5 estrelas`}>
       {[1, 2, 3, 4, 5].map((n) => (
-        <span key={n} className={n <= cheias ? "text-primary-400" : "text-neutral-700"}>
+        <span key={n} className={n <= cheias ? "text-amber-500 dark:text-primary-400" : "text-slate-300 dark:text-neutral-700"}>
           ★
         </span>
       ))}

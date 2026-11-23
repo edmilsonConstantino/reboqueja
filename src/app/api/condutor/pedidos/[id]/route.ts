@@ -43,6 +43,13 @@ export async function PATCH(
       data: { pedidoId: pedido.id, estado, nota: `Actualizado pelo condutor ${sessao.nome}` },
     });
 
+    if (estado === "CONCLUIDO" && !camiao.disponivel) {
+      await prisma.camiao.update({
+        where: { id: camiao.id },
+        data: { partilhaLocalizacao: false },
+      });
+    }
+
     return ok({ estado });
   } catch (e) {
     return tratarErroApi(e);

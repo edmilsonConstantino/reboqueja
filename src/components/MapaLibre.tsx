@@ -32,6 +32,8 @@ export type MarcadorMapa = {
   cor?: string;
   emoji?: string;
   pulso?: boolean;
+  titulo?: string;
+  aoClicar?: () => void;
 };
 
 export function MapaLibre({
@@ -50,8 +52,8 @@ export function MapaLibre({
   centro?: LatLng;
   zoom?: number;
   marcadores?: MarcadorMapa[];
-  /** Par de pontos para desenhar linha (ex.: camião → origem). */
-  linha?: [LatLng, LatLng] | null;
+  /** Pontos para desenhar trajecto/linha (ex.: rota por estrada ou camião → origem). */
+  linha?: LatLng[] | null;
   poligonoMatola?: boolean;
   aoClicar?: (p: LatLng) => void;
   className?: string;
@@ -69,9 +71,16 @@ export function MapaLibre({
   const marcadoresRef = useRef<Map<string, Marker>>(new Map());
   const [pronto, setPronto] = useState(false);
 
+  // Clique (actualiza handler sem recrear mapa)
+  const cliqueRef = useRef(aoClicar);
+  useEffect(() => {
+    cliqueRef.current = aoClicar;
+  }, [aoClicar]);
+
   // Inicializa
   useEffect(() => {
     if (!ref.current || mapaRef.current) return;
+    const mapaMarcadores = marcadoresRef.current;
     const mapa = new maplibregl.Map({
       container: ref.current,
       style: ESTILO_OSM as never,
@@ -81,23 +90,17 @@ export function MapaLibre({
     });
     mapaRef.current = mapa;
     mapa.on("load", () => setPronto(true));
-    if (aoClicar) {
-      mapa.on("click", (e) => aoClicar({ lat: e.lngLat.lat, lng: e.lngLat.lng }));
-    }
+    mapa.on("click", (e) => {
+      cliqueRef.current?.({ lat: e.lngLat.lat, lng: e.lngLat.lng });
+    });
     return () => {
       mapa.remove();
       mapaRef.current = null;
-      marcadoresRef.current.clear();
+      mapaMarcadores.clear();
       setPronto(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Clique (actualiza handler sem recrear mapa)
-  const cliqueRef = useRef(aoClicar);
-  useEffect(() => {
-    cliqueRef.current = aoClicar;
-  }, [aoClicar]);
 
   // Marcadores
   useEffect(() => {
@@ -114,11 +117,18 @@ export function MapaLibre({
 
     marcadores.forEach((m) => {
       const el = document.createElement("div");
-      el.className = "relative grid place-items-center";
+      el.className = `relative grid place-items-center ${m.aoClicar ? "cursor-pointer" : ""}`;
+      if (m.titulo) el.title = m.titulo;
       el.innerHTML = `
         ${m.pulso ? `<span class="absolute w-10 h-10 rounded-full rj-radar" style="background:${m.cor || "#FFC300"};opacity:.35"></span>` : ""}
         <span class="relative w-9 h-9 rounded-full grid place-items-center text-base shadow-card border-2 border-white" style="background:${m.cor || "#FFC300"}">${m.emoji || "📍"}</span>
       `;
+      if (m.aoClicar) {
+        el.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          m.aoClicar?.();
+        });
+      }
       const marker = new maplibregl.Marker({ element: el })
         .setLngLat([m.pos.lng, m.pos.lat])
         .addTo(mapa);
@@ -147,24 +157,22 @@ export function MapaLibre({
     const mapa = mapaRef.current;
     if (!mapa || !pronto) return;
     const src = mapa.getSource("rj-linha") as maplibregl.GeoJSONSource | undefined;
-    const dadosLinha = linha
-      ? {
-          type: "FeatureCollection" as const,
-          features: [
-            {
-              type: "Feature" as const,
-              properties: {},
-              geometry: {
-                type: "LineString" as const,
-                coordinates: [
-                  [linha[0].lng, linha[0].lat],
-                  [linha[1].lng, linha[1].lat],
-                ],
+    const dadosLinha =
+      linha && linha.length >= 2
+        ? {
+            type: "FeatureCollection" as const,
+            features: [
+              {
+                type: "Feature" as const,
+                properties: {},
+                geometry: {
+                  type: "LineString" as const,
+                  coordinates: linha.map((p) => [p.lng, p.lat]),
+                },
               },
-            },
-          ],
-        }
-      : { type: "FeatureCollection" as const, features: [] };
+            ],
+          }
+        : { type: "FeatureCollection" as const, features: [] };
 
     if (!src) {
       mapa.addSource("rj-linha", { type: "geojson", data: dadosLinha as never });
@@ -246,21 +254,21 @@ export function MapaLibre({
       {(controlos || aoLocalizar) && pronto && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
           {controlos && (
-            <div className="flex flex-col rounded-xl overflow-hidden border border-white/10 bg-neutral-950/80 backdrop-blur shadow-lg">
+            <div className="flex flex-col rounded-xl overflow-hidden border border-slate-200 dark:border-white/15 bg-white/90 dark:bg-[#070B14]/85 backdrop-blur shadow-lg">
               <button
                 type="button"
                 aria-label="Aproximar"
                 onClick={() => mapaRef.current?.zoomIn()}
-                className="w-10 h-10 grid place-items-center text-xl text-neutral-200 hover:text-primary-400 hover:bg-white/[0.06]"
+                className="w-10 h-10 grid place-items-center text-xl text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
               >
                 +
               </button>
-              <span className="h-px bg-white/10" />
+              <span className="h-px bg-slate-200 dark:bg-white/10" />
               <button
                 type="button"
                 aria-label="Afastar"
                 onClick={() => mapaRef.current?.zoomOut()}
-                className="w-10 h-10 grid place-items-center text-xl text-neutral-200 hover:text-primary-400 hover:bg-white/[0.06]"
+                className="w-10 h-10 grid place-items-center text-xl text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
               >
                 −
               </button>
@@ -272,7 +280,7 @@ export function MapaLibre({
               aria-label="Usar a minha localização"
               title="Usar a minha localização"
               onClick={aoLocalizar}
-              className="w-10 h-10 grid place-items-center rounded-xl border border-white/10 bg-neutral-950/80 backdrop-blur shadow-lg text-neutral-200 hover:text-primary-400"
+              className="w-10 h-10 grid place-items-center rounded-xl border border-slate-200 dark:border-white/15 bg-white/90 dark:bg-[#070B14]/85 backdrop-blur shadow-lg text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-primary-400 transition"
             >
               <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
                 <circle cx="12" cy="12" r="7" />
@@ -284,7 +292,7 @@ export function MapaLibre({
         </div>
       )}
       {!pronto && (
-        <div className="absolute inset-0 grid place-items-center bg-neutral-100 dark:bg-neutral-900">
+        <div className="absolute inset-0 grid place-items-center bg-slate-100 dark:bg-[#0E1629]">
           <div className="w-9 h-9 rounded-full border-4 border-primary-400 border-t-transparent animate-spin" />
         </div>
       )}

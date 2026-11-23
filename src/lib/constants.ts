@@ -17,6 +17,7 @@ export const TIPOS_VEICULO = [
 export const ESTADOS_PEDIDO = [
   "PENDENTE",
   "ACEITE",
+  "RECUSADO",
   "A_CAMINHO",
   "NO_LOCAL",
   "EM_TRANSPORTE",
@@ -29,14 +30,15 @@ export type EstadoPedido = (typeof ESTADOS_PEDIDO)[number];
 export const LABEL_ESTADO: Record<string, string> = {
   PENDENTE: "Pendente",
   ACEITE: "Aceite",
+  RECUSADO: "Recusado",
   A_CAMINHO: "A caminho",
   NO_LOCAL: "No local",
-  EM_TRANSPORTE: "Em transporte",
+  EM_TRANSPORTE: "Em execução",
   CONCLUIDO: "Concluído",
   CANCELADO: "Cancelado",
 };
 
-/** Próximo estado no fluxo da empresa. */
+/** Próximo estado no fluxo da empresa/condutor. */
 export const PROXIMO_ESTADO: Record<string, string> = {
   ACEITE: "A_CAMINHO",
   A_CAMINHO: "NO_LOCAL",
@@ -80,3 +82,9 @@ export const CENTRO_MATOLA = { lat: -25.962, lng: 32.459 };
 export const VELOCIDADE_MEDIA_KMH = 30;
 
 export const EXPIRACAO_PEDIDO_MS = 3 * 60 * 1000; // 3 minutos
+
+/** Janela máxima de validade da última localização GPS do condutor para pesquisa. */
+export const LOCALIZACAO_TTL_MS = 2 * 60 * 1000; // 2 minutos
+
+export const RAIOS_PESQUISA_KM = [10, 15, 25, 50] as const;
+export const RAIO_PESQUISA_PADRAO_KM = 15;

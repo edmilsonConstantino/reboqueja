@@ -19,7 +19,7 @@ export function Mapa(props: {
   centro?: LatLng;
   zoom?: number;
   marcadores?: MarcadorMapa[];
-  linha?: [LatLng, LatLng] | null;
+  linha?: LatLng[] | null;
   poligonoMatola?: boolean;
   aoClicar?: (p: LatLng) => void;
   className?: string;

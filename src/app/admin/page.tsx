@@ -34,18 +34,20 @@ type Dashboard = {
 };
 
 const COR_ESTADO: Record<string, string> = {
-  PENDENTE: "bg-primary-400/15 text-primary-300 ring-primary-400/30",
-  ACEITE: "bg-indigo-400/15 text-indigo-300 ring-indigo-400/30",
-  A_CAMINHO: "bg-sky-400/15 text-sky-300 ring-sky-400/30",
-  NO_LOCAL: "bg-sky-400/15 text-sky-300 ring-sky-400/30",
-  EM_TRANSPORTE: "bg-cyan-400/15 text-cyan-300 ring-cyan-400/30",
-  CONCLUIDO: "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30",
-  CANCELADO: "bg-red-400/15 text-red-300 ring-red-400/30",
+  PENDENTE: "bg-amber-500/15 text-amber-800 dark:text-primary-300 ring-amber-500/30 dark:ring-primary-400/30",
+  ACEITE: "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 ring-indigo-500/25 dark:ring-indigo-400/30",
+  A_CAMINHO: "bg-sky-500/15 text-sky-700 dark:text-sky-300 ring-sky-500/25 dark:ring-sky-400/30",
+  NO_LOCAL: "bg-sky-500/15 text-sky-700 dark:text-sky-300 ring-sky-500/25 dark:ring-sky-400/30",
+  EM_TRANSPORTE: "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 ring-cyan-500/25 dark:ring-cyan-400/30",
+  CONCLUIDO: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-emerald-500/25 dark:ring-emerald-400/30",
+  RECUSADO: "bg-orange-500/15 text-orange-700 dark:text-orange-300 ring-orange-500/25 dark:ring-orange-400/30",
+  CANCELADO: "bg-red-500/15 text-red-700 dark:text-red-300 ring-red-500/25 dark:ring-red-400/30",
 };
 
 const COR_ARCO: Record<string, string> = {
   CONCLUIDO: "#10b981",
   A_CAMINHO: "#FFC300",
+  RECUSADO: "#f97316",
   CANCELADO: "#ef4444",
   NO_LOCAL: "#38bdf8",
   ACEITE: "#818cf8",
@@ -94,18 +96,18 @@ export default function DashboardAdmin() {
       {/* Cabeçalho */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Olá, Administrador!
           </h1>
-          <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 mt-1.5">
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1.5">
             Aqui está um resumo do que está a acontecer na sua plataforma.
           </p>
         </div>
-        <div className="flex items-center gap-3 rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/[0.03] px-4 py-2.5">
-          <IconeCalendario className="w-6 h-6 text-primary-400" />
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] px-4 py-2.5 shadow-sm dark:shadow-none">
+          <IconeCalendario className="w-6 h-6 text-amber-600 dark:text-primary-400" />
           <div className="leading-tight">
-            <p className="text-sm font-bold text-neutral-900 dark:text-white first-letter:uppercase">{dataHoje}</p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="text-sm font-bold text-slate-900 dark:text-white first-letter:uppercase">{dataHoje}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
               {hoje.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}
             </p>
           </div>
@@ -231,7 +233,7 @@ export default function DashboardAdmin() {
           <div className="overflow-x-auto -mx-5 px-5">
             <table className="w-full text-sm min-w-[620px]">
               <thead>
-                <tr className="text-left text-xs text-neutral-500 border-b border-white/[0.08]">
+                <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/[0.08]">
                   <th className="pb-3 pr-3 font-medium">ID</th>
                   <th className="pb-3 pr-3 font-medium">Cliente</th>
                   <th className="pb-3 pr-3 font-medium">Bairro</th>
@@ -244,7 +246,7 @@ export default function DashboardAdmin() {
                 {dados.ultimosPedidos.map((p) => (
                   <tr
                     key={p.id}
-                    className="border-b border-white/[0.05] last:border-0 hover:bg-neutral-50 dark:hover:bg-white/[0.02] transition"
+                    className="border-b border-slate-100 dark:border-white/[0.05] last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition"
                   >
                     <td className="py-3 pr-3 font-mono text-xs text-neutral-500 dark:text-neutral-400">
                       #{p.id.slice(-5).toUpperCase()}
@@ -284,18 +286,18 @@ export default function DashboardAdmin() {
         </CartaoEscuro>
 
         {/* Cartão de crescimento */}
-        <div className="relative overflow-hidden rounded-2xl border border-primary-400/20 bg-gradient-to-br from-primary-400/20 via-primary-50 to-white dark:via-neutral-900 dark:to-neutral-950 p-6 flex flex-col justify-end min-h-[300px]">
-          <div aria-hidden className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-primary-400/10 blur-3xl" />
+        <div className="relative overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-400/20 bg-gradient-to-br from-amber-100/90 via-amber-50 to-white dark:from-amber-400/15 dark:via-[#0E1629] dark:to-[#070B14] p-6 flex flex-col justify-end min-h-[300px] shadow-sm dark:shadow-none">
+          <div aria-hidden className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-primary-400/15 blur-3xl" />
           <IlustracaoCrescimento className="relative mx-auto w-44 h-32 mb-4" />
-          <h2 className="relative font-bold text-lg text-neutral-900 dark:text-white">O seu negócio está a crescer!</h2>
-          <p className="relative text-sm text-neutral-700 dark:text-neutral-300 mt-1.5 leading-relaxed">
+          <h2 className="relative font-bold text-lg text-slate-900 dark:text-white">O seu negócio está a crescer!</h2>
+          <p className="relative text-sm text-slate-700 dark:text-slate-300 mt-1.5 leading-relaxed">
             {dados.tempoMedioRespostaMin !== null
               ? `Com um tempo médio de resposta de ${formatarMin(dados.tempoMedioRespostaMin)}, está a oferecer uma excelente experiência aos seus utilizadores.`
               : "Registe pedidos para começar a acompanhar o crescimento da plataforma."}
           </p>
           <Link
             href="/admin/avaliacoes"
-            className="relative mt-5 self-start inline-flex items-center gap-2 bg-primary-400 text-neutral-950 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-primary-300 transition shadow-[0_4px_14px_-4px_rgba(255,195,0,0.6)]"
+            className="relative mt-5 self-start inline-flex items-center gap-2 bg-primary-400 text-slate-950 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-primary-300 transition shadow-[0_4px_14px_-4px_rgba(255,195,0,0.6)]"
           >
             Ver relatório completo <span aria-hidden>→</span>
           </Link>
@@ -310,7 +312,7 @@ export default function DashboardAdmin() {
 function CartaoEscuro({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
+      className={`rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1629] p-5 shadow-sm dark:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)] ${className}`}
     >
       {children}
     </div>
@@ -329,19 +331,19 @@ function CabecalhoCartao({
   extra?: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-white/[0.06]">
-      <h2 className="flex items-center gap-2.5 font-bold text-neutral-900 dark:text-white">
-        <span className="w-8 h-8 rounded-lg bg-primary-400/15 text-primary-400 grid place-items-center">
+    <div className="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-200/80 dark:border-white/[0.08]">
+      <h2 className="flex items-center gap-2.5 font-bold text-slate-900 dark:text-white">
+        <span className="w-8 h-8 rounded-lg bg-amber-500/15 dark:bg-primary-400/15 text-amber-700 dark:text-primary-400 grid place-items-center">
           {icone}
         </span>
         {titulo}
       </h2>
       <div className="flex items-center gap-3">
-        {extra && <span className="text-xs text-neutral-500">{extra}</span>}
+        {extra && <span className="text-xs text-slate-500 dark:text-slate-400">{extra}</span>}
         {href && (
           <Link
             href={href}
-            className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 hover:text-primary-400 inline-flex items-center gap-1 transition"
+            className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-amber-700 dark:hover:text-primary-400 inline-flex items-center gap-1 transition"
           >
             Ver todos <span aria-hidden>→</span>
           </Link>
@@ -375,7 +377,7 @@ function KpiCard({
   const desceu = variacao !== null && variacao < 0;
   const bom = variacao === null ? true : menorMelhor ? variacao <= 0 : variacao >= 0;
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.05] p-5 transition hover:border-neutral-300 dark:hover:border-white/20 hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1629] p-5 shadow-sm dark:shadow-none transition hover:border-slate-300 dark:hover:border-white/20 hover:-translate-y-0.5">
       <div
         aria-hidden
         className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-2xl opacity-20"
@@ -383,28 +385,28 @@ function KpiCard({
       />
       <div className="relative flex items-center gap-4">
         <span
-          className={`w-14 h-14 shrink-0 rounded-full bg-gradient-to-br ${gradiente} grid place-items-center text-white shadow-lg ring-4 ring-white/[0.04]`}
+          className={`w-14 h-14 shrink-0 rounded-full bg-gradient-to-br ${gradiente} grid place-items-center text-white shadow-lg ring-4 ring-slate-100 dark:ring-white/[0.04]`}
         >
           {icone}
         </span>
         <div className="min-w-0">
-          <p className="text-3xl font-extrabold text-neutral-900 dark:text-white leading-none tracking-tight">{valor}</p>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5 truncate">{titulo}</p>
+          <p className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none tracking-tight tabular-nums">{valor}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 truncate">{titulo}</p>
         </div>
       </div>
       <div className="relative mt-4 flex items-end justify-between gap-2">
         <div className="text-xs">
           {variacao !== null ? (
             <>
-              <p className={`font-bold ${bom ? "text-emerald-400" : "text-red-400"}`}>
+              <p className={`font-bold tabular-nums ${bom ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
                 {desceu ? "↓" : "↑"} {variacao > 0 ? "+" : variacao < 0 ? "−" : ""}
                 {Math.abs(variacao).toFixed(1)}
                 {sufixoVariacao}
               </p>
-              <p className="text-neutral-500 mt-0.5">em relação ao mês anterior</p>
+              <p className="text-slate-500 dark:text-slate-400 mt-0.5">em relação ao mês anterior</p>
             </>
           ) : (
-            <p className="text-neutral-500">Sem dados do mês anterior</p>
+            <p className="text-slate-500 dark:text-slate-400">Sem dados do mês anterior</p>
           )}
         </div>
         <Sparkline valores={serie} cor={corLinha} />

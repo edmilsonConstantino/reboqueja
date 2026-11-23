@@ -14,6 +14,7 @@ type Utilizador = {
   criadoEm: string;
   _count: { pedidos: number };
   empresa: { id: string; nome: string } | null;
+  empresaCondutor?: { id: string; nome: string } | null;
   camiao: { matricula: string; empresa: { id: string; nome: string } } | null;
 };
 
@@ -25,10 +26,10 @@ const ROTULO_PAPEL: Record<string, string> = {
 };
 
 const COR_PAPEL: Record<string, string> = {
-  CLIENTE: "bg-sky-400/10 text-sky-300 ring-sky-400/25",
-  CONDUTOR: "bg-primary-400/10 text-primary-300 ring-primary-400/25",
-  EMPRESA: "bg-violet-400/10 text-violet-300 ring-violet-400/25",
-  ADMIN: "bg-emerald-400/10 text-emerald-300 ring-emerald-400/25",
+  CLIENTE: "bg-sky-500/15 text-sky-700 dark:text-sky-300 ring-sky-500/25 dark:ring-sky-400/25",
+  CONDUTOR: "bg-amber-500/15 text-amber-800 dark:text-primary-300 ring-amber-500/30 dark:ring-primary-400/25",
+  EMPRESA: "bg-violet-500/15 text-violet-700 dark:text-violet-300 ring-violet-500/25 dark:ring-violet-400/25",
+  ADMIN: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-emerald-500/25 dark:ring-emerald-400/25",
 };
 
 const POR_PAGINA = 8;
@@ -90,7 +91,9 @@ export default function AdminUtilizadores() {
         ? utilizadores ?? []
         : (utilizadores ?? []).filter(
             (u) =>
-              u.empresa?.id === empresaFiltro || u.camiao?.empresa?.id === empresaFiltro
+              u.empresa?.id === empresaFiltro ||
+              u.empresaCondutor?.id === empresaFiltro ||
+              u.camiao?.empresa?.id === empresaFiltro
           ),
     [utilizadores, empresaFiltro]
   );
@@ -137,7 +140,7 @@ export default function AdminUtilizadores() {
     u.papel === "EMPRESA"
       ? u.empresa?.nome
       : u.papel === "CONDUTOR"
-        ? u.camiao?.empresa.nome
+        ? u.camiao?.empresa?.nome ?? u.empresaCondutor?.nome
         : undefined;
 
   return (
@@ -173,12 +176,12 @@ export default function AdminUtilizadores() {
       )}
 
       {/* Painel */}
-      <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] shadow-sm dark:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)]">
         {/* Barra de filtros */}
-        <div className="p-4 sm:p-5 border-b border-white/[0.07] space-y-4">
+        <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-white/[0.07] space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center gap-3">
             <div className="relative flex-1 min-w-0">
-              <IconeLupa className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-neutral-500 pointer-events-none" />
+              <IconeLupa className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none" />
               <input
                 value={termo}
                 onChange={(e) => {
@@ -186,7 +189,7 @@ export default function AdminUtilizadores() {
                   setPagina(1);
                 }}
                 placeholder="Pesquisar por nome, telefone, email ou matrícula…"
-                className="w-full h-11 pl-10 pr-4 rounded-xl bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 outline-none focus:border-primary-400/60 focus:ring-2 focus:ring-primary-400/20 transition"
+                className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-[#0B1120] border border-slate-200 dark:border-white/10 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 outline-none focus:border-amber-500 dark:focus:border-primary-400/60 focus:ring-2 focus:ring-amber-400/20 dark:focus:ring-primary-400/20 transition"
               />
             </div>
 
@@ -194,7 +197,7 @@ export default function AdminUtilizadores() {
               value={empresaFiltro}
               onChange={(e) => mudarFiltro(setEmpresaFiltro)(e.target.value)}
               aria-label="Filtrar por empresa"
-              className="h-11 px-3 rounded-xl bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm text-neutral-800 dark:text-neutral-200 outline-none focus:border-primary-400/60 lg:w-56"
+              className="h-11 px-3 rounded-xl bg-slate-50 dark:bg-[#0B1120] border border-slate-200 dark:border-white/10 text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 dark:focus:border-primary-400/60 lg:w-56 [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#0B1120] dark:[&>option]:text-slate-100"
             >
               <option value="TODAS">Todas as empresas</option>
               {empresas.map((e) => (
@@ -208,7 +211,7 @@ export default function AdminUtilizadores() {
               value={papel}
               onChange={(e) => mudarFiltro(setPapel)(e.target.value)}
               aria-label="Filtrar por cargo"
-              className="h-11 px-3 rounded-xl bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm text-neutral-800 dark:text-neutral-200 outline-none focus:border-primary-400/60 lg:w-48"
+              className="h-11 px-3 rounded-xl bg-slate-50 dark:bg-[#0B1120] border border-slate-200 dark:border-white/10 text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 dark:focus:border-primary-400/60 lg:w-48 [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#0B1120] dark:[&>option]:text-slate-100"
             >
               <option value="TODOS">Todos os cargos</option>
               {Object.entries(ROTULO_PAPEL).map(([v, r]) => (
@@ -266,7 +269,7 @@ export default function AdminUtilizadores() {
         </div>
 
         {/* Cabeçalho da tabela (desktop) */}
-        <div className="hidden md:grid grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_96px] gap-4 px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 border-b border-white/[0.07]">
+        <div className="hidden md:grid grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_96px] gap-4 px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/[0.07]">
           <span>Utilizador</span>
           <span>Cargo</span>
           <span>Empresa</span>
@@ -343,12 +346,12 @@ export default function AdminUtilizadores() {
                     <span
                       aria-hidden
                       className={`w-2 h-2 rounded-full ${
-                        u.activo ? "bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.15)]" : "bg-red-400"
+                        u.activo ? "bg-emerald-500" : "bg-red-500"
                       }`}
                     />
                     <span
                       className={`text-sm font-semibold ${
-                        u.activo ? "text-emerald-400" : "text-red-400"
+                        u.activo ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                       }`}
                     >
                       {u.activo ? "Activo" : "Inactivo"}
@@ -356,7 +359,7 @@ export default function AdminUtilizadores() {
                   </div>
 
                   {/* Registado */}
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{formatarData(u.criadoEm)}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{formatarData(u.criadoEm)}</p>
 
                   {/* Acções */}
                   <div className="flex items-center justify-start md:justify-end gap-1">
@@ -367,8 +370,8 @@ export default function AdminUtilizadores() {
                       aria-label={aberto ? "Fechar detalhes" : "Ver detalhes"}
                       className={`w-9 h-9 grid place-items-center rounded-lg transition ${
                         aberto
-                          ? "text-primary-400 bg-primary-400/10"
-                          : "text-neutral-500 dark:text-neutral-400 hover:text-primary-400 hover:bg-neutral-100 dark:hover:bg-white/[0.06]"
+                          ? "text-amber-700 dark:text-primary-400 bg-amber-500/10 dark:bg-primary-400/10"
+                          : "text-slate-500 dark:text-slate-400 hover:text-amber-700 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/[0.06]"
                       }`}
                     >
                       <IconeOlho className="w-[18px] h-[18px]" />
@@ -381,8 +384,8 @@ export default function AdminUtilizadores() {
                         aria-label={u.activo ? "Desactivar conta" : "Activar conta"}
                         className={`w-9 h-9 grid place-items-center rounded-lg transition disabled:opacity-40 ${
                           u.activo
-                            ? "text-red-400 hover:bg-red-500/10"
-                            : "text-emerald-400 hover:bg-emerald-500/10"
+                            ? "text-red-600 dark:text-red-400 hover:bg-red-500/10"
+                            : "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
                         }`}
                       >
                         <IconeEnergia className="w-[18px] h-[18px]" />
@@ -394,7 +397,7 @@ export default function AdminUtilizadores() {
                 {/* Detalhes */}
                 {aberto && (
                   <div className="px-4 sm:px-5 pb-4">
-                    <dl className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded-xl border border-white/[0.07] bg-neutral-50 dark:bg-white/[0.02] p-4 text-sm">
+                    <dl className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-[#0B1120] p-4 text-sm">
                       <Campo rotulo="Telefone" valor={formatarTelefone(u.telefone)} />
                       <Campo rotulo="Email" valor={u.email ?? "—"} />
                       <Campo rotulo="Empresa" valor={empresa ?? "—"} />
@@ -420,7 +423,7 @@ export default function AdminUtilizadores() {
         </div>
 
         {/* Rodapé / paginação */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3.5 border-t border-white/[0.07]">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3.5 border-t border-slate-200 dark:border-white/[0.07]">
           <p className="text-xs text-neutral-500">
             {filtrados.length === 0
               ? "0 utilizadores"

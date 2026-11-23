@@ -16,7 +16,10 @@ export async function GET() {
     if (!empresa) return ok({ condutores: [] });
 
     const condutores = await prisma.utilizador.findMany({
-      where: { papel: "CONDUTOR", camiao: { empresaId: empresa.id } },
+      where: {
+        papel: "CONDUTOR",
+        OR: [{ empresaCondutorId: empresa.id }, { camiao: { empresaId: empresa.id } }],
+      },
       orderBy: { criadoEm: "desc" },
       select: {
         id: true,
@@ -57,20 +60,45 @@ export async function POST(req: NextRequest) {
       return erro("Já existe uma conta com este número de telefone.", 409);
     }
 
-    const condutor = await prisma.utilizador.create({
-      data: {
-        nome: dados.nome,
-        telefone: dados.telefone,
-        senhaHash: await hashSenha(dados.senha),
-        papel: "CONDUTOR",
-        camiao: { connect: { id: camiao.id } },
-      },
-    });
+    const agora = new Date();
+    const condutor = await prisma.$transaction(async (tx) => {
+      const criado = await tx.utilizador.create({
+        data: {
+          nome: dados.nome,
+          telefone: dados.telefone,
+          senhaHash: await hashSenha(dados.senha),
+          papel: "CONDUTOR",
+          activo: true,
+          empresaCondutorId: empresa.id,
+        },
+      });
 
-    // Mantém os dados de contacto do camião em sincronia com a conta.
-    await prisma.camiao.update({
-      where: { id: camiao.id },
-      data: { motoristaNome: dados.nome, motoristaTelefone: dados.telefone },
+      await tx.camiao.update({
+        where: { id: camiao.id },
+        data: {
+          motoristaId: criado.id,
+          motoristaNome: dados.nome,
+          motoristaTelefone: dados.telefone,
+          disponivel: false,
+          partilhaLocalizacao: false,
+          localizacaoActualizadaEm: null,
+          lat: 0,
+          lng: 0,
+        },
+      });
+
+      await tx.atribuicaoCamiao.create({
+        data: {
+          camiaoId: camiao.id,
+          motoristaId: criado.id,
+          atribuidoPorId: sessao.id,
+          inicioEm: agora,
+          fimEm: null,
+          motivo: "Atribuição pela empresa",
+        },
+      });
+
+      return criado;
     });
 
     return ok({ id: condutor.id, telefone: condutor.telefone }, 201);
@@ -79,7 +107,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-/** DELETE: retira o acesso do condutor (conta desactivada, camião fica livre). */
+/** DELETE: retira o acesso do condutor (conta desactivada, camião fica livre e histórico fechado). */
 export async function DELETE(req: NextRequest) {
   try {
     const sessao = await exigirPapel("EMPRESA");
@@ -93,20 +121,40 @@ export async function DELETE(req: NextRequest) {
       where: { id: motoristaId },
       include: { camiao: { select: { id: true, empresaId: true } } },
     });
-    if (!condutor || condutor.camiao?.empresaId !== empresa.id) {
+    if (
+      !condutor ||
+      (condutor.empresaCondutorId !== empresa.id &&
+        condutor.camiao?.empresaId !== empresa.id)
+    ) {
       return erro("Condutor não encontrado.", 404);
     }
 
-    await prisma.$transaction([
-      prisma.camiao.update({
-        where: { id: condutor.camiao!.id },
-        data: { motoristaId: null },
-      }),
-      prisma.utilizador.update({
+    const agora = new Date();
+    await prisma.$transaction(async (tx) => {
+      if (condutor.camiao) {
+        await tx.atribuicaoCamiao.updateMany({
+          where: { camiaoId: condutor.camiao.id, fimEm: null },
+          data: { fimEm: agora },
+        });
+        await tx.camiao.update({
+          where: { id: condutor.camiao.id },
+          data: {
+            motoristaId: null,
+            motoristaNome: "",
+            motoristaTelefone: "",
+            disponivel: false,
+            partilhaLocalizacao: false,
+            localizacaoActualizadaEm: null,
+            lat: 0,
+            lng: 0,
+          },
+        });
+      }
+      await tx.utilizador.update({
         where: { id: condutor.id },
         data: { activo: false },
-      }),
-    ]);
+      });
+    });
 
     return ok({ sucesso: true });
   } catch (e) {

@@ -11,11 +11,23 @@ import type { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { contacto, senha } = schemaEntrar.parse(await req.json());
-    const c = contacto.trim().toLowerCase();
+    const limpo = contacto.trim();
+    const c = limpo.toLowerCase();
+    const digitos = limpo.replace(/[^\d+]/g, "");
+    const telefoneNormalizado =
+      /^8[2-7]\d{7}$/.test(digitos)
+        ? `+258${digitos}`
+        : /^2588[2-7]\d{7}$/.test(digitos)
+          ? `+${digitos}`
+          : digitos;
 
     const utilizador = await prisma.utilizador.findFirst({
       where: {
-        OR: [{ telefone: contacto.trim() }, { email: c }],
+        OR: [
+          { telefone: limpo },
+          { telefone: telefoneNormalizado },
+          { email: c },
+        ],
       },
     });
 

@@ -28,46 +28,46 @@ type ConfigCard = {
 const CONFIGS_EMPRESAS: Record<string, ConfigCard> = {
   "Matola Rio Assistência": {
     imagem: "/empresas/reboque-amarelo.jpg",
-    borda: "border-cyan-500/35",
-    bordaHover: "hover:border-cyan-400/80",
-    sombra: "shadow-[0_0_35px_rgba(6,182,212,0.08)]",
-    iconeBg: "bg-cyan-500/15",
-    iconeCor: "text-cyan-400",
-    tagCor: "border-cyan-500/30 text-cyan-400",
-    pinCor: "text-cyan-400",
+    borda: "border-slate-200 border-t-2 border-t-amber-500 dark:border-white/10 dark:border-t-amber-400",
+    bordaHover: "hover:border-amber-400 dark:hover:border-amber-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-amber-100 dark:bg-amber-500/15",
+    iconeCor: "text-amber-700 dark:text-amber-400",
+    tagCor: "border-amber-500/30 text-amber-700 dark:text-amber-400",
+    pinCor: "text-amber-600 dark:text-amber-400",
     notaPadrao: "4.5",
   },
   "Reboque Machava Lda": {
     imagem: "/empresas/reboque-branco.jpg",
-    borda: "border-emerald-500/35",
-    bordaHover: "hover:border-emerald-400/80",
-    sombra: "shadow-[0_0_35px_rgba(16,185,129,0.08)]",
-    iconeBg: "bg-emerald-500/15",
-    iconeCor: "text-emerald-400",
-    tagCor: "border-emerald-500/30 text-emerald-400",
-    pinCor: "text-emerald-400",
+    borda: "border-slate-200 border-t-2 border-t-emerald-500 dark:border-white/10 dark:border-t-emerald-400",
+    bordaHover: "hover:border-emerald-400 dark:hover:border-emerald-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-emerald-100 dark:bg-emerald-500/15",
+    iconeCor: "text-emerald-700 dark:text-emerald-400",
+    tagCor: "border-emerald-500/30 text-emerald-700 dark:text-emerald-400",
+    pinCor: "text-emerald-600 dark:text-emerald-400",
     notaPadrao: "4.5",
   },
   "Socorro Rápido Liberdade": {
     imagem: "/empresas/reboque-vermelho.jpg",
-    borda: "border-rose-500/35",
-    bordaHover: "hover:border-rose-400/80",
-    sombra: "shadow-[0_0_35px_rgba(244,63,94,0.08)]",
-    iconeBg: "bg-rose-500/15",
-    iconeCor: "text-rose-400",
-    tagCor: "border-rose-500/30 text-rose-400",
-    pinCor: "text-rose-400",
+    borda: "border-slate-200 border-t-2 border-t-rose-500 dark:border-white/10 dark:border-t-rose-400",
+    bordaHover: "hover:border-rose-400 dark:hover:border-rose-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-rose-100 dark:bg-rose-500/15",
+    iconeCor: "text-rose-700 dark:text-rose-400",
+    tagCor: "border-rose-500/30 text-rose-700 dark:text-rose-400",
+    pinCor: "text-rose-600 dark:text-rose-400",
     notaPadrao: "4.5",
   },
   "T3 Reboques & Socorro": {
     imagem: "/empresas/reboque-azul.jpg",
-    borda: "border-blue-500/35",
-    bordaHover: "hover:border-blue-400/80",
-    sombra: "shadow-[0_0_35px_rgba(59,130,246,0.08)]",
-    iconeBg: "bg-blue-500/15",
-    iconeCor: "text-blue-400",
-    tagCor: "border-blue-500/30 text-blue-400",
-    pinCor: "text-blue-400",
+    borda: "border-slate-200 border-t-2 border-t-sky-500 dark:border-white/10 dark:border-t-sky-400",
+    bordaHover: "hover:border-sky-400 dark:hover:border-sky-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-sky-100 dark:bg-sky-500/15",
+    iconeCor: "text-sky-700 dark:text-sky-400",
+    tagCor: "border-sky-500/30 text-sky-700 dark:text-sky-400",
+    pinCor: "text-sky-600 dark:text-sky-400",
     notaPadrao: "4.0",
   },
 };
@@ -75,46 +75,46 @@ const CONFIGS_EMPRESAS: Record<string, ConfigCard> = {
 const TEMAS_FALLBACK: ConfigCard[] = [
   {
     imagem: "/empresas/reboque-amarelo.jpg",
-    borda: "border-cyan-500/35",
-    bordaHover: "hover:border-cyan-400/80",
-    sombra: "shadow-[0_0_35px_rgba(6,182,212,0.08)]",
-    iconeBg: "bg-cyan-500/15",
-    iconeCor: "text-cyan-400",
-    tagCor: "border-cyan-500/30 text-cyan-400",
-    pinCor: "text-cyan-400",
+    borda: "border-slate-200 border-t-2 border-t-amber-500 dark:border-white/10 dark:border-t-amber-400",
+    bordaHover: "hover:border-amber-400 dark:hover:border-amber-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-amber-100 dark:bg-amber-500/15",
+    iconeCor: "text-amber-700 dark:text-amber-400",
+    tagCor: "border-amber-500/30 text-amber-700 dark:text-amber-400",
+    pinCor: "text-amber-600 dark:text-amber-400",
     notaPadrao: "4.5",
   },
   {
     imagem: "/empresas/reboque-branco.jpg",
-    borda: "border-emerald-500/35",
-    bordaHover: "hover:border-emerald-400/80",
-    sombra: "shadow-[0_0_35px_rgba(16,185,129,0.08)]",
-    iconeBg: "bg-emerald-500/15",
-    iconeCor: "text-emerald-400",
-    tagCor: "border-emerald-500/30 text-emerald-400",
-    pinCor: "text-emerald-400",
+    borda: "border-slate-200 border-t-2 border-t-emerald-500 dark:border-white/10 dark:border-t-emerald-400",
+    bordaHover: "hover:border-emerald-400 dark:hover:border-emerald-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-emerald-100 dark:bg-emerald-500/15",
+    iconeCor: "text-emerald-700 dark:text-emerald-400",
+    tagCor: "border-emerald-500/30 text-emerald-700 dark:text-emerald-400",
+    pinCor: "text-emerald-600 dark:text-emerald-400",
     notaPadrao: "4.5",
   },
   {
     imagem: "/empresas/reboque-vermelho.jpg",
-    borda: "border-rose-500/35",
-    bordaHover: "hover:border-rose-400/80",
-    sombra: "shadow-[0_0_35px_rgba(244,63,94,0.08)]",
-    iconeBg: "bg-rose-500/15",
-    iconeCor: "text-rose-400",
-    tagCor: "border-rose-500/30 text-rose-400",
-    pinCor: "text-rose-400",
+    borda: "border-slate-200 border-t-2 border-t-rose-500 dark:border-white/10 dark:border-t-rose-400",
+    bordaHover: "hover:border-rose-400 dark:hover:border-rose-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-rose-100 dark:bg-rose-500/15",
+    iconeCor: "text-rose-700 dark:text-rose-400",
+    tagCor: "border-rose-500/30 text-rose-700 dark:text-rose-400",
+    pinCor: "text-rose-600 dark:text-rose-400",
     notaPadrao: "4.5",
   },
   {
     imagem: "/empresas/reboque-azul.jpg",
-    borda: "border-blue-500/35",
-    bordaHover: "hover:border-blue-400/80",
-    sombra: "shadow-[0_0_35px_rgba(59,130,246,0.08)]",
-    iconeBg: "bg-blue-500/15",
-    iconeCor: "text-blue-400",
-    tagCor: "border-blue-500/30 text-blue-400",
-    pinCor: "text-blue-400",
+    borda: "border-slate-200 border-t-2 border-t-sky-500 dark:border-white/10 dark:border-t-sky-400",
+    bordaHover: "hover:border-sky-400 dark:hover:border-sky-400/70",
+    sombra: "shadow-sm dark:shadow-none",
+    iconeBg: "bg-sky-100 dark:bg-sky-500/15",
+    iconeCor: "text-sky-700 dark:text-sky-400",
+    tagCor: "border-sky-500/30 text-sky-700 dark:text-sky-400",
+    pinCor: "text-sky-600 dark:text-sky-400",
     notaPadrao: "4.0",
   },
 ];
@@ -307,9 +307,9 @@ export default async function PaginaEmpresas() {
   });
 
   return (
-    <div className="min-h-screen bg-[#060911] text-neutral-100 antialiased selection:bg-[#FFC300] selection:text-neutral-950">
-      {/* ===== HERO COM BANNER DO REBOQUE AO PÔR DO SOL ===== */}
-      <section className="relative overflow-hidden bg-[#060911] border-b border-white/[0.06]">
+    <div className="min-h-screen bg-[#FAF7F2] text-[#1E120B] dark:bg-[#0C0603] dark:text-[#F5EDE4] antialiased selection:bg-[#D97706] selection:text-white transition-colors duration-200">
+      {/* ===== SECÇÃO 1: HERO COM BANNER DO REBOQUE AO PÔR DO SOL ===== */}
+      <section className="relative overflow-hidden bg-[#FAF7F2] dark:bg-[#0C0603] border-b border-[#E5D6C3] dark:border-[#3A2212]/70">
         {/* Imagem de fundo alinhada à direita */}
         <div
           aria-hidden
@@ -319,51 +319,51 @@ export default async function PaginaEmpresas() {
             backgroundPosition: "88% center",
           }}
         />
-        {/* Degradês para integração cinematográfica e leitura do texto */}
+        {/* Degradês adaptativos claro/escuro */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-[#060911] via-[#060911]/95 sm:via-[#060911]/85 to-transparent pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/95 sm:via-[#FAF7F2]/88 to-[#FAF7F2]/20 dark:from-[#0C0603] dark:via-[#0C0603]/92 sm:dark:via-[#0C0603]/84 dark:to-transparent pointer-events-none"
         />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#060911] to-transparent pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#FAF7F2] dark:from-[#0C0603] to-transparent pointer-events-none"
         />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-10 sm:pb-14">
-          {/* Traço indicador em amarelo dourado */}
-          <div className="w-10 h-1 rounded-full bg-[#FFC300] mb-3 shadow-[0_0_10px_rgba(255,195,0,0.5)]" />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-12 pb-12 sm:pb-14">
+          <div className="w-10 h-1 rounded-full bg-[#9A4D0D] dark:bg-[#F59E0B] mb-3" />
 
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-[1.1]">
-            Empresas de <span className="text-[#FFC300]">reboque</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1A100A] dark:text-white tracking-tight leading-[1.1]">
+            Empresas de{" "}
+            <span className="text-[#9A4D0D] dark:text-[#F59E0B]">reboque</span>
           </h1>
 
-          <p className="mt-2 text-xs sm:text-sm text-neutral-300 max-w-xl leading-relaxed">
+          <p className="mt-2.5 text-sm text-[#594637] dark:text-[#D1C0AE] max-w-xl leading-relaxed">
             Empresas aprovadas a operar na Cidade da Matola. Os preços são faixas
             definidas por cada empresa, por tipo de veículo e distância.
           </p>
         </div>
       </section>
 
-      {/* ===== GRELHA DE EMPRESAS (2x2) ===== */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      {/* ===== SECÇÃO 2: GRELHA DE EMPRESAS (2x2) ===== */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {empresas.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-[#0a0f1d] p-10 text-center max-w-md mx-auto">
+          <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] p-10 text-center max-w-md mx-auto">
             <span className="text-4xl block mb-2.5">🛻</span>
-            <h2 className="text-lg font-bold text-white mb-1.5">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1.5">
               Ainda não há empresas aprovadas
             </h2>
-            <p className="text-xs text-neutral-400 mb-5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
               Volte mais tarde ou registe a sua empresa de reboque na plataforma.
             </p>
             <Link
               href="/registar/empresa"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#FFC300] text-neutral-950 font-bold text-xs hover:bg-[#ffd033] transition"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#FFC300] text-slate-950 font-bold text-xs hover:bg-[#ffd033] transition"
             >
               Registar empresa
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {empresas.map((e, index) => {
               const cfg =
                 CONFIGS_EMPRESAS[e.nome] ||
@@ -386,20 +386,17 @@ export default async function PaginaEmpresas() {
               return (
                 <article
                   key={e.id}
-                  className={`group relative rounded-2xl bg-[#090e1a]/95 border ${cfg.borda} ${cfg.bordaHover} ${cfg.sombra} transition-all duration-300 p-3.5 sm:p-4 flex flex-col sm:flex-row gap-3.5 sm:gap-4`}
+                  className={`group relative rounded-2xl bg-white dark:bg-[#0E1629] border ${cfg.borda} ${cfg.bordaHover} ${cfg.sombra} transition-all duration-200 p-4 flex flex-col sm:flex-row gap-4`}
                 >
                   {/* Foto do camião de reboque */}
-                  <div className="relative w-full sm:w-36 md:w-44 h-36 sm:h-auto sm:self-stretch rounded-xl overflow-hidden shrink-0 bg-neutral-950 border border-white/10 shadow-inner">
+                  <div className="relative w-full sm:w-36 md:w-44 h-40 sm:h-auto sm:self-stretch rounded-xl overflow-hidden shrink-0 bg-slate-200 dark:bg-slate-950 border border-slate-200/80 dark:border-white/10">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={cfg.imagem}
                       alt={`Camião de reboque da ${e.nome}`}
+                      referrerPolicy="no-referrer"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
-                    />
-                    <div
-                      aria-hidden
-                      className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"
                     />
                   </div>
 
@@ -408,38 +405,36 @@ export default async function PaginaEmpresas() {
                     {/* Cabeçalho do Cartão */}
                     <div>
                       <div className="flex items-start justify-between gap-2">
-                        <h2 className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-snug truncate">
+                        <h2 className="font-extrabold text-base text-slate-950 dark:text-white tracking-tight leading-snug truncate">
                           {e.nome}
                         </h2>
-
-                        {/* Tag Disponível */}
-                        <span className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          {e.disponivel ? "Disponível" : "Disponível"}
+                        <span className="shrink-0 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
+                          {e.disponivel === false ? "Indisponível" : "Disponível"}
                         </span>
                       </div>
 
                       {/* Localização */}
-                      <p className="text-[11px] text-neutral-400 flex items-center gap-1.5 mt-0.5">
-                        <IconePin className="w-3 h-3 text-neutral-400 shrink-0" />
+                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                        <IconePin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span className="truncate">{e.endereco}</span>
                       </p>
 
                       {/* Avaliação e camiões */}
-                      <div className="flex items-center gap-3 mt-1.5 text-[11px]">
-                        <span className="text-[#FFC300] font-bold flex items-center gap-1">
-                          <IconeEstrela className="w-3 h-3 fill-[#FFC300] text-[#FFC300]" />
+                      <div className="flex items-center gap-3 mt-1.5 text-xs tabular-nums">
+                        <span className="text-amber-600 dark:text-[#FFC300] font-bold flex items-center gap-1">
+                          <IconeEstrela className="w-3.5 h-3.5 fill-amber-500 text-amber-500 dark:fill-[#FFC300] dark:text-[#FFC300]" />
                           <span>{mediaCalculada}</span>
                         </span>
-                        <span className="text-neutral-300 flex items-center gap-1">
-                          <IconeCamiaoMini className="w-3 h-3 text-neutral-400" />
+                        <span className="text-slate-300 dark:text-slate-600">·</span>
+                        <span className="text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                          <IconeCamiaoMini className="w-3.5 h-3.5 text-slate-400" />
                           <span>{totalCamioes} camiões</span>
                         </span>
                       </div>
                     </div>
 
                     {/* Tabela de Preços por Tipo de Veículo (4 Linhas) */}
-                    <div className="space-y-1 mt-2.5">
+                    <div className="space-y-1.5 mt-3">
                       {TIPOS_VEICULO.map(({ chave, rotulo }) => {
                         const { t1, t2, t3, t4 } = obterFaixasPorTipo(
                           e.precos,
@@ -449,7 +444,7 @@ export default async function PaginaEmpresas() {
                         return (
                           <div
                             key={chave}
-                            className="rounded-lg bg-[#0d1424] border border-white/[0.06] px-2 py-1 flex items-center gap-2 transition-colors hover:border-white/10"
+                            className="rounded-lg bg-slate-50 dark:bg-[#131D33] border border-slate-200/80 dark:border-white/[0.07] px-2.5 py-1.5 flex items-center gap-2 transition-colors hover:border-slate-300 dark:hover:border-white/15"
                           >
                             {/* Ícone e nome do tipo de veículo */}
                             <div className="flex items-center gap-1.5 w-24 sm:w-28 shrink-0">
@@ -458,34 +453,34 @@ export default async function PaginaEmpresas() {
                               >
                                 <IconeVeiculo tipo={chave} className="w-3 h-3" />
                               </span>
-                              <span className="text-[11px] font-bold text-neutral-200 truncate">
+                              <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">
                                 {rotulo}
                               </span>
                             </div>
 
                             {/* Matriz 2 Colunas de Faixas de Distância */}
-                            <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-2.5 gap-y-0.5 text-[10px] sm:text-[10.5px] leading-tight">
+                            <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-2.5 gap-y-0.5 text-[10px] sm:text-[10.5px] leading-tight tabular-nums">
                               {/* Coluna 1: 0-5 km & 10-20 km */}
                               <div className="space-y-0.5 min-w-0">
                                 <div className="truncate">
-                                  <span className="text-neutral-400">0.0 km – 5.0 km: </span>
-                                  <b className="font-semibold text-white">{t1}</b>
+                                  <span className="text-slate-500 dark:text-slate-400">0–5 km: </span>
+                                  <b className="font-semibold text-slate-900 dark:text-white">{t1}</b>
                                 </div>
                                 <div className="truncate">
-                                  <span className="text-neutral-400">10 km – 20 km: </span>
-                                  <b className="font-semibold text-white">{t3}</b>
+                                  <span className="text-slate-500 dark:text-slate-400">10–20 km: </span>
+                                  <b className="font-semibold text-slate-900 dark:text-white">{t3}</b>
                                 </div>
                               </div>
 
                               {/* Coluna 2: 5-10 km & 20+ km */}
                               <div className="space-y-0.5 min-w-0">
                                 <div className="truncate">
-                                  <span className="text-neutral-400">5.0 km – 10 km: </span>
-                                  <b className="font-semibold text-white">{t2}</b>
+                                  <span className="text-slate-500 dark:text-slate-400">5–10 km: </span>
+                                  <b className="font-semibold text-slate-900 dark:text-white">{t2}</b>
                                 </div>
                                 <div className="truncate">
-                                  <span className="text-neutral-400">20+ km: </span>
-                                  <b className="font-semibold text-white">{t4}</b>
+                                  <span className="text-slate-500 dark:text-slate-400">20+ km: </span>
+                                  <b className="font-semibold text-slate-900 dark:text-white">{t4}</b>
                                 </div>
                               </div>
                             </div>

@@ -20,6 +20,7 @@ export async function GET() {
         // Empresa do utilizador (papel EMPRESA) e, para condutores, o camião e
         // a empresa a que está afecto — permite filtrar por empresa no painel.
         empresa: { select: { id: true, nome: true } },
+        empresaCondutor: { select: { id: true, nome: true } },
         camiao: {
           select: {
             matricula: true,
@@ -46,6 +47,12 @@ export async function PATCH(req: NextRequest) {
     }
 
     await prisma.utilizador.update({ where: { id }, data: { activo } });
+    if (!activo) {
+      await prisma.camiao.updateMany({
+        where: { motoristaId: id },
+        data: { disponivel: false, partilhaLocalizacao: false },
+      });
+    }
     return ok({ sucesso: true });
   } catch (e) {
     return tratarErroApi(e);

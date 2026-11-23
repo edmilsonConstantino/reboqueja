@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { exigirPapel } from "@/lib/auth";
 import { ok, erro, tratarErroApi } from "@/lib/api";
 import { schemaCamiao } from "@/lib/validations";
-import { CENTRO_MATOLA } from "@/lib/constants";
 import type { NextRequest } from "next/server";
 
 async function empresaId(sessaoId: string) {
@@ -37,17 +36,31 @@ export async function POST(req: NextRequest) {
     if (!id) return erro("Empresa não encontrada.", 404);
 
     const dados = schemaCamiao.parse(await req.json());
+    const matricula = dados.matricula.trim().toUpperCase();
+    const duplicada = await prisma.camiao.findFirst({
+      where: { matricula },
+      select: { id: true },
+    });
+    if (duplicada) {
+      return erro(`Já existe um camião com a matrícula ${matricula}.`, 409);
+    }
+
     const camiao = await prisma.camiao.create({
       data: {
         empresaId: id,
-        matricula: dados.matricula.toUpperCase(),
+        matricula,
+        marca: dados.marca?.trim() || null,
+        modelo: dados.modelo?.trim() || null,
         tipo: dados.tipo,
-        capacidade: dados.capacidade || null,
-        motoristaNome: dados.motoristaNome,
-        motoristaTelefone: dados.motoristaTelefone,
+        capacidade: dados.capacidade?.trim() || null,
+        motoristaNome: dados.motoristaNome || "",
+        motoristaTelefone: dados.motoristaTelefone || "",
         activo: dados.activo ?? true,
-        lat: CENTRO_MATOLA.lat + (Math.random() - 0.5) * 0.04,
-        lng: CENTRO_MATOLA.lng + (Math.random() - 0.5) * 0.04,
+        lat: 0,
+        lng: 0,
+        disponivel: false,
+        partilhaLocalizacao: false,
+        localizacaoActualizadaEm: null,
       },
     });
     return ok({ id: camiao.id }, 201);
@@ -74,8 +87,11 @@ export async function PATCH(req: NextRequest) {
       where: { id: camiaoId },
       data: {
         ...parsed,
-        matricula: parsed.matricula?.toUpperCase(),
-        capacidade: parsed.capacidade ?? undefined,
+        matricula: parsed.matricula?.trim().toUpperCase(),
+        marca: parsed.marca !== undefined ? parsed.marca?.trim() || null : undefined,
+        modelo: parsed.modelo !== undefined ? parsed.modelo?.trim() || null : undefined,
+        capacidade: parsed.capacidade !== undefined ? parsed.capacidade?.trim() || null : undefined,
+        ...(parsed.activo === false ? { disponivel: false, partilhaLocalizacao: false } : {}),
       },
     });
     return ok({ sucesso: true });

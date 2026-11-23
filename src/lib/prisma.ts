@@ -1,23 +1,45 @@
 import "server-only";
 import { PrismaClient } from "@prisma/client";
+import { getMockPrismaClient } from "@/lib/mock-prisma";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL não está definido. Configure a connection string Postgres " +
-      "(no Vercel: pooled URL do Neon/Supabase) nas variáveis de ambiente."
-  );
+function isDatabaseConfigured(): boolean {
+  const url = process.env.DATABASE_URL?.trim();
+  if (!url) return false;
+  if (!/^postgres(ql)?:\/\//i.test(url)) return false;
+  // Detect template / placeholder Neon or example connection strings
+  if (
+    url.includes("ep-xxxx") ||
+    url.includes("utilizador:senha") ||
+    url.includes("usuario:senha") ||
+    url.includes("placeholder")
+  ) {
+    return false;
+  }
+  return true;
 }
 
-/**
- * Cliente Prisma único por processo. Em desenvolvimento o global evita
- * recriar ligações a cada hot reload.
- */
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
-  });
+let prismaInstance: PrismaClient;
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (!isDatabaseConfigured()) {
+  prismaInstance = getMockPrismaClient();
+} else {
+  try {
+    prismaInstance =
+      globalForPrisma.prisma ??
+      new PrismaClient({
+        log:
+          process.env.NODE_ENV === "development"
+            ? ["warn", "error"]
+            : ["error"],
+      });
+    if (process.env.NODE_ENV !== "production") {
+      globalForPrisma.prisma = prismaInstance;
+    }
+  } catch {
+    prismaInstance = getMockPrismaClient();
+  }
+}
+
+export const prisma = prismaInstance;

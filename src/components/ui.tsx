@@ -2,7 +2,25 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
+import {
+  ArrowRight,
+  ArrowUp,
+  Building2,
+  ChevronDown,
+  FileText,
+  Home,
+  Info,
+  LogOut,
+  Mail,
+  MapPin,
+  Menu,
+  Moon,
+  Phone,
+  Sun,
+  User,
+  X,
+} from "lucide-react";
 import { usarTema } from "@/components/ProvedorTema";
 
 export function Botao({
@@ -18,11 +36,11 @@ export function Botao({
     "min-h-[48px] px-5 rounded-xl font-semibold text-sm transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none inline-flex items-center justify-center gap-2";
   const variantes: Record<string, string> = {
     primario:
-      "bg-primary-400 text-neutral-900 hover:bg-primary-300 shadow-card",
+      "bg-primary-400 text-slate-950 hover:bg-primary-300 shadow-card",
     contorno:
-      "border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-900 dark:text-neutral-100",
+      "border border-slate-300 dark:border-white/15 bg-white dark:bg-[#0E1629] hover:bg-slate-50 dark:hover:bg-white/[0.06] text-slate-900 dark:text-slate-100",
     fantasma:
-      "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800",
+      "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06]",
     perigo: "bg-red-600 text-white hover:bg-red-500",
     sucesso: "bg-emerald-600 text-white hover:bg-emerald-500",
   };
@@ -42,7 +60,7 @@ export function Cartao({
 }) {
   return (
     <div
-      className={`bg-white dark:bg-neutral-900 rounded-2xl shadow-card border border-neutral-100 dark:border-neutral-800 ${className}`}
+      className={`bg-white dark:bg-[#0E1629] rounded-2xl shadow-card border border-slate-200/80 dark:border-white/10 ${className}`}
     >
       {children}
     </div>
@@ -57,15 +75,15 @@ export function Etiqueta({
   cor?: "amarelo" | "verde" | "vermelho" | "cinza" | "azul";
 }) {
   const cores: Record<string, string> = {
-    amarelo: "bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-200",
-    verde: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-    vermelho: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-    cinza: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300",
-    azul: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+    amarelo: "bg-amber-100 text-amber-800 dark:bg-primary-400/15 dark:text-primary-300",
+    verde: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
+    vermelho: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
+    cinza: "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300",
+    azul: "bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300",
   };
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${cores[cor]}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${cores[cor]}`}
     >
       {children}
     </span>
@@ -80,15 +98,15 @@ export function Entrada({
   return (
     <label className="block">
       {rotulo && (
-        <span className="block text-sm font-medium mb-1.5 text-neutral-700 dark:text-neutral-300">
+        <span className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">
           {rotulo}
         </span>
       )}
       <input
-        className={`w-full min-h-[48px] px-4 rounded-xl border bg-white dark:bg-neutral-900 text-sm outline-none transition focus:ring-2 focus:ring-primary-400 ${
+        className={`w-full min-h-[48px] px-4 rounded-xl border bg-white dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 text-sm outline-none transition focus:ring-2 focus:ring-primary-400 ${
           erro
             ? "border-red-400"
-            : "border-neutral-300 dark:border-neutral-700"
+            : "border-slate-300 dark:border-white/15"
         }`}
         {...props}
       />
@@ -104,12 +122,12 @@ export function AreaTexto({
   return (
     <label className="block">
       {rotulo && (
-        <span className="block text-sm font-medium mb-1.5 text-neutral-700 dark:text-neutral-300">
+        <span className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">
           {rotulo}
         </span>
       )}
       <textarea
-        className="w-full min-h-[80px] p-3 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm outline-none focus:ring-2 focus:ring-primary-400"
+        className="w-full min-h-[80px] p-3 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 text-sm outline-none focus:ring-2 focus:ring-primary-400"
         {...props}
       />
     </label>
@@ -124,12 +142,12 @@ export function Selector({
   return (
     <label className="block">
       {rotulo && (
-        <span className="block text-sm font-medium mb-1.5 text-neutral-700 dark:text-neutral-300">
+        <span className="block text-sm font-medium mb-1.5 text-slate-700 dark:text-slate-300">
           {rotulo}
         </span>
       )}
       <select
-        className="w-full min-h-[48px] px-3 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm outline-none focus:ring-2 focus:ring-primary-400"
+        className="w-full min-h-[48px] px-3 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 text-sm outline-none focus:ring-2 focus:ring-primary-400"
         {...props}
       >
         {children}
@@ -294,14 +312,18 @@ export function BarraNavegacaoPublica() {
   };
 
   const itens = [
-    { href: "/", rotulo: "Início", icone: <IconeCasa className="w-[18px] h-[18px]" /> },
-    { href: "/empresas", rotulo: "Empresas", icone: <IconePredio className="w-[18px] h-[18px]" /> },
-    { href: "/termos", rotulo: "Termos", icone: <IconeDoc className="w-[18px] h-[18px]" /> },
+    { href: "/", rotulo: "Início", icone: <Home className="w-4 h-4" /> },
+    { href: "/empresas", rotulo: "Empresas", icone: <Building2 className="w-4 h-4" /> },
+    { href: "/termos", rotulo: "Termos", icone: <FileText className="w-4 h-4" /> },
+    { href: "/#como-funciona", rotulo: "Sobre", icone: <Info className="w-4 h-4" /> },
   ];
-  const estaActivo = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const estaActivo = (href: string) => {
+    if (href === "/") return pathname === "/";
+    if (href.startsWith("/#")) return false;
+    return pathname.startsWith(href);
+  };
 
-  // Na página inicial a barra fica transparente sobre o hero até rolar.
+  // Na página inicial a barra fica translúcida sobre o hero até rolar.
   const emCasa = pathname === "/";
   const transparente = emCasa && !rolou && !menuAberto;
 
@@ -309,7 +331,6 @@ export function BarraNavegacaoPublica() {
   const primeiroNome = sessao?.nome.split(" ")[0] ?? "";
   const inicial = primeiroNome.charAt(0).toUpperCase();
 
-  // Botão de acção quando não há sessão (adapta-se à página actual)
   const accaoAuth =
     pathname === "/entrar"
       ? { href: "/registar", rotulo: "Criar conta" }
@@ -319,30 +340,35 @@ export function BarraNavegacaoPublica() {
     <header
       className={`${emCasa ? "fixed inset-x-0" : "sticky"} top-0 z-40 pt-[env(safe-area-inset-top)] transition-all duration-300 ${
         transparente
-          ? "bg-transparent border-b border-transparent"
-          : "bg-neutral-950/85 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20"
+          ? "bg-[#FAF7F2]/70 dark:bg-transparent backdrop-blur-md dark:backdrop-blur-none border-b border-[#E5D6C3]/60 dark:border-transparent"
+          : "bg-[#FAF7F2]/95 dark:bg-[#0D0704]/92 backdrop-blur-md border-b border-[#E5D6C3] dark:border-[#3A2212]/80 shadow-sm dark:shadow-lg dark:shadow-black/30"
       }`}
     >
       <div
-        className={`max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 transition-all duration-300 ${
-          transparente ? "h-20" : "h-16"
+        className={`max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-6 transition-all duration-300 ${
+          transparente ? "h-16 sm:h-20" : "h-16"
         }`}
       >
-        {/* Logo */}
-        <Link href="/" className="group flex items-center gap-2 shrink-0" aria-label="ReboqueJá — início">
+        {/* Zona 1: Marca */}
+        <Link
+          href="/"
+          className="group flex items-center gap-2.5 shrink-0 whitespace-nowrap"
+          aria-label="ReboqueJá — início"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.svg"
             alt=""
-            className="w-8 h-8 rounded-lg shadow-[0_0_0_2px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
+            className="w-8 h-8 rounded-lg shadow-[0_0_0_2px_rgba(180,83,9,0.28)] dark:shadow-[0_0_0_2px_rgba(245,158,11,0.3)] transition group-hover:scale-105"
           />
-          <span className="font-extrabold text-lg tracking-tight text-white">
-            Reboque<span className="text-primary-400">Já</span>
+          <span className="font-extrabold text-lg tracking-tight text-[#1A100A] dark:text-white">
+            Reboque
+            <span className="text-[#9A4D0D] dark:text-[#F59E0B]">Já</span>
           </span>
         </Link>
 
-        {/* Links centrais (desktop) */}
-        <nav className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/10">
+        {/* Zona 2: Links centrais em cápsula */}
+        <nav className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/85 dark:bg-[#1A0F08]/85 border border-[#DFCEB9] dark:border-[#492C19]/80 shadow-sm dark:shadow-none backdrop-blur-md">
           {itens.map((item) => {
             const activo = estaActivo(item.href);
             return (
@@ -350,99 +376,90 @@ export function BarraNavegacaoPublica() {
                 key={item.href}
                 href={item.href}
                 aria-current={activo ? "page" : undefined}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition ${
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 transition ${
                   activo
-                    ? "bg-primary-400 text-neutral-950 shadow-[0_4px_14px_-4px_rgba(255,195,0,0.6)]"
-                    : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
+                    ? "bg-gradient-to-r from-[#A45312] to-[#7C3B0B] text-white dark:from-[#D97706] dark:to-[#92400E] dark:text-white shadow-sm"
+                    : "text-[#594637] hover:text-[#1A100A] hover:bg-[#F5EDE2] dark:text-[#D1C0AE] dark:hover:text-white dark:hover:bg-[#2A180D]"
                 }`}
               >
                 {item.icone}
-                {item.rotulo}
+                <span>{item.rotulo}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Acções (desktop) */}
-        <div className="hidden md:flex items-center gap-2 shrink-0">
+        {/* Zona 3: Tema + Acção principal */}
+        <div className="hidden md:flex items-center gap-2.5 shrink-0">
           <BotaoTema tema={tema} alternar={alternar} />
 
           {sessao && painel ? (
             <>
               <Link
                 href={painel.href}
-                className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1.5 rounded-xl hover:bg-white/[0.06] transition"
+                className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1.5 rounded-full hover:bg-[#EFE4D6] dark:hover:bg-[#1F120A] transition"
                 title={`Ir para: ${painel.rotulo}`}
               >
-                <span className="w-8 h-8 rounded-full bg-primary-400 text-neutral-950 grid place-items-center text-sm font-extrabold">
+                <span className="w-8 h-8 rounded-full bg-gradient-to-br from-[#A45312] to-[#7C3B0B] dark:from-[#F59E0B] dark:to-[#B45309] text-white dark:text-[#140B05] grid place-items-center text-sm font-extrabold">
                   {inicial}
                 </span>
                 <span className="flex flex-col leading-tight text-left">
-                  <span className="text-sm font-semibold text-white max-w-[120px] truncate">
+                  <span className="text-sm font-semibold text-[#1A100A] dark:text-white max-w-[120px] truncate">
                     {primeiroNome}
                   </span>
-                  <span className="text-[11px] text-neutral-400">
+                  <span className="text-[11px] text-[#6B5747] dark:text-[#B9A490]">
                     {ROTULO_PAPEL[sessao.papel] ?? sessao.papel}
                   </span>
                 </span>
-                <IconeChevronBaixo className="w-4 h-4 text-neutral-400 ml-0.5" />
+                <ChevronDown className="w-4 h-4 text-[#8C735B] ml-0.5" />
               </Link>
               <button
                 onClick={sair}
                 disabled={aSair}
                 title="Terminar sessão"
                 aria-label="Terminar sessão"
-                className="w-10 h-10 grid place-items-center rounded-lg text-neutral-400 hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
+                className="w-10 h-10 grid place-items-center rounded-full text-[#6B5747] dark:text-[#B9A490] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
               >
-                <IconeSair className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
               </button>
             </>
           ) : (
-            <>
-              {!paginaAuth && (
-                <Link
-                  href="/entrar?tipo=empresa"
-                  className="hidden lg:inline-flex items-center px-3 py-2 rounded-full text-sm font-semibold text-neutral-300 hover:text-white transition"
-                >
-                  Sou empresa
-                </Link>
-              )}
-              <Link
-                href={accaoAuth.href}
-                className="group bg-primary-400 text-neutral-950 pl-4 pr-3 py-2.5 rounded-full font-bold text-sm hover:bg-primary-300 inline-flex items-center gap-1.5 transition shadow-[0_4px_14px_-4px_rgba(255,195,0,0.6)]"
-              >
-                <IconeUtilizador className="w-4 h-4" /> {accaoAuth.rotulo}
-                <span aria-hidden className="transition group-hover:translate-x-0.5">→</span>
-              </Link>
-            </>
+            <Link
+              href={accaoAuth.href}
+              className="group bg-gradient-to-r from-[#A45312] to-[#7C3B0B] hover:from-[#B45C15] hover:to-[#8B430E] dark:from-[#D97706] dark:to-[#92400E] dark:hover:from-[#F59E0B] dark:hover:to-[#B45309] text-white pl-4 pr-3.5 py-2.5 rounded-full font-bold text-sm inline-flex items-center gap-1.5 transition shadow-md shadow-[#9A4D0D]/25 whitespace-nowrap shrink-0"
+            >
+              <User className="w-4 h-4" />
+              <span>{accaoAuth.rotulo}</span>
+              <ArrowRight className="w-3.5 h-3.5 transition group-hover:translate-x-0.5" />
+            </Link>
           )}
         </div>
 
         {/* Mobile: tema + menu */}
-        <div className="flex md:hidden items-center gap-1">
+        <div className="flex md:hidden items-center gap-1.5">
           <BotaoTema tema={tema} alternar={alternar} />
           <button
             onClick={() => setMenuAberto((v) => !v)}
             aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
             aria-expanded={menuAberto}
-            className="w-10 h-10 grid place-items-center rounded-lg text-neutral-200 hover:bg-neutral-900 transition"
+            className="w-10 h-10 grid place-items-center rounded-full text-[#2C1C12] dark:text-[#F5EDE4] hover:bg-[#EFE4D6] dark:hover:bg-[#1F120A] transition"
           >
-            {menuAberto ? <IconeFechar className="w-6 h-6" /> : <IconeMenu className="w-6 h-6" />}
+            {menuAberto ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Menu mobile */}
       {menuAberto && (
-        <div className="md:hidden border-t border-white/10 bg-neutral-950 px-4 pb-4 pt-2">
+        <div className="md:hidden border-t border-[#E5D6C3] dark:border-[#3A2212] bg-[#FAF7F2] dark:bg-[#120A05] px-4 pb-4 pt-2 shadow-lg">
           {sessao && painel && (
-            <div className="flex items-center gap-3 py-3 mb-2 border-b border-neutral-800">
-              <span className="w-10 h-10 rounded-full bg-primary-400 text-neutral-950 grid place-items-center font-extrabold">
+            <div className="flex items-center gap-3 py-3 mb-2 border-b border-[#E5D6C3] dark:border-[#3A2212]">
+              <span className="w-10 h-10 rounded-full bg-gradient-to-br from-[#A45312] to-[#7C3B0B] dark:from-[#F59E0B] dark:to-[#B45309] text-white dark:text-[#140B05] grid place-items-center font-extrabold">
                 {inicial}
               </span>
               <div className="leading-tight">
-                <p className="text-sm font-semibold text-white">{sessao.nome}</p>
-                <p className="text-xs text-neutral-400">{ROTULO_PAPEL[sessao.papel] ?? sessao.papel}</p>
+                <p className="text-sm font-semibold text-[#1A100A] dark:text-white">{sessao.nome}</p>
+                <p className="text-xs text-[#6B5747] dark:text-[#B9A490]">{ROTULO_PAPEL[sessao.papel] ?? sessao.papel}</p>
               </div>
             </div>
           )}
@@ -453,14 +470,14 @@ export function BarraNavegacaoPublica() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold transition ${
+                  className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition ${
                     activo
-                      ? "bg-neutral-900 text-primary-400"
-                      : "text-neutral-300 hover:bg-neutral-900 hover:text-white"
+                      ? "bg-[#EFE4D6] text-[#9A4D0D] dark:bg-[#2A180D] dark:text-[#FBBF24]"
+                      : "text-[#4A3728] hover:bg-[#EFE4D6]/60 hover:text-[#1A100A] dark:text-[#D1C0AE] dark:hover:bg-[#1E1109] dark:hover:text-white"
                   }`}
                 >
                   {item.icone}
-                  {item.rotulo}
+                  <span>{item.rotulo}</span>
                 </Link>
               );
             })}
@@ -470,23 +487,23 @@ export function BarraNavegacaoPublica() {
               <>
                 <Link
                   href={painel.href}
-                  className="w-full text-center bg-primary-400 text-neutral-950 py-3 rounded-xl font-bold text-sm"
+                  className="w-full text-center bg-gradient-to-r from-[#A45312] to-[#7C3B0B] dark:from-[#F59E0B] dark:to-[#B45309] text-white dark:text-[#140B05] py-3 rounded-xl font-bold text-sm"
                 >
                   {painel.rotulo}
                 </Link>
                 <button
                   onClick={sair}
                   disabled={aSair}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/60 text-red-400 text-sm font-bold disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/40 text-red-600 dark:text-red-400 text-sm font-bold disabled:opacity-50"
                 >
-                  <IconeSair className="w-4 h-4" />
-                  {aSair ? "A sair…" : "Sair"}
+                  <LogOut className="w-4 h-4" />
+                  <span>{aSair ? "A sair…" : "Sair"}</span>
                 </button>
               </>
             ) : (
               <Link
                 href={accaoAuth.href}
-                className="w-full text-center bg-primary-400 text-neutral-950 py-3 rounded-xl font-bold text-sm"
+                className="w-full text-center bg-gradient-to-r from-[#A45312] to-[#7C3B0B] dark:from-[#D97706] dark:to-[#92400E] text-white py-3 rounded-xl font-bold text-sm"
               >
                 {accaoAuth.rotulo}
               </Link>
@@ -503,128 +520,200 @@ function BotaoTema({ tema, alternar }: { tema: string; alternar: () => void }) {
     <button
       onClick={alternar}
       aria-label="Alternar tema"
-      title={tema === "escuro" ? "Modo claro" : "Modo escuro"}
-      className="w-10 h-10 grid place-items-center rounded-full text-neutral-300 hover:text-primary-400 hover:bg-white/[0.06] transition"
+      title={tema === "escuro" ? "Mudar para modo claro" : "Mudar para modo escuro"}
+      className="w-10 h-10 grid place-items-center rounded-full border border-[#DFCEB9] bg-white/80 text-[#594637] hover:text-[#9A4D0D] hover:bg-white dark:border-[#492C19]/80 dark:bg-[#1A0F08]/80 dark:text-[#D1C0AE] dark:hover:text-[#F59E0B] dark:hover:bg-[#2A180D] transition"
     >
-      {tema === "escuro" ? <IconeSol className="w-5 h-5" /> : <IconeLua className="w-5 h-5" />}
+      {tema === "escuro" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </button>
   );
 }
 
-/* ===== Ícones da navbar ===== */
-
-function IconeMenu(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" {...props}>
-      <path d="M4 7h16M4 12h16M4 17h16" />
-    </svg>
-  );
-}
-
-function IconeFechar(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" {...props}>
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
-  );
-}
-
-function IconeSol(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" {...props}>
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-    </svg>
-  );
-}
-
-function IconeLua(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
-    </svg>
-  );
-}
-
-function IconeCasa(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M3 10.5 12 3l9 7.5" />
-      <path d="M5 9.5V21h14V9.5" />
-    </svg>
-  );
-}
-
-function IconePredio(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <rect x="4" y="3" width="16" height="18" rx="1.5" />
-      <path d="M9 7h1.5M13.5 7H15M9 11h1.5M13.5 11H15M9 15h1.5M13.5 15H15" />
-      <path d="M10.5 21v-3h3v3" />
-    </svg>
-  );
-}
-
-function IconeDoc(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <rect x="5" y="3" width="14" height="18" rx="2" />
-      <path d="M9 8h6M9 12h6M9 16h4" />
-    </svg>
-  );
-}
-
-function IconeUtilizador(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
-    </svg>
-  );
-}
-
-function IconeSair(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <path d="m16 17 5-5-5-5" />
-      <path d="M21 12H9" />
-    </svg>
-  );
-}
-
-function IconeChevronBaixo(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
 export function Rodape() {
+  const [emailNewsletter, setEmailNewsletter] = useState("");
+  const [subscrito, setSubscrito] = useState(false);
+  const [erroNewsletter, setErroNewsletter] = useState("");
+
+  const subscrever = (e: FormEvent) => {
+    e.preventDefault();
+    const v = emailNewsletter.trim();
+    if (!v || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+      setErroNewsletter("Indique um email válido.");
+      setSubscrito(false);
+      return;
+    }
+    setErroNewsletter("");
+    setSubscrito(true);
+    setEmailNewsletter("");
+  };
+
+  const voltarTopo = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <footer className="border-t border-white/10 py-10 mt-16 bg-[#060911] text-center">
-      <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-2">
-        <Link href="/" className="inline-flex items-center gap-2 group">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.svg"
-            alt=""
-            className="w-7 h-7 rounded-lg shadow-[0_0_0_2px_rgba(255,195,0,0.2)] transition group-hover:scale-105"
-          />
-          <span className="font-extrabold text-base tracking-tight text-white">
-            Reboque<span className="text-primary-400">Já</span>
-          </span>
-        </Link>
-        <p className="text-xs font-semibold text-neutral-300 mt-1">
-          Reboque Já — protótipo académico
-        </p>
-        <p className="text-xs text-neutral-400">
-          Cidade da Matola, Moçambique • Preços em Meticais (MT)
-        </p>
-        <p className="text-xs text-neutral-500">
-          Trabalho de fim de curso • Sem pagamento real • Dados fictícios no protótipo
-        </p>
+    <footer className="border-t border-[#E5D6C3] dark:border-[#3A2212]/80 bg-[#F3ECE2] dark:bg-[#090402] text-[#2C1C12] dark:text-[#E7D8C7] transition-colors duration-200">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* Coluna 1: Marca e canais */}
+          <div className="lg:col-span-4">
+            <Link href="/" className="inline-flex items-center gap-2.5 group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.svg"
+                alt=""
+                className="w-9 h-9 rounded-lg shadow-[0_0_0_2px_rgba(180,83,9,0.25)] dark:shadow-[0_0_0_2px_rgba(245,158,11,0.3)] transition group-hover:scale-105"
+              />
+              <span className="font-extrabold text-lg tracking-tight text-[#1A100A] dark:text-white">
+                Reboque<span className="text-[#9A4D0D] dark:text-[#F59E0B]">Já</span>
+              </span>
+            </Link>
+            <p className="text-xs sm:text-sm text-[#6B5747] dark:text-[#B9A490] mt-3 max-w-xs leading-relaxed">
+              Conectando condutores e empresas de reboque na Cidade da Matola.
+            </p>
+            <div className="flex items-center gap-2 mt-4">
+              <Link
+                href="/empresas"
+                aria-label="Empresas parceiras"
+                className="w-8 h-8 rounded-full bg-white/80 dark:bg-[#1A0F08] border border-[#DFCEB9] dark:border-[#492C19]/80 grid place-items-center text-[#594637] dark:text-[#D1C0AE] hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition"
+              >
+                <Building2 className="w-3.5 h-3.5" />
+              </Link>
+              <Link
+                href="/entrar"
+                aria-label="Contactar ou entrar"
+                className="w-8 h-8 rounded-full bg-white/80 dark:bg-[#1A0F08] border border-[#DFCEB9] dark:border-[#492C19]/80 grid place-items-center text-[#594637] dark:text-[#D1C0AE] hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition"
+              >
+                <Phone className="w-3.5 h-3.5" />
+              </Link>
+              <Link
+                href="/termos"
+                aria-label="Email e termos"
+                className="w-8 h-8 rounded-full bg-white/80 dark:bg-[#1A0F08] border border-[#DFCEB9] dark:border-[#492C19]/80 grid place-items-center text-[#594637] dark:text-[#D1C0AE] hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition"
+              >
+                <Mail className="w-3.5 h-3.5" />
+              </Link>
+              <Link
+                href="/app/pedido/novo"
+                aria-label="Mapa de cobertura"
+                className="w-8 h-8 rounded-full bg-white/80 dark:bg-[#1A0F08] border border-[#DFCEB9] dark:border-[#492C19]/80 grid place-items-center text-[#594637] dark:text-[#D1C0AE] hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition"
+              >
+                <MapPin className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Coluna 2: Links Rápidos */}
+          <div className="lg:col-span-2">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#1A100A] dark:text-white mb-3">
+              Links Rápidos
+            </h3>
+            <ul className="space-y-2 text-xs sm:text-sm text-[#6B5747] dark:text-[#B9A490]">
+              <li>
+                <Link href="/" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Início
+                </Link>
+              </li>
+              <li>
+                <Link href="/empresas" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Empresas
+                </Link>
+              </li>
+              <li>
+                <Link href="/termos" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Termos
+                </Link>
+              </li>
+              <li>
+                <Link href="/#como-funciona" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Sobre
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Coluna 3: Suporte */}
+          <div className="lg:col-span-2">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#1A100A] dark:text-white mb-3">
+              Suporte
+            </h3>
+            <ul className="space-y-2 text-xs sm:text-sm text-[#6B5747] dark:text-[#B9A490]">
+              <li>
+                <Link href="/registar" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Pedir reboque
+                </Link>
+              </li>
+              <li>
+                <Link href="/registar/empresa" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Sou empresa
+                </Link>
+              </li>
+              <li>
+                <Link href="/entrar" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Entrar
+                </Link>
+              </li>
+              <li>
+                <Link href="/termos" className="hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition">
+                  Privacidade
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Coluna 4: Newsletter */}
+          <div className="lg:col-span-4">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#1A100A] dark:text-white mb-2">
+              Receba novidades
+            </h3>
+            <p className="text-xs text-[#6B5747] dark:text-[#B9A490] mb-3">
+              Subscreva para ficar por dentro das novidades.
+            </p>
+            <form onSubmit={subscrever} className="flex items-center gap-2">
+              <input
+                type="email"
+                value={emailNewsletter}
+                onChange={(e) => setEmailNewsletter(e.target.value)}
+                placeholder="Seu e-mail"
+                aria-label="Seu e-mail"
+                className="flex-1 min-w-0 h-10 px-3.5 rounded-full border border-[#DFCEB9] dark:border-[#492C19]/80 bg-white dark:bg-[#1A0F08] text-xs text-[#1A100A] dark:text-white placeholder:text-[#9A8470] dark:placeholder:text-[#7E6651] outline-none focus:ring-2 focus:ring-[#D97706]/40"
+              />
+              <button
+                type="submit"
+                className="h-10 px-4 rounded-full bg-gradient-to-r from-[#A45312] to-[#7C3B0B] hover:from-[#B45C15] hover:to-[#8B430E] dark:from-[#F59E0B] dark:to-[#D97706] dark:hover:from-[#FBBF24] dark:hover:to-[#F59E0B] text-white dark:text-[#140B05] font-bold text-xs whitespace-nowrap shrink-0 transition"
+              >
+                Subscrever
+              </button>
+            </form>
+            {erroNewsletter && (
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1.5">
+                {erroNewsletter}
+              </p>
+            )}
+            {subscrito && (
+              <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1.5 font-medium">
+                Subscrição registada com sucesso.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Barra inferior de direitos */}
+        <div className="mt-10 pt-6 border-t border-[#E5D6C3] dark:border-[#3A2212]/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B5747] dark:text-[#9A8470]">
+          <p className="text-center sm:text-left">
+            © 2026 ReboqueJá. Todos os direitos reservados.{" "}
+            <span aria-hidden className="mx-1.5">|</span> Cidade da Matola ·
+            Protótipo académico · Preços em MT
+          </p>
+          <button
+            type="button"
+            onClick={voltarTopo}
+            aria-label="Voltar ao topo"
+            title="Voltar ao topo"
+            className="w-9 h-9 rounded-full bg-white dark:bg-[#1A0F08] border border-[#DFCEB9] dark:border-[#492C19]/80 grid place-items-center text-[#594637] dark:text-[#D1C0AE] hover:text-[#9A4D0D] dark:hover:text-[#F59E0B] transition shrink-0"
+          >
+            <ArrowUp className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </footer>
   );

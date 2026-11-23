@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { NaoAutorizado, Proibido } from "@/lib/auth";
 
+export class ErroApi extends Error {
+  status: number;
+  constructor(mensagem: string, status = 400) {
+    super(mensagem);
+    this.status = status;
+  }
+}
+
 export function erro(mensagem: unknown, status = 400) {
   return NextResponse.json({ erro: mensagem }, { status });
 }
@@ -11,6 +19,7 @@ export function ok<T>(dados: T, status = 200) {
 }
 
 export function tratarErroApi(e: unknown) {
+  if (e instanceof ErroApi) return erro(e.message, e.status);
   if (e instanceof NaoAutorizado)
     return erro("Sessão expirada. Entre novamente.", 401);
   if (e instanceof Proibido) return erro("Sem permissão para esta acção.", 403);

@@ -57,10 +57,112 @@ export function estaNaMatola(p: LatLng): boolean {
   return pontoNoPoligono(p, POLIGONO_MATOLA);
 }
 
-/** Interpolação linear entre dois pontos (t entre 0 e 1) — para simular trajectos. */
+/** Interpolação linear entre dois pontos (t entre 0 e 1). */
 export function interpolar(a: LatLng, b: LatLng, t: number): LatLng {
   return {
     lat: a.lat + (b.lat - a.lat) * t,
     lng: a.lng + (b.lng - a.lng) * t,
   };
+}
+
+/** Verifica se um par de coordenadas representa uma posição geográfica real e não-nula. */
+export function coordenadasValidas(p?: { lat?: number | null; lng?: number | null } | null): p is LatLng {
+  if (!p || typeof p.lat !== "number" || typeof p.lng !== "number") return false;
+  if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return false;
+  if (p.lat === 0 && p.lng === 0) return false;
+  return p.lat >= -90 && p.lat <= 90 && p.lng >= -180 && p.lng <= 180;
+}
+
+export type ResultadoRota =
+  | {
+      disponivel: true;
+      fonteRota: "OSRM";
+      distanciaEstradaKm: number;
+      tempoEstimadoMin: number;
+      geometria: LatLng[];
+    }
+  | {
+      disponivel: false;
+      fonteRota: "INDISPONIVEL";
+      distanciaEstradaKm: null;
+      tempoEstimadoMin: null;
+      geometria: null;
+    };
+
+/**
+ * Calcula distância real por estrada e tempo estimado via OSRM público.
+ * Nunca fabrica estimativas caso o serviço esteja indisponível.
+ */
+export async function calcularRotaOSRM(
+  origem: LatLng,
+  destino: LatLng,
+  timeoutMs = 2500
+): Promise<ResultadoRota> {
+  if (!coordenadasValidas(origem) || !coordenadasValidas(destino)) {
+    return {
+      disponivel: false,
+      fonteRota: "INDISPONIVEL",
+      distanciaEstradaKm: null,
+      tempoEstimadoMin: null,
+      geometria: null,
+    };
+  }
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+
+  try {
+    const url = `https://router.project-osrm.org/route/v1/driving/${origem.lng},${origem.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`;
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) {
+      return {
+        disponivel: false,
+        fonteRota: "INDISPONIVEL",
+        distanciaEstradaKm: null,
+        tempoEstimadoMin: null,
+        geometria: null,
+      };
+    }
+    const data = (await res.json()) as {
+      code?: string;
+      routes?: {
+        distance?: number;
+        duration?: number;
+        geometry?: { coordinates?: [number, number][] };
+      }[];
+    };
+    const rota = data.routes?.[0];
+    if (data.code !== "Ok" || !rota || typeof rota.distance !== "number" || typeof rota.duration !== "number") {
+      return {
+        disponivel: false,
+        fonteRota: "INDISPONIVEL",
+        distanciaEstradaKm: null,
+        tempoEstimadoMin: null,
+        geometria: null,
+      };
+    }
+
+    const coords = (rota.geometry?.coordinates ?? []).map(([lng, lat]) => ({ lat, lng }));
+    return {
+      disponivel: true,
+      fonteRota: "OSRM",
+      distanciaEstradaKm: Math.round((rota.distance / 1000) * 100) / 100,
+      tempoEstimadoMin: Math.max(1, Math.round(rota.duration / 60)),
+      geometria: coords.length >= 2 ? coords : [origem, destino],
+    };
+  } catch {
+    return {
+      disponivel: false,
+      fonteRota: "INDISPONIVEL",
+      distanciaEstradaKm: null,
+      tempoEstimadoMin: null,
+      geometria: null,
+    };
+  } finally {
+    clearTimeout(timer);
+  }
 }

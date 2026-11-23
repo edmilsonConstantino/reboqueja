@@ -40,24 +40,33 @@ export const schemaCoordenada = z.object({
   lng: z.number().min(-180).max(180),
 });
 
-export const schemaLocalizacao = z.object({
-  origemLat: z.number(),
-  origemLng: z.number(),
-  origemEndereco: z.string().min(2, "Confirme o endereço da avaria."),
-  destinoLat: z.number(),
-  destinoLng: z.number(),
-  destinoEndereco: z.string().min(2, "Escolha o destino."),
-  tipoProblema: z.enum([
-    "AVARIA_MECANICA",
-    "ACIDENTE",
-    "PNEU_FURADO",
-    "SEM_COMBUSTIVEL",
-    "BATERIA",
-    "OUTRO",
-  ]),
-  tipoVeiculo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]),
-  observacoes: z.string().max(500).optional().nullable(),
-});
+export const schemaLocalizacao = z
+  .object({
+    origemLat: z.number().min(-90).max(90),
+    origemLng: z.number().min(-180).max(180),
+    origemEndereco: z.string().min(2, "Confirme o endereço da avaria."),
+    destinoLat: z.number().min(-90).max(90).nullable().optional(),
+    destinoLng: z.number().min(-180).max(180).nullable().optional(),
+    destinoEndereco: z.string().nullable().optional(),
+    camiaoId: z.string().min(1, "Seleccione um veículo de reboque disponível."),
+    empresaId: z.string().min(1).optional(),
+    tipoProblema: z.enum([
+      "AVARIA_MECANICA",
+      "ACIDENTE",
+      "PNEU_FURADO",
+      "SEM_COMBUSTIVEL",
+      "BATERIA",
+      "OUTRO",
+    ]),
+    tipoVeiculo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]),
+    observacoes: z.string().max(500).optional().nullable(),
+  })
+  .refine(
+    (d) =>
+      (d.destinoLat == null && d.destinoLng == null) ||
+      (typeof d.destinoLat === "number" && typeof d.destinoLng === "number"),
+    { message: "Coordenadas de destino incompletas.", path: ["destinoLat"] }
+  );
 
 export const schemaAceitarPedido = z.object({
   empresaId: z.string().min(1).optional(), // derivado da sessão no servidor
@@ -83,12 +92,70 @@ export const schemaConcluir = z.object({
 });
 
 export const schemaCamiao = z.object({
-  matricula: z.string().min(4, "Matrícula inválida."),
+  matricula: z.string().trim().min(4, "Matrícula inválida."),
+  marca: z.string().trim().max(60).optional().nullable(),
+  modelo: z.string().trim().max(60).optional().nullable(),
   tipo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]),
-  capacidade: z.string().optional().nullable(),
-  motoristaNome: z.string().min(3, "Indique o nome do condutor."),
-  motoristaTelefone: schemaTelefone,
+  capacidade: z.string().trim().max(60).optional().nullable(),
+  motoristaNome: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v ?? "")
+    .refine((v) => v.length === 0 || v.length >= 3, {
+      message: "O nome do condutor deve ter pelo menos 3 caracteres.",
+    }),
+  motoristaTelefone: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => (v ? v.replace(/[^\d+]/g, "") : ""))
+    .refine((v) => v.length === 0 || telefoneRegex.test(v.replace(/\s/g, "")), {
+      message: "Use um número moçambicano (ex.: +258 84 123 4567).",
+    }),
   activo: z.boolean().optional(),
+});
+
+export const schemaAdminCriarCamiao = z.object({
+  empresaId: z.string().min(1, "Seleccione a empresa proprietária."),
+  matricula: z.string().trim().min(4, "Indique uma matrícula válida."),
+  marca: z.string().trim().min(2, "Indique a marca do camião.").max(60),
+  modelo: z.string().trim().min(1, "Indique o modelo do camião.").max(60),
+  tipo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]),
+  capacidade: z.string().trim().max(60).optional().nullable(),
+  activo: z.boolean().optional().default(true),
+  motoristaId: z.string().min(1).optional().nullable(),
+  motivo: z.string().trim().max(240).optional().nullable(),
+});
+
+export const schemaAdminActualizarCamiao = z.object({
+  matricula: z.string().trim().min(4, "Indique uma matrícula válida.").optional(),
+  marca: z.string().trim().min(2, "Indique a marca do camião.").max(60).optional(),
+  modelo: z.string().trim().min(1, "Indique o modelo do camião.").max(60).optional(),
+  tipo: z.enum(["LIGEIRO", "SUV", "MINIBUS", "PESADO"]).optional(),
+  capacidade: z.string().trim().max(60).optional().nullable(),
+  activo: z.boolean().optional(),
+  motoristaId: z.string().min(1).nullable().optional(),
+  motivo: z.string().trim().max(240).optional().nullable(),
+});
+
+export const schemaAdminCriarCondutor = z.object({
+  empresaId: z.string().min(1, "Seleccione a empresa do condutor."),
+  nome: z.string().trim().min(3, "Indique o nome completo do condutor."),
+  telefone: schemaTelefone,
+  email: z
+    .string()
+    .trim()
+    .optional()
+    .nullable()
+    .transform((v) => (v && v.length > 0 ? v : null))
+    .refine((v) => v === null || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), {
+      message: "Email inválido.",
+    }),
+  senha: z
+    .string()
+    .min(4, "A palavra-passe deve ter pelo menos 4 caracteres.")
+    .max(72),
 });
 
 export const schemaFaixaPreco = z
@@ -167,4 +234,28 @@ export const schemaContaCondutor = z.object({
 /** Condutor aceita um pedido pendente. */
 export const schemaAceitarPedidoCondutor = z.object({
   pedidoId: z.string().min(1),
+});
+
+/** Condutor recusa um pedido pendente. */
+export const schemaRecusarPedidoCondutor = z.object({
+  pedidoId: z.string().min(1),
+  motivo: z.string().max(300).optional().nullable(),
+});
+
+/** Condutor alterna disponibilidade para serviços (com coordenadas obrigatórias ao activar). */
+export const schemaDisponibilidadeCondutor = z
+  .object({
+    disponivel: z.boolean(),
+    lat: z.number().min(-90).max(90).optional(),
+    lng: z.number().min(-180).max(180).optional(),
+  })
+  .refine((d) => !d.disponivel || (typeof d.lat === "number" && typeof d.lng === "number"), {
+    message: "É necessária uma localização válida para ficar disponível.",
+    path: ["lat"],
+  });
+
+/** Actualização periódica da localização GPS do condutor. */
+export const schemaLocalizacaoCondutor = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
 });

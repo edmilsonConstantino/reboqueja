@@ -15,20 +15,26 @@ datasource db {
 // ---------- Utilizadores e papéis ----------
 
 model Utilizador {
-  id          String    @id @default(cuid())
-  nome        String
-  telefone    String    @unique
-  email       String?   @unique
-  senhaHash   String
-  papel       String // CLIENTE | CONDUTOR | EMPRESA | ADMIN
-  activo      Boolean   @default(true)
-  criadoEm    DateTime  @default(now())
+  id                String    @id @default(cuid())
+  nome              String
+  telefone          String    @unique
+  email             String?   @unique
+  senhaHash         String
+  papel             String // CLIENTE | CONDUTOR | EMPRESA | ADMIN
+  activo            Boolean   @default(true)
+  empresaCondutorId String?
+  criadoEm          DateTime  @default(now())
 
-  veiculos     Veiculo[]
-  pedidos      Pedido[]  @relation("PedidosDoCondutor")
-  empresa      Empresa?
-  camiao       Camiao?   // camião atribuído (papel CONDUTOR)
-  respostas    RespostaPrototipo[]
+  veiculos             Veiculo[]
+  pedidos              Pedido[]           @relation("PedidosDoCondutor")
+  empresa              Empresa?
+  empresaCondutor      Empresa?           @relation("CondutoresDaEmpresa", fields: [empresaCondutorId], references: [id], onDelete: SetNull)
+  camiao               Camiao?            // camião atribuído (papel CONDUTOR)
+  atribuicoesMotorista AtribuicaoCamiao[] @relation("AtribuicoesMotorista")
+  atribuicoesFeitasPor AtribuicaoCamiao[] @relation("AtribuicoesFeitasPor")
+  respostas            RespostaPrototipo[]
+
+  @@index([empresaCondutorId])
 }
 
 model Veiculo {
@@ -62,8 +68,9 @@ model Empresa {
   estadoAprovacao String @default("PENDENTE") // PENDENTE | APROVADA | REJEITADA
   consentimentoEm DateTime?
 
-  utilizador Utilizador @relation(fields: [utilizadorId], references: [id], onDelete: Cascade)
+  utilizador Utilizador   @relation(fields: [utilizadorId], references: [id], onDelete: Cascade)
   camioes    Camiao[]
+  condutores Utilizador[] @relation("CondutoresDaEmpresa")
   precos     FaixaPreco[]
   pedidos    Pedido[]
 
@@ -71,23 +78,47 @@ model Empresa {
 }
 
 model Camiao {
-  id              String  @id @default(cuid())
-  empresaId       String
-  motoristaId     String? @unique
-  matricula       String
-  tipo            String // LIGEIRO | SUV | MINIBUS | PESADO
-  capacidade      String?
-  motoristaNome   String
-  motoristaTelefone String
-  lat             Float   @default(0)
-  lng             Float   @default(0)
-  activo          Boolean @default(true)
+  id                       String    @id @default(cuid())
+  empresaId                String
+  motoristaId              String?   @unique
+  matricula                String
+  marca                    String?
+  modelo                   String?
+  tipo                     String    // LIGEIRO | SUV | MINIBUS | PESADO
+  capacidade               String?
+  motoristaNome            String    @default("")
+  motoristaTelefone        String    @default("")
+  lat                      Float     @default(0)
+  lng                      Float     @default(0)
+  activo                   Boolean   @default(true)
+  disponivel               Boolean   @default(false)
+  partilhaLocalizacao      Boolean   @default(false)
+  localizacaoActualizadaEm DateTime?
 
-  empresa Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  motorista Utilizador? @relation(fields: [motoristaId], references: [id], onDelete: SetNull)
-  pedidos Pedido[]
+  empresa     Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  motorista   Utilizador?        @relation(fields: [motoristaId], references: [id], onDelete: SetNull)
+  pedidos     Pedido[]
+  atribuicoes AtribuicaoCamiao[]
 
   @@index([empresaId])
+  @@index([disponivel, activo])
+}
+
+model AtribuicaoCamiao {
+  id             String    @id @default(cuid())
+  camiaoId       String
+  motoristaId    String
+  atribuidoPorId String?
+  inicioEm       DateTime  @default(now())
+  fimEm          DateTime?
+  motivo         String?
+
+  camiao       Camiao      @relation(fields: [camiaoId], references: [id], onDelete: Cascade)
+  motorista    Utilizador  @relation("AtribuicoesMotorista", fields: [motoristaId], references: [id], onDelete: Cascade)
+  atribuidoPor Utilizador? @relation("AtribuicoesFeitasPor", fields: [atribuidoPorId], references: [id], onDelete: SetNull)
+
+  @@index([camiaoId, inicioEm])
+  @@index([motoristaId])
 }
 
 model FaixaPreco {
@@ -107,39 +138,41 @@ model FaixaPreco {
 // ---------- Pedidos ----------
 
 model Pedido {
-  id               String  @id @default(cuid())
-  condutorId       String
-  empresaId        String?
-  camiaoId         String?
-  veiculoId        String?
-  origemLat        Float
-  origemLng        Float
-  origemEndereco   String
-  destinoLat       Float
-  destinoLng       Float
-  destinoEndereco  String
-  distanciaKm      Float
-  tipoProblema     String // AVARIA_MECANICA | ACIDENTE | PNEU_FURADO | SEM_COMBUSTIVEL | BATERIA | OUTRO
-  tipoVeiculo      String  // LIGEIRO | SUV | MINIBUS | PESADO
-  observacoes      String?
-  estado           String  @default("PENDENTE") // PENDENTE | ACEITE | A_CAMINHO | NO_LOCAL | EM_TRANSPORTE | CONCLUIDO | CANCELADO
-  precoMin         Int
-  precoMax         Int
-  metodoPagamento  String? // DINHEIRO | MPESA | EMOLA
-  pagamentoConfirmado Boolean @default(false)
-  canceladoPor     String?
-  criadoEm         DateTime @default(now())
-  actualizadoEm    DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  condutorId          String
+  empresaId           String?
+  camiaoId            String?
+  veiculoId           String?
+  origemLat           Float
+  origemLng           Float
+  origemEndereco      String
+  destinoLat          Float?
+  destinoLng          Float?
+  destinoEndereco     String?
+  distanciaKm         Float
+  tipoProblema        String   // AVARIA_MECANICA | ACIDENTE | PNEU_FURADO | SEM_COMBUSTIVEL | BATERIA | OUTRO
+  tipoVeiculo         String   // LIGEIRO | SUV | MINIBUS | PESADO
+  observacoes         String?
+  estado              String   @default("PENDENTE") // PENDENTE | ACEITE | RECUSADO | A_CAMINHO | NO_LOCAL | EM_TRANSPORTE | CONCLUIDO | CANCELADO
+  motivoRecusa        String?
+  precoMin            Int
+  precoMax            Int
+  metodoPagamento     String?  // DINHEIRO | MPESA | EMOLA
+  pagamentoConfirmado Boolean  @default(false)
+  canceladoPor        String?
+  criadoEm            DateTime @default(now())
+  actualizadoEm       DateTime @updatedAt
 
-  condutor Utilizador    @relation("PedidosDoCondutor", fields: [condutorId], references: [id], onDelete: Cascade)
-  empresa  Empresa?      @relation(fields: [empresaId], references: [id])
-  camiao   Camiao?       @relation(fields: [camiaoId], references: [id])
-  veiculo  Veiculo?      @relation(fields: [veiculoId], references: [id])
-  eventos  PedidoEvento[]
+  condutor  Utilizador     @relation("PedidosDoCondutor", fields: [condutorId], references: [id], onDelete: Cascade)
+  empresa   Empresa?       @relation(fields: [empresaId], references: [id])
+  camiao    Camiao?        @relation(fields: [camiaoId], references: [id])
+  veiculo   Veiculo?       @relation(fields: [veiculoId], references: [id])
+  eventos   PedidoEvento[]
   avaliacao Avaliacao?
 
   @@index([condutorId])
   @@index([empresaId])
+  @@index([camiaoId, estado])
   @@index([estado])
 }
 

@@ -9,7 +9,7 @@ type Pedido = {
   id: string;
   estado: string;
   origemEndereco: string;
-  destinoEndereco: string;
+  destinoEndereco: string | null;
   distanciaKm: number;
   precoMin: number;
   precoMax: number;
@@ -50,9 +50,9 @@ export default function HistoricoEmpresa() {
         </Cartao>
         <Cartao className="p-3 text-center">
           <p className="text-2xl font-extrabold text-red-500">
-            {pedidos.filter((p) => p.estado === "CANCELADO").length}
+            {pedidos.filter((p) => p.estado === "CANCELADO" || p.estado === "RECUSADO").length}
           </p>
-          <p className="text-xs text-neutral-500">cancelados</p>
+          <p className="text-xs text-neutral-500">cancelados / recusados</p>
         </Cartao>
         <Cartao className="p-3 text-center">
           <p className="text-2xl font-extrabold text-primary-500">
@@ -75,7 +75,7 @@ export default function HistoricoEmpresa() {
                 <div className="min-w-0">
                   <p className="font-bold text-sm truncate">{p.origemEndereco}</p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                    → {p.destinoEndereco} · {formatarKm(p.distanciaKm)}
+                    → {p.destinoEndereco || "Destino não indicado"} · {formatarKm(p.distanciaKm)}
                   </p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                     {p.condutor.nome} · {p.camiao?.matricula || "—"} · {formatarDataHora(p.criadoEm)}
@@ -89,7 +89,7 @@ export default function HistoricoEmpresa() {
                 </div>
                 <div className="text-right shrink-0">
                   <Etiqueta cor={p.estado === "CONCLUIDO" ? "verde" : "vermelho"}>
-                    {LABEL_ESTADO[p.estado]}
+                    {LABEL_ESTADO[p.estado] || p.estado}
                   </Etiqueta>
                   <p className="text-xs font-bold mt-2 text-primary-600 dark:text-primary-400">
                     {faixaPrecoTexto(p.precoMin, p.precoMax)}

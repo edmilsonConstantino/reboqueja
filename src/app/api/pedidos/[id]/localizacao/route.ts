@@ -1,50 +1,121 @@
 import { prisma } from "@/lib/prisma";
-import { exigirPapel } from "@/lib/auth";
-import { ok, tratarErroApi } from "@/lib/api";
+import { exigirPapel, Proibido } from "@/lib/auth";
+import { ok, erro, tratarErroApi } from "@/lib/api";
+import { ESTADOS_EM_CURSO } from "@/lib/condutor";
+import { calcularRotaOSRM, coordenadasValidas } from "@/lib/geo";
+import { schemaLocalizacaoCondutor } from "@/lib/validations";
 import type { NextRequest } from "next/server";
 
-/** Localização actual do camião (usado pelo acompanhamento em tempo real). */
+/** Localização actual do camião (usada no acompanhamento de serviço activo). */
 export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    await exigirPapel("CLIENTE", "EMPRESA", "ADMIN");
+    const sessao = await exigirPapel("CLIENTE", "EMPRESA", "CONDUTOR", "ADMIN");
     const pedido = await prisma.pedido.findUnique({
       where: { id: params.id },
-      select: { camiao: { select: { id: true, lat: true, lng: true, matricula: true } } },
+      include: {
+        empresa: { select: { utilizadorId: true } },
+        camiao: {
+          select: {
+            id: true,
+            motoristaId: true,
+            lat: true,
+            lng: true,
+            matricula: true,
+            partilhaLocalizacao: true,
+            localizacaoActualizadaEm: true,
+          },
+        },
+      },
     });
+    if (!pedido) return erro("Pedido não encontrado.", 404);
+
+    const eDono = pedido.condutorId === sessao.id;
+    const eEmpresa =
+      sessao.papel === "EMPRESA" && pedido.empresa?.utilizadorId === sessao.id;
+    const eCondutor =
+      sessao.papel === "CONDUTOR" && pedido.camiao?.motoristaId === sessao.id;
+    const eAdmin = sessao.papel === "ADMIN";
+    if (!eDono && !eEmpresa && !eCondutor && !eAdmin) {
+      throw new Proibido();
+    }
+
+    const emCurso = (ESTADOS_EM_CURSO as readonly string[]).includes(pedido.estado);
+    const podeExpor = Boolean(
+      pedido.camiao &&
+        pedido.camiao.partilhaLocalizacao &&
+        coordenadasValidas({ lat: pedido.camiao.lat, lng: pedido.camiao.lng }) &&
+        (emCurso || eAdmin)
+    );
+
+    if (!podeExpor || !pedido.camiao) {
+      return ok({ camiao: null, estado: pedido.estado, rota: null });
+    }
+
+    const camiaoPos = { lat: pedido.camiao.lat, lng: pedido.camiao.lng };
+    const destinoRota =
+      pedido.estado === "EM_TRANSPORTE" &&
+      pedido.destinoLat != null &&
+      pedido.destinoLng != null
+        ? { lat: pedido.destinoLat, lng: pedido.destinoLng }
+        : { lat: pedido.origemLat, lng: pedido.origemLng };
+    const rota = await calcularRotaOSRM(camiaoPos, destinoRota);
+
     return ok({
-      camiao: pedido?.camiao
-        ? { lat: pedido.camiao.lat, lng: pedido.camiao.lng }
-        : null,
+      estado: pedido.estado,
+      camiao: {
+        lat: pedido.camiao.lat,
+        lng: pedido.camiao.lng,
+        actualizadaEm: pedido.camiao.localizacaoActualizadaEm ?? null,
+      },
+      rota,
     });
   } catch (e) {
     return tratarErroApi(e);
   }
 }
 
-/** A empresa actualiza a posição do camião (partilha GPS ou simulação). */
+/** Actualização real de posição GPS pelo condutor ou empresa durante serviço activo. */
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const sessao = await exigirPapel("EMPRESA");
-    const empresa = await prisma.empresa.findUnique({
-      where: { utilizadorId: sessao.id },
+    const sessao = await exigirPapel("CONDUTOR", "EMPRESA");
+    const pedido = await prisma.pedido.findUnique({
+      where: { id: params.id },
+      include: { empresa: true, camiao: true },
     });
-    if (!empresa) return ok({ sucesso: false }, 404);
-
-    const pedido = await prisma.pedido.findUnique({ where: { id: params.id } });
-    if (!pedido || pedido.empresaId !== empresa.id || !pedido.camiaoId) {
-      return ok({ sucesso: false }, 404);
+    if (!pedido || !pedido.camiaoId || !pedido.camiao) {
+      return erro("Pedido ou camião não encontrado.", 404);
     }
 
-    const { lat, lng } = (await req.json()) as { lat: number; lng: number };
+    if (sessao.papel === "EMPRESA" && pedido.empresa?.utilizadorId !== sessao.id) {
+      throw new Proibido();
+    }
+    if (sessao.papel === "CONDUTOR" && pedido.camiao.motoristaId !== sessao.id) {
+      throw new Proibido();
+    }
+
+    if (!(ESTADOS_EM_CURSO as readonly string[]).includes(pedido.estado)) {
+      return erro("Só é possível actualizar a localização durante um serviço activo.", 409);
+    }
+
+    const { lat, lng } = schemaLocalizacaoCondutor.parse(await req.json());
+    if (!coordenadasValidas({ lat, lng })) {
+      return erro("Coordenadas GPS inválidas.", 422);
+    }
+
     await prisma.camiao.update({
       where: { id: pedido.camiaoId },
-      data: { lat, lng },
+      data: {
+        lat,
+        lng,
+        partilhaLocalizacao: true,
+        localizacaoActualizadaEm: new Date(),
+      },
     });
     return ok({ sucesso: true });
   } catch (e) {

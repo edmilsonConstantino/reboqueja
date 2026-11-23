@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { exigirPapel } from "@/lib/auth";
 import { ok, erro, tratarErroApi } from "@/lib/api";
 import { schemaAprovarEmpresa } from "@/lib/validations";
+import { ESTADOS_EM_CURSO, localizacaoActualizada } from "@/lib/condutor";
 import type { NextRequest } from "next/server";
 
 export async function GET() {
@@ -13,10 +14,22 @@ export async function GET() {
           select: { nome: true, telefone: true, email: true, criadoEm: true },
         },
         _count: { select: { camioes: true, pedidos: true } },
-        // Condutores da empresa: cada camião atribuído a um utilizador CONDUTOR.
         camioes: {
           select: {
+            id: true,
             matricula: true,
+            tipo: true,
+            activo: true,
+            disponivel: true,
+            partilhaLocalizacao: true,
+            localizacaoActualizadaEm: true,
+            lat: true,
+            lng: true,
+            pedidos: {
+              where: { estado: { in: [...ESTADOS_EM_CURSO] } },
+              select: { id: true, estado: true },
+              take: 1,
+            },
             motorista: {
               select: {
                 id: true,
@@ -32,7 +45,22 @@ export async function GET() {
       },
       orderBy: { estadoAprovacao: "asc" },
     });
-    return ok({ empresas });
+
+    const enriquecidas = empresas.map((e) => ({
+      ...e,
+      camioes: e.camioes.map((c) => ({
+        id: c.id,
+        matricula: c.matricula,
+        tipo: c.tipo,
+        activo: c.activo,
+        disponivel: Boolean(c.disponivel),
+        localizacaoValida: localizacaoActualizada(c),
+        emServico: c.pedidos.length > 0,
+        motorista: c.motorista,
+      })),
+    }));
+
+    return ok({ empresas: enriquecidas });
   } catch (e) {
     return tratarErroApi(e);
   }

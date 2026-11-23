@@ -12,12 +12,13 @@ type Painel = {
     camioesActivos: number; media: number | null; totalAvaliacoes: number;
   } | null;
   novos: {
-    id: string; criadoEm: string; origemEndereco: string; destinoEndereco: string;
+    id: string; criadoEm: string; origemEndereco: string; destinoEndereco: string | null;
     distanciaKm: number; tipoProblema: string; tipoVeiculo: string;
-    precoMin: number; precoMax: number; condutorNome: string; veiculo: string | null;
+    precoMin: number; precoMax: number; condutorNome: string;
+    camiaoMatricula?: string | null; motoristaNome?: string | null; veiculo: string | null;
   }[];
   emCurso: {
-    id: string; estado: string; origemEndereco: string; destinoEndereco: string;
+    id: string; estado: string; origemEndereco: string; destinoEndereco: string | null;
     condutorNome: string; condutorTelefone: string; camiaoMatricula: string | null;
     motoristaNome: string | null;
   }[];
@@ -28,8 +29,9 @@ type Painel = {
   };
   semana: { dia: string; dataIso: string; concluidos: number; cancelados: number }[];
   camioes: {
-    id: string; matricula: string; tipo: string; motoristaNome: string;
-    activo: boolean; emServico: boolean;
+    id: string; matricula: string; marca?: string | null; modelo?: string | null;
+    tipo: string; motoristaNome: string; temContaCondutor?: boolean;
+    activo: boolean; disponivel?: boolean; localizacaoValida?: boolean; emServico: boolean;
   }[];
 };
 
@@ -105,7 +107,7 @@ export default function PainelEmpresa() {
   const maxSemana = Math.max(1, ...dados.semana.map((d) => Math.max(d.concluidos, d.cancelados)));
 
   return (
-    <div className="min-h-[calc(100dvh-3.5rem)] bg-neutral-50 dark:bg-neutral-950 dark:bg-[radial-gradient(ellipse_at_top,rgba(255,195,0,0.05),transparent_60%)]">
+    <div className="min-h-[calc(100dvh-3.5rem)] bg-slate-100/80 dark:bg-[#070B14] dark:bg-[radial-gradient(ellipse_at_top,rgba(255,195,0,0.05),transparent_60%)] transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
 
       {/* ===== Cabeçalho da empresa ===== */}
@@ -193,16 +195,16 @@ export default function PainelEmpresa() {
         </Cartao>
 
         <Cartao className="p-5 flex items-center gap-4">
-          <span className="w-12 h-12 shrink-0 rounded-full bg-primary-400/15 text-primary-600 dark:text-primary-400 grid place-items-center">
+          <span className="w-12 h-12 shrink-0 rounded-full bg-amber-500/15 dark:bg-primary-400/15 text-amber-700 dark:text-primary-400 grid place-items-center">
             <IconeDinheiro className="w-6 h-6" />
           </span>
           <div className="min-w-0">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">Faturação (faixa) hoje</p>
-            <p className="text-base sm:text-lg font-extrabold leading-tight text-primary-600 dark:text-primary-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">Faturação (faixa) hoje</p>
+            <p className="text-base sm:text-lg font-extrabold leading-tight text-amber-700 dark:text-primary-400 tabular-nums">
               {faixaPrecoTexto(dados.hoje.ganhoMin, dados.hoje.ganhoMax)}
             </p>
           </div>
-          <IconeGrafico className="w-5 h-5 text-neutral-300 dark:text-neutral-600 ml-auto" />
+          <IconeGrafico className="w-5 h-5 text-slate-300 dark:text-slate-600 ml-auto" />
         </Cartao>
       </div>
 
@@ -211,33 +213,33 @@ export default function PainelEmpresa() {
 
         {/* Coluna esquerda */}
         <div className="space-y-5 min-w-0">
-          {/* Pedidos novos */}
-          <section>
+          {/* Pedidos novos — secção com destaque âmbar */}
+          <section className="rounded-3xl border border-amber-200/80 dark:border-amber-400/15 bg-amber-50/70 dark:bg-[#0F172A] p-4 sm:p-5">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-extrabold flex items-center gap-2.5">
-                <span className="w-8 h-8 rounded-lg bg-primary-400/15 text-primary-600 dark:text-primary-400 grid place-items-center">
+              <h2 className="font-extrabold flex items-center gap-2.5 text-slate-900 dark:text-white">
+                <span className="w-8 h-8 rounded-lg bg-amber-500/15 dark:bg-primary-400/15 text-amber-700 dark:text-primary-400 grid place-items-center">
                   <IconeSino className="w-5 h-5" />
                 </span>
                 Pedidos novos
                 {dados.novos.length > 0 && dados.empresa.disponivel && (
-                  <span className="w-6 h-6 rounded-full bg-primary-400 text-neutral-950 text-xs font-bold grid place-items-center">
+                  <span className="w-6 h-6 rounded-full bg-primary-400 text-slate-950 text-xs font-bold grid place-items-center tabular-nums">
                     {dados.novos.length}
                   </span>
                 )}
               </h2>
-              <Link href="/empresa/historico" className="text-sm font-semibold text-neutral-500 hover:text-primary-500 dark:hover:text-primary-400 transition">
+              <Link href="/empresa/historico" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-amber-700 dark:hover:text-primary-400 transition">
                 Ver todos →
               </Link>
             </div>
             {dados.novos.length === 0 ? (
-              <Cartao className="p-4 text-sm text-neutral-500 dark:text-neutral-400">
+              <Cartao className="p-4 text-sm text-slate-600 dark:text-slate-400">
                 Sem pedidos novos neste momento. O painel actualiza a cada 5 segundos.
               </Cartao>
             ) : (
               <div className="space-y-3">
                 {dados.novos.map((p) => (
-                  <Link key={p.id} href={`/empresa/pedidos/${p.id}`}>
-                    <Cartao className="p-5 border-l-4 border-l-primary-400 hover:border-primary-300 transition rj-fade-up">
+                  <Link key={p.id} href={`/empresa/pedidos/${p.id}`} className="block">
+                    <Cartao className="p-5 border-l-4 border-l-primary-400 hover:border-amber-400 dark:hover:border-primary-300 transition rj-fade-up">
                       <div className="grid sm:grid-cols-[1.4fr_1fr_auto] gap-4">
                         <div className="space-y-2.5 min-w-0">
                           <div className="flex items-start gap-2.5">
@@ -245,7 +247,7 @@ export default function PainelEmpresa() {
                             <div className="min-w-0">
                               <p className="font-bold text-sm truncate">{p.origemEndereco}</p>
                               <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                                Matola, Moçambique → {p.destinoEndereco}
+                                Matola, Moçambique → {p.destinoEndereco || "Destino não indicado"}
                               </p>
                             </div>
                           </div>
@@ -308,33 +310,33 @@ export default function PainelEmpresa() {
             )}
           </section>
 
-          {/* Serviços em curso */}
-          <section>
+          {/* Serviços em curso — secção azul-ardósia */}
+          <section className="rounded-3xl border border-sky-200/80 dark:border-sky-400/15 bg-sky-50/60 dark:bg-[#0B1426] p-4 sm:p-5">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-extrabold flex items-center gap-2.5">
-                <span className="w-8 h-8 rounded-lg bg-sky-500/15 text-sky-500 grid place-items-center">
+              <h2 className="font-extrabold flex items-center gap-2.5 text-slate-900 dark:text-white">
+                <span className="w-8 h-8 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-400 grid place-items-center">
                   <IconeBussola className="w-5 h-5" />
                 </span>
                 Serviços em curso
                 {dados.emCurso.length > 0 && (
-                  <span className="w-6 h-6 rounded-full bg-primary-400 text-neutral-950 text-xs font-bold grid place-items-center">
+                  <span className="w-6 h-6 rounded-full bg-sky-500 text-white text-xs font-bold grid place-items-center tabular-nums">
                     {dados.emCurso.length}
                   </span>
                 )}
               </h2>
-              <Link href="/empresa/historico" className="text-sm font-semibold text-neutral-500 hover:text-primary-500 dark:hover:text-primary-400 transition">
+              <Link href="/empresa/historico" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-sky-700 dark:hover:text-sky-400 transition">
                 Ver todos →
               </Link>
             </div>
             {dados.emCurso.length === 0 ? (
-              <Cartao className="p-4 text-sm text-neutral-500 dark:text-neutral-400">
+              <Cartao className="p-4 text-sm text-slate-600 dark:text-slate-400">
                 Nenhum serviço em curso.
               </Cartao>
             ) : (
               <div className="space-y-3">
                 {dados.emCurso.map((p) => (
-                  <Link key={p.id} href={`/empresa/pedidos/${p.id}`}>
-                    <Cartao className="p-5 hover:border-primary-300 transition">
+                  <Link key={p.id} href={`/empresa/pedidos/${p.id}`} className="block">
+                    <Cartao className="p-5 hover:border-sky-400/60 transition">
                       <div className="grid sm:grid-cols-3 gap-4">
                         <div className="space-y-2.5 min-w-0">
                           <div className="flex items-start gap-2.5">
@@ -491,15 +493,39 @@ export default function PainelEmpresa() {
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold truncate">
-                        {TIPO_CAMIAO_ROTULO[c.tipo] || c.tipo} ({c.motoristaNome || "—"})
+                        {[c.marca, c.modelo].filter(Boolean).join(" ") || (TIPO_CAMIAO_ROTULO[c.tipo] || c.tipo)} ({c.motoristaNome || "Sem condutor"})
                       </p>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                        {c.motoristaNome ? `Motorista ${c.motoristaNome} · ` : ""}
+                        {c.motoristaNome ? `Condutor ${c.motoristaNome} · ` : "Sem condutor · "}
                         {c.matricula}
                       </p>
                     </div>
-                    <Etiqueta cor={c.emServico ? "azul" : c.activo ? "verde" : "cinza"}>
-                      {c.emServico ? "Em serviço" : c.activo ? "Disponível" : "Inactivo"}
+                    <Etiqueta
+                      cor={
+                        c.emServico
+                          ? "azul"
+                          : !c.activo
+                            ? "cinza"
+                            : !c.temContaCondutor
+                              ? "amarelo"
+                              : c.disponivel && c.localizacaoValida
+                                ? "verde"
+                                : c.disponivel
+                                  ? "amarelo"
+                                  : "cinza"
+                      }
+                    >
+                      {c.emServico
+                        ? "Em serviço"
+                        : !c.activo
+                          ? "Inactivo"
+                          : !c.temContaCondutor
+                            ? "Sem condutor"
+                            : c.disponivel && c.localizacaoValida
+                              ? "Disponível"
+                              : c.disponivel
+                                ? "GPS expirado"
+                                : "Indisponível"}
                     </Etiqueta>
                     <IconeSeta className="w-4 h-4 text-neutral-300 dark:text-neutral-600 group-hover:text-primary-400 transition" />
                   </Link>

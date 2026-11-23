@@ -11,7 +11,7 @@ type Pedido = {
   criadoEm: string;
   actualizadoEm: string;
   origemEndereco: string;
-  destinoEndereco: string;
+  destinoEndereco: string | null;
   distanciaKm: number;
   tipoProblema: string;
   precoMin: number;
@@ -88,11 +88,11 @@ export default function HistoricoCondutor() {
                 <div className="min-w-0">
                   <p className="font-bold text-sm truncate">{p.origemEndereco}</p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                    → {p.destinoEndereco}
+                    → {p.destinoEndereco || "Destino não indicado"}
                   </p>
                 </div>
                 <Etiqueta cor={p.estado === "CONCLUIDO" ? "verde" : "vermelho"}>
-                  {LABEL_ESTADO[p.estado]}
+                  {LABEL_ESTADO[p.estado] || p.estado}
                 </Etiqueta>
               </div>
 

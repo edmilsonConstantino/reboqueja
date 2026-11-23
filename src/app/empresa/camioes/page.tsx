@@ -8,6 +8,8 @@ import { TIPOS_VEICULO } from "@/lib/constants";
 type Camiao = {
   id: string;
   matricula: string;
+  marca: string | null;
+  modelo: string | null;
   tipo: string;
   capacidade: string | null;
   motoristaNome: string;
@@ -16,7 +18,16 @@ type Camiao = {
   motorista: { id: string; nome: string; telefone: string; activo: boolean } | null;
 };
 
-const vazio = { matricula: "", tipo: "LIGEIRO", capacidade: "", motoristaNome: "", motoristaTelefone: "", activo: true };
+const vazio = {
+  matricula: "",
+  marca: "",
+  modelo: "",
+  tipo: "LIGEIRO",
+  capacidade: "",
+  motoristaNome: "",
+  motoristaTelefone: "",
+  activo: true,
+};
 
 export default function Camioes() {
   const [camioes, setCamioes] = useState<Camiao[] | null>(null);
@@ -25,6 +36,8 @@ export default function Camioes() {
   const [aSalvar, setASalvar] = useState(false);
   const [editando, setEditando] = useState<string | null>(null);
   const [edicao, setEdicao] = useState({ ...vazio });
+  const [confirmarEliminarId, setConfirmarEliminarId] = useState<string | null>(null);
+  const [confirmarRemoverId, setConfirmarRemoverId] = useState<string | null>(null);
 
   const carregar = async () => {
     const res = await fetch("/api/empresa/camioes", { cache: "no-store" });
@@ -83,17 +96,21 @@ export default function Camioes() {
   };
 
   const eliminar = async (id: string) => {
-    if (!confirm("Eliminar este camião? Esta acção não pode ser revertida.")) return;
     await fetch(`/api/empresa/camioes?id=${id}`, { method: "DELETE" });
+    setConfirmarEliminarId(null);
     await carregar();
   };
 
   // ---- Conta de acesso do condutor (login em /condutor) ----
-  const [acesso, setAcesso] = useState<Record<string, { telefone: string; senha: string }>>({});
+  const [acesso, setAcesso] = useState<Record<string, { nome: string; telefone: string; senha: string }>>({});
   const [aCriarAcesso, setACriarAcesso] = useState<string | null>(null);
 
   const criarAcesso = async (c: Camiao) => {
-    const dados = acesso[c.id] || { telefone: c.motoristaTelefone, senha: "" };
+    const dados = acesso[c.id] || {
+      nome: c.motoristaNome,
+      telefone: c.motoristaTelefone,
+      senha: "",
+    };
     setErroMsg("");
     setACriarAcesso(c.id);
     try {
@@ -101,7 +118,7 @@ export default function Camioes() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nome: c.motoristaNome,
+          nome: dados.nome || c.motoristaNome,
           telefone: dados.telefone || c.motoristaTelefone,
           senha: dados.senha,
           camiaoId: c.id,
@@ -112,7 +129,7 @@ export default function Camioes() {
         setErroMsg(d.erro || "Erro ao criar o acesso do condutor.");
         return;
       }
-      setAcesso((a) => ({ ...a, [c.id]: { telefone: "", senha: "" } }));
+      setAcesso((a) => ({ ...a, [c.id]: { nome: "", telefone: "", senha: "" } }));
       await carregar();
     } finally {
       setACriarAcesso(null);
@@ -120,9 +137,8 @@ export default function Camioes() {
   };
 
   const removerAcesso = async (motoristaId: string) => {
-    if (!confirm("Retirar o acesso deste condutor? A conta fica desactivada e o camião livre."))
-      return;
     await fetch(`/api/empresa/condutores?id=${motoristaId}`, { method: "DELETE" });
+    setConfirmarRemoverId(null);
     await carregar();
   };
 
@@ -136,17 +152,54 @@ export default function Camioes() {
       <Cartao className="p-4 space-y-3">
         <h2 className="font-bold">Adicionar camião</h2>
         <div className="grid grid-cols-2 gap-3">
-          <Entrada rotulo="Matrícula" placeholder="RBM-001-MC" value={novo.matricula} onChange={(e) => setNovo({ ...novo, matricula: e.target.value })} />
-          <Selector rotulo="Tipo" value={novo.tipo} onChange={(e) => setNovo({ ...novo, tipo: e.target.value })}>
+          <Entrada
+            rotulo="Matrícula"
+            placeholder="RBM-001-MC"
+            value={novo.matricula}
+            onChange={(e) => setNovo({ ...novo, matricula: e.target.value.toUpperCase() })}
+          />
+          <Selector
+            rotulo="Tipo"
+            value={novo.tipo}
+            onChange={(e) => setNovo({ ...novo, tipo: e.target.value })}
+          >
             {TIPOS_VEICULO.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </Selector>
+          <Entrada
+            rotulo="Marca"
+            placeholder="Ex.: Volvo, Isuzu"
+            value={novo.marca}
+            onChange={(e) => setNovo({ ...novo, marca: e.target.value })}
+          />
+          <Entrada
+            rotulo="Modelo"
+            placeholder="Ex.: FH 460"
+            value={novo.modelo}
+            onChange={(e) => setNovo({ ...novo, modelo: e.target.value })}
+          />
         </div>
-        <Entrada rotulo="Capacidade (opcional)" placeholder="Ex.: Até 2 t" value={novo.capacidade || ""} onChange={(e) => setNovo({ ...novo, capacidade: e.target.value })} />
+        <Entrada
+          rotulo="Capacidade (opcional)"
+          placeholder="Ex.: Até 2 t"
+          value={novo.capacidade || ""}
+          onChange={(e) => setNovo({ ...novo, capacidade: e.target.value })}
+        />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Entrada rotulo="Motorista" placeholder="Nome do condutor" value={novo.motoristaNome} onChange={(e) => setNovo({ ...novo, motoristaNome: e.target.value })} />
-          <Entrada rotulo="Telefone do condutor" placeholder="+258 87 000 0000" inputMode="tel" value={novo.motoristaTelefone} onChange={(e) => setNovo({ ...novo, motoristaTelefone: e.target.value })} />
+          <Entrada
+            rotulo="Motorista (opcional)"
+            placeholder="Nome do condutor"
+            value={novo.motoristaNome}
+            onChange={(e) => setNovo({ ...novo, motoristaNome: e.target.value })}
+          />
+          <Entrada
+            rotulo="Telefone do condutor (opcional)"
+            placeholder="+258 87 000 0000"
+            inputMode="tel"
+            value={novo.motoristaTelefone}
+            onChange={(e) => setNovo({ ...novo, motoristaTelefone: e.target.value })}
+          />
         </div>
         <AvisoErro>{erroMsg}</AvisoErro>
         <Botao className="w-full" onClick={criar} disabled={aSalvar}>
@@ -157,140 +210,232 @@ export default function Camioes() {
       {/* Lista */}
       {camioes.length === 0 ? (
         <Cartao className="p-4 text-sm text-neutral-500">
-          Ainda não tem camiões. Adicione o primeiro acima — sem camiões activos a
+          Ainda não tem camiões. Adicione o primeiro acima — sem camiões activos com condutor a
           empresa não recebe pedidos.
         </Cartao>
       ) : (
         <div className="space-y-3">
-          {camioes.map((c) => (
-            <Cartao key={c.id} className="p-4">
-              {editando === c.id ? (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Entrada rotulo="Matrícula" value={edicao.matricula} onChange={(e) => setEdicao({ ...edicao, matricula: e.target.value })} />
-                    <Selector rotulo="Tipo" value={edicao.tipo} onChange={(e) => setEdicao({ ...edicao, tipo: e.target.value })}>
-                      {TIPOS_VEICULO.map((t) => (
-                        <option key={t.value} value={t.value}>{t.label}</option>
-                      ))}
-                    </Selector>
-                  </div>
-                  <Entrada rotulo="Motorista" value={edicao.motoristaNome} onChange={(e) => setEdicao({ ...edicao, motoristaNome: e.target.value })} />
-                  <Entrada rotulo="Telefone" value={edicao.motoristaTelefone} onChange={(e) => setEdicao({ ...edicao, motoristaTelefone: e.target.value })} />
-                  <div className="flex gap-2">
-                    <Botao className="flex-1" onClick={() => gravarEdicao(c.id)}>Gravar</Botao>
-                    <Botao variante="contorno" className="flex-1" onClick={() => setEditando(null)}>Cancelar</Botao>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-bold">{c.matricula}</p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      {LABEL_VEICULO[c.tipo] || c.tipo}
-                      {c.capacidade ? ` · ${c.capacidade}` : ""}
-                    </p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      👤 {c.motoristaNome} · {c.motoristaTelefone}
-                    </p>
-
-                    {c.motorista ? (
-                      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20 px-3 py-2">
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                            Acesso do condutor
-                          </p>
-                          <p className="text-xs text-neutral-600 dark:text-neutral-300 truncate">
-                            {c.motorista.nome} · {c.motorista.telefone} ·{" "}
-                            {c.motorista.activo ? "activo" : "desactivado"}
-                          </p>
-                        </div>
-                        <button
-                          className="text-xs font-bold text-red-600 dark:text-red-400 px-2 py-1 min-h-[32px]"
-                          onClick={() => removerAcesso(c.motorista!.id)}
-                        >
-                          Remover acesso
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="mt-3 rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-3 space-y-2">
-                        <p className="text-xs font-bold">Conta de acesso do condutor</p>
-                        <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                          Crie o login que o condutor usa para entrar e aguardar solicitações.
-                        </p>
-                        <div className="grid sm:grid-cols-2 gap-2">
-                          <Entrada
-                            rotulo="Telefone"
-                            inputMode="tel"
-                            placeholder="+258 87 000 0000"
-                            value={acesso[c.id]?.telefone ?? c.motoristaTelefone}
-                            onChange={(e) =>
-                              setAcesso({
-                                ...acesso,
-                                [c.id]: {
-                                  senha: acesso[c.id]?.senha ?? "",
-                                  telefone: e.target.value,
-                                },
-                              })
-                            }
-                          />
-                          <Entrada
-                            rotulo="Palavra-passe inicial"
-                            type="password"
-                            placeholder="mínimo 4 caracteres"
-                            value={acesso[c.id]?.senha ?? ""}
-                            onChange={(e) =>
-                              setAcesso({
-                                ...acesso,
-                                [c.id]: {
-                                  telefone: acesso[c.id]?.telefone ?? c.motoristaTelefone,
-                                  senha: e.target.value,
-                                },
-                              })
-                            }
-                          />
-                        </div>
-                        <Botao
-                          className="w-full"
-                          onClick={() => criarAcesso(c)}
-                          disabled={aCriarAcesso === c.id}
-                        >
-                          {aCriarAcesso === c.id ? "A criar…" : "Criar acesso do condutor"}
-                        </Botao>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <button onClick={() => alternarActivo(c)}>
-                      <Etiqueta cor={c.activo ? "verde" : "cinza"}>
-                        {c.activo ? "Activo" : "Inactivo"}
-                      </Etiqueta>
-                    </button>
-                    <div className="flex gap-1 text-xs font-semibold">
-                      <button
-                        className="text-primary-600 px-2 py-1"
-                        onClick={() => {
-                          setEditando(c.id);
-                          setEdicao({
-                            matricula: c.matricula,
-                            tipo: c.tipo,
-                            capacidade: c.capacidade || "",
-                            motoristaNome: c.motoristaNome,
-                            motoristaTelefone: c.motoristaTelefone,
-                            activo: c.activo,
-                          });
-                        }}
+          {camioes.map((c) => {
+            const marcaModelo = [c.marca, c.modelo].filter(Boolean).join(" ");
+            return (
+              <Cartao key={c.id} className="p-4">
+                {editando === c.id ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <Entrada
+                        rotulo="Matrícula"
+                        value={edicao.matricula}
+                        onChange={(e) => setEdicao({ ...edicao, matricula: e.target.value.toUpperCase() })}
+                      />
+                      <Selector
+                        rotulo="Tipo"
+                        value={edicao.tipo}
+                        onChange={(e) => setEdicao({ ...edicao, tipo: e.target.value })}
                       >
-                        Editar
-                      </button>
-                      <button className="text-red-500 px-2 py-1" onClick={() => eliminar(c.id)}>
-                        Eliminar
-                      </button>
+                        {TIPOS_VEICULO.map((t) => (
+                          <option key={t.value} value={t.value}>{t.label}</option>
+                        ))}
+                      </Selector>
+                      <Entrada
+                        rotulo="Marca"
+                        value={edicao.marca}
+                        onChange={(e) => setEdicao({ ...edicao, marca: e.target.value })}
+                      />
+                      <Entrada
+                        rotulo="Modelo"
+                        value={edicao.modelo}
+                        onChange={(e) => setEdicao({ ...edicao, modelo: e.target.value })}
+                      />
+                    </div>
+                    <Entrada
+                      rotulo="Motorista"
+                      value={edicao.motoristaNome}
+                      onChange={(e) => setEdicao({ ...edicao, motoristaNome: e.target.value })}
+                    />
+                    <Entrada
+                      rotulo="Telefone"
+                      value={edicao.motoristaTelefone}
+                      onChange={(e) => setEdicao({ ...edicao, motoristaTelefone: e.target.value })}
+                    />
+                    <div className="flex gap-2">
+                      <Botao className="flex-1" onClick={() => gravarEdicao(c.id)}>Gravar</Botao>
+                      <Botao variante="contorno" className="flex-1" onClick={() => setEditando(null)}>Cancelar</Botao>
                     </div>
                   </div>
-                </div>
-              )}
-            </Cartao>
-          ))}
+                ) : (
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold">
+                        {c.matricula}
+                        {marcaModelo ? ` · ${marcaModelo}` : ""}
+                      </p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        {LABEL_VEICULO[c.tipo] || c.tipo}
+                        {c.capacidade ? ` · ${c.capacidade}` : ""}
+                      </p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        {c.motorista
+                          ? `👤 ${c.motorista.nome} · ${c.motorista.telefone}`
+                          : c.motoristaNome
+                            ? `👤 ${c.motoristaNome} · ${c.motoristaTelefone}`
+                            : "Sem condutor associado"}
+                      </p>
+
+                      {c.motorista ? (
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20 px-3 py-2">
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                              Acesso do condutor
+                            </p>
+                            <p className="text-xs text-neutral-600 dark:text-neutral-300 truncate">
+                              {c.motorista.nome} · {c.motorista.telefone} ·{" "}
+                              {c.motorista.activo ? "activo" : "desactivado"}
+                            </p>
+                          </div>
+                          {confirmarRemoverId === c.motorista.id ? (
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                className="text-xs font-bold bg-red-600 text-white rounded-lg px-2.5 py-1"
+                                onClick={() => removerAcesso(c.motorista!.id)}
+                              >
+                                Confirmar
+                              </button>
+                              <button
+                                className="text-xs font-semibold px-2 py-1"
+                                onClick={() => setConfirmarRemoverId(null)}
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              className="text-xs font-bold text-red-600 dark:text-red-400 px-2 py-1 min-h-[32px]"
+                              onClick={() => setConfirmarRemoverId(c.motorista!.id)}
+                            >
+                              Remover acesso
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="mt-3 rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-3 space-y-2">
+                          <p className="text-xs font-bold">Conta de acesso do condutor</p>
+                          <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                            Crie o login que o condutor usa para entrar e aguardar solicitações.
+                          </p>
+                          <div className="grid sm:grid-cols-3 gap-2">
+                            <Entrada
+                              rotulo="Nome"
+                              placeholder="Nome completo"
+                              value={acesso[c.id]?.nome ?? c.motoristaNome}
+                              onChange={(e) =>
+                                setAcesso({
+                                  ...acesso,
+                                  [c.id]: {
+                                    telefone: acesso[c.id]?.telefone ?? c.motoristaTelefone,
+                                    senha: acesso[c.id]?.senha ?? "",
+                                    nome: e.target.value,
+                                  },
+                                })
+                              }
+                            />
+                            <Entrada
+                              rotulo="Telefone"
+                              inputMode="tel"
+                              placeholder="+258 87 000 0000"
+                              value={acesso[c.id]?.telefone ?? c.motoristaTelefone}
+                              onChange={(e) =>
+                                setAcesso({
+                                  ...acesso,
+                                  [c.id]: {
+                                    nome: acesso[c.id]?.nome ?? c.motoristaNome,
+                                    senha: acesso[c.id]?.senha ?? "",
+                                    telefone: e.target.value,
+                                  },
+                                })
+                              }
+                            />
+                            <Entrada
+                              rotulo="Palavra-passe inicial"
+                              type="password"
+                              placeholder="mínimo 4 caracteres"
+                              value={acesso[c.id]?.senha ?? ""}
+                              onChange={(e) =>
+                                setAcesso({
+                                  ...acesso,
+                                  [c.id]: {
+                                    nome: acesso[c.id]?.nome ?? c.motoristaNome,
+                                    telefone: acesso[c.id]?.telefone ?? c.motoristaTelefone,
+                                    senha: e.target.value,
+                                  },
+                                })
+                              }
+                            />
+                          </div>
+                          <Botao
+                            className="w-full"
+                            onClick={() => criarAcesso(c)}
+                            disabled={aCriarAcesso === c.id}
+                          >
+                            {aCriarAcesso === c.id ? "A criar…" : "Criar acesso do condutor"}
+                          </Botao>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <button onClick={() => alternarActivo(c)}>
+                        <Etiqueta cor={c.activo ? "verde" : "cinza"}>
+                          {c.activo ? "Activo" : "Inactivo"}
+                        </Etiqueta>
+                      </button>
+                      <div className="flex gap-1 text-xs font-semibold">
+                        <button
+                          className="text-primary-600 px-2 py-1"
+                          onClick={() => {
+                            setEditando(c.id);
+                            setEdicao({
+                              matricula: c.matricula,
+                              marca: c.marca || "",
+                              modelo: c.modelo || "",
+                              tipo: c.tipo,
+                              capacidade: c.capacidade || "",
+                              motoristaNome: c.motoristaNome,
+                              motoristaTelefone: c.motoristaTelefone,
+                              activo: c.activo,
+                            });
+                          }}
+                        >
+                          Editar
+                        </button>
+                        {confirmarEliminarId === c.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              className="text-white bg-red-600 rounded px-2 py-0.5"
+                              onClick={() => eliminar(c.id)}
+                            >
+                              Sim
+                            </button>
+                            <button
+                              className="px-1.5 py-0.5"
+                              onClick={() => setConfirmarEliminarId(null)}
+                            >
+                              Não
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            className="text-red-500 px-2 py-1"
+                            onClick={() => setConfirmarEliminarId(c.id)}
+                          >
+                            Eliminar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Cartao>
+            );
+          })}
         </div>
       )}
     </div>

@@ -21,11 +21,13 @@ export function ProvedorTema({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const guardado = localStorage.getItem("rj-tema") as Tema | null;
-    const preferido =
-      guardado ||
-      (window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "escuro"
-        : "claro");
+    const preferido: Tema =
+      guardado === "claro" || guardado === "escuro"
+        ? guardado
+        : document.documentElement.classList.contains("dark") ||
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "escuro"
+          : "claro";
     setTema(preferido);
     aplicar(preferido);
   }, []);
@@ -37,14 +39,18 @@ export function ProvedorTema({ children }: { children: React.ReactNode }) {
   const alternar = useCallback(() => {
     setTema((t) => {
       const novo = t === "claro" ? "escuro" : "claro";
-      localStorage.setItem("rj-tema", novo);
+      try {
+        localStorage.setItem("rj-tema", novo);
+      } catch {}
       aplicar(novo);
       return novo;
     });
   }, []);
 
   const definir = useCallback((t: Tema) => {
-    localStorage.setItem("rj-tema", t);
+    try {
+      localStorage.setItem("rj-tema", t);
+    } catch {}
     aplicar(t);
     setTema(t);
   }, []);

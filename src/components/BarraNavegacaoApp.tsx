@@ -122,7 +122,7 @@ export function BarraNavegacaoApp({
 
   return (
     <>
-    <nav className="sticky top-0 z-40 pt-[env(safe-area-inset-top)] bg-neutral-950/95 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20">
+    <nav className="sticky top-0 z-40 pt-[env(safe-area-inset-top)] bg-white/95 dark:bg-[#070B14]/95 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-sm dark:shadow-lg dark:shadow-black/20 transition-colors duration-200">
       <div className="max-w-6xl mx-auto h-14 px-3 sm:px-6 flex items-center gap-2 sm:gap-4">
         {/* Logo */}
         <Link href={base} className="group flex items-center gap-2.5 shrink-0" aria-label="ReboqueJá">
@@ -130,10 +130,10 @@ export function BarraNavegacaoApp({
           <img
             src="/logo.svg"
             alt=""
-            className="w-8 h-8 rounded-lg shadow-[0_0_0_3px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
+            className="w-8 h-8 rounded-lg shadow-[0_0_0_3px_rgba(255,195,0,0.2)] transition group-hover:scale-105"
           />
-          <span className="hidden md:inline font-extrabold text-lg tracking-tight text-white">
-            Reboque<span className="text-primary-400">Já</span>
+          <span className="hidden md:inline font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">
+            Reboque<span className="text-amber-600 dark:text-primary-400">Já</span>
           </span>
         </Link>
 
@@ -150,7 +150,9 @@ export function BarraNavegacaoApp({
                   aria-label={rotulo}
                   aria-current={activo ? "page" : undefined}
                   className={`relative flex items-center gap-2 px-3 sm:px-4 text-sm font-semibold whitespace-nowrap transition ${
-                    activo ? "text-primary-400" : "text-neutral-400 hover:text-white"
+                    activo
+                      ? "text-amber-600 dark:text-primary-400"
+                      : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
                   }`}
                 >
                   <Icone className="w-5 h-5 shrink-0" />
@@ -158,7 +160,7 @@ export function BarraNavegacaoApp({
                   <span
                     aria-hidden
                     className={`absolute left-2 right-2 bottom-0 h-[3px] rounded-t-full transition ${
-                      activo ? "bg-primary-400 shadow-[0_0_12px_rgba(255,195,0,0.7)]" : "bg-transparent"
+                      activo ? "bg-amber-500 dark:bg-primary-400 shadow-[0_0_12px_rgba(255,195,0,0.6)]" : "bg-transparent"
                     }`}
                   />
                 </Link>
@@ -172,8 +174,8 @@ export function BarraNavegacaoApp({
           <button
             onClick={alternar}
             aria-label="Alternar tema"
-            title={tema === "escuro" ? "Modo claro" : "Modo escuro"}
-            className="hidden sm:grid w-9 h-9 place-items-center rounded-full text-neutral-300 hover:text-primary-400 hover:bg-white/[0.06] transition"
+            title={tema === "escuro" ? "Mudar para modo claro" : "Mudar para modo escuro"}
+            className="hidden sm:grid w-9 h-9 place-items-center rounded-full text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
           >
             {tema === "escuro" ? <NavIconeSol className="w-5 h-5" /> : <NavIconeLua className="w-5 h-5" />}
           </button>
@@ -183,45 +185,45 @@ export function BarraNavegacaoApp({
               href={pedidoActivo ? `/app/pedido/${pedidoActivo}` : "/app/historico"}
               title={pedidoActivo ? "Tem um pedido em curso" : "Sem pedidos em curso"}
               aria-label="Notificações"
-              className="relative w-9 h-9 grid place-items-center rounded-full text-neutral-300 hover:text-primary-400 hover:bg-white/[0.06] transition"
+              className="relative w-9 h-9 grid place-items-center rounded-full text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
             >
               <NavIconeSino className="w-5 h-5" />
               {pedidoActivo && (
-                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-primary-400 ring-2 ring-neutral-950 animate-pulse" />
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-primary-400 ring-2 ring-white dark:ring-[#070B14]" />
               )}
             </Link>
           )}
 
-          <span aria-hidden className="hidden sm:block w-px h-7 bg-white/10 mx-1.5" />
+          <span aria-hidden className="hidden sm:block w-px h-7 bg-slate-200 dark:bg-white/10 mx-1.5" />
 
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenu((v) => !v)}
               aria-expanded={menu}
               aria-label="Menu da conta"
-              className="flex items-center gap-2 pl-1 pr-1.5 sm:pr-2 py-1 rounded-full hover:bg-white/[0.06] transition"
+              className="flex items-center gap-2 pl-1 pr-1.5 sm:pr-2 py-1 rounded-full hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
             >
-              <span className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-300 to-primary-500 text-neutral-950 grid place-items-center text-sm font-extrabold ring-2 ring-primary-400/30">
+              <span className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-300 to-primary-500 text-slate-950 grid place-items-center text-sm font-extrabold ring-2 ring-primary-400/30">
                 {inicial}
               </span>
               <span className="hidden md:flex flex-col items-start leading-tight">
-                <span className="text-sm font-semibold text-white max-w-[110px] truncate">
+                <span className="text-sm font-semibold text-slate-900 dark:text-white max-w-[110px] truncate">
                   {primeiroNome || "…"}
                 </span>
-                <span className="text-[11px] text-neutral-400">{ROTULO_PAPEL_APP[papel]}</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">{ROTULO_PAPEL_APP[papel]}</span>
               </span>
-              <NavIconeSeta className={`hidden sm:block w-4 h-4 text-neutral-400 transition ${menu ? "rotate-180" : ""}`} />
+              <NavIconeSeta className={`hidden sm:block w-4 h-4 text-slate-400 transition ${menu ? "rotate-180" : ""}`} />
             </button>
 
             {menu && (
-              <div className="absolute right-0 mt-2 w-60 rounded-2xl border border-white/10 bg-neutral-900 shadow-2xl p-1.5">
-                <div className="px-3 py-2.5 mb-1 border-b border-white/10">
-                  <p className="text-sm font-semibold text-white truncate">{nome || "—"}</p>
-                  <p className="text-xs text-neutral-400">{ROTULO_PAPEL_APP[papel]}</p>
+              <div className="absolute right-0 mt-2 w-60 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] shadow-2xl p-1.5">
+                <div className="px-3 py-2.5 mb-1 border-b border-slate-200 dark:border-white/10">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{nome || "—"}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{ROTULO_PAPEL_APP[papel]}</p>
                 </div>
                 <button
                   onClick={alternar}
-                  className="sm:hidden w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                  className="sm:hidden w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-950 dark:hover:text-white"
                 >
                   {tema === "escuro" ? <NavIconeSol className="w-4 h-4" /> : <NavIconeLua className="w-4 h-4" />}
                   {tema === "escuro" ? "Modo claro" : "Modo escuro"}
@@ -229,21 +231,21 @@ export function BarraNavegacaoApp({
                 {papel === "EMPRESA" && (
                   <Link
                     href="/empresa/avaliacao-prototipo"
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-950 dark:hover:text-white"
                   >
                     <NavIconeEstrela className="w-4 h-4" /> Avaliar o protótipo
                   </Link>
                 )}
                 <Link
                   href="/"
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-950 dark:hover:text-white"
                 >
                   <NavIconeCasa className="w-4 h-4" /> Ver site público
                 </Link>
                 <button
                   onClick={sair}
                   disabled={aSair}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50"
                 >
                   <NavIconeSair className="w-4 h-4" /> {aSair ? "A sair…" : "Terminar sessão"}
                 </button>
@@ -258,7 +260,7 @@ export function BarraNavegacaoApp({
     {!imersiva && (
       <nav
         aria-label="Navegação principal"
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-neutral-950/95 backdrop-blur-md border-t border-white/10 pb-[env(safe-area-inset-bottom)]"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#070B14]/95 backdrop-blur-md border-t border-slate-200 dark:border-white/10 pb-[env(safe-area-inset-bottom)]"
       >
         <ul
           className="grid"
@@ -273,12 +275,14 @@ export function BarraNavegacaoApp({
                   aria-current={activo ? "page" : undefined}
                   aria-label={rotulo}
                   className={`flex flex-col items-center justify-center gap-0.5 min-h-[58px] px-1 transition ${
-                    activo ? "text-primary-400" : "text-neutral-400 active:text-neutral-200"
+                    activo
+                      ? "text-amber-600 dark:text-primary-400"
+                      : "text-slate-500 active:text-slate-900 dark:text-slate-400 dark:active:text-slate-200"
                   }`}
                 >
                   <span
                     className={`grid place-items-center w-11 h-7 rounded-full transition ${
-                      activo ? "bg-primary-400/15" : ""
+                      activo ? "bg-amber-100 dark:bg-primary-400/15" : ""
                     }`}
                   >
                     <Icone className="w-5 h-5 shrink-0" />

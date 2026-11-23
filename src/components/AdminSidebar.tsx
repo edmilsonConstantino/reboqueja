@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import { usarTema } from "@/components/ProvedorTema";
 
 const ITENS = [
   { href: "/admin", rotulo: "Dashboard", exact: true, icone: IconeCasa },
   { href: "/admin/empresas", rotulo: "Empresas", exact: false, icone: IconePredio },
+  { href: "/admin/frota", rotulo: "Gestão de Camiões", exact: false, icone: IconeCamiao },
   { href: "/admin/pedidos", rotulo: "Pedidos", exact: false, icone: IconeCaixa },
   { href: "/admin/utilizadores", rotulo: "Utilizadores", exact: false, icone: IconePessoas },
   { href: "/admin/avaliacoes", rotulo: "Avaliações", exact: false, icone: IconeEstrela },
@@ -37,11 +39,11 @@ function Logo({ compacto = false }: { compacto?: boolean }) {
       <img
         src="/logo.svg"
         alt=""
-        className="w-9 h-9 rounded-xl shadow-[0_0_0_3px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
+        className="w-9 h-9 rounded-xl shadow-[0_0_0_3px_rgba(245,158,11,0.2)] dark:shadow-[0_0_0_3px_rgba(255,195,0,0.15)] transition group-hover:scale-105"
       />
       {!compacto && (
-        <span className="font-extrabold text-xl tracking-tight text-white">
-          Reboque<span className="text-primary-400">Já</span>
+        <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
+          Reboque<span className="text-amber-600 dark:text-primary-400">Já</span>
         </span>
       )}
     </Link>
@@ -57,7 +59,7 @@ function BotaoTemaAdmin() {
       onClick={alternar}
       aria-label={escuro ? "Mudar para modo claro" : "Mudar para modo escuro"}
       title={escuro ? "Modo claro" : "Modo escuro"}
-      className="w-10 h-10 grid place-items-center rounded-full text-neutral-400 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 hover:bg-white/10 dark:hover:bg-white/[0.06] transition"
+      className="w-10 h-10 grid place-items-center rounded-full text-slate-500 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
     >
       {escuro ? <IconeSol className="w-5 h-5" /> : <IconeLua className="w-5 h-5" />}
     </button>
@@ -68,8 +70,12 @@ function BotaoTemaAdmin() {
 
 export function BarraLateralAdmin({
   variante = "lateral",
+  recolhida = false,
+  aoAlternarRecolher,
 }: {
   variante?: "lateral" | "topo";
+  recolhida?: boolean;
+  aoAlternarRecolher?: () => void;
 }) {
   const pathname = usePathname();
   const { sair, aSair } = useSair();
@@ -80,7 +86,7 @@ export function BarraLateralAdmin({
   if (topo) {
     // Mobile / tablet: barra horizontal com scroll
     return (
-      <div className="h-14 flex items-center gap-2 px-3 pt-[env(safe-area-inset-top)] bg-neutral-950/90 backdrop-blur-md border-b border-white/10 overflow-x-auto no-scrollbar">
+      <div className="h-14 flex items-center gap-2 px-3 pt-[env(safe-area-inset-top)] bg-white/95 dark:bg-neutral-950/90 backdrop-blur-md border-b border-slate-200 dark:border-white/10 overflow-x-auto no-scrollbar transition-colors duration-200">
         <Logo compacto />
         <nav className="flex items-center gap-1">
           {ITENS.map(({ href, rotulo, exact, icone: Icone }) => {
@@ -93,8 +99,8 @@ export function BarraLateralAdmin({
                 aria-label={rotulo}
                 className={`flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ${
                   a
-                    ? "bg-primary-400 text-neutral-950"
-                    : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
+                    ? "bg-primary-400 text-slate-950 shadow-sm"
+                    : "text-slate-600 hover:text-slate-950 hover:bg-slate-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/[0.06]"
                 }`}
               >
                 <Icone className="w-4 h-4 shrink-0" />
@@ -109,7 +115,7 @@ export function BarraLateralAdmin({
             onClick={sair}
             disabled={aSair}
             aria-label="Sair"
-            className="w-10 h-10 grid place-items-center rounded-full text-neutral-400 hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
+            className="w-10 h-10 grid place-items-center rounded-full text-slate-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition disabled:opacity-50"
           >
             <IconeSair className="w-5 h-5" />
           </button>
@@ -119,52 +125,110 @@ export function BarraLateralAdmin({
   }
 
   return (
-    <div className="h-full flex flex-col bg-neutral-950 border-r border-white/10">
-      <div className="h-16 px-5 flex items-center border-b border-white/10">
-        <Logo />
+    <div className="h-full flex flex-col bg-white dark:bg-[#080D1A] border-r border-slate-200 dark:border-white/10 transition-colors duration-200">
+      <div
+        className={`h-16 flex items-center border-b border-slate-200 dark:border-white/10 ${
+          recolhida ? "justify-center px-3" : "px-5"
+        }`}
+      >
+        <Logo compacto={recolhida} />
       </div>
 
-      <nav className="flex-1 flex flex-col px-3 py-5 gap-1 overflow-y-auto">
-        <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-          Menu
-        </p>
+      <nav className="flex-1 flex flex-col px-3 py-5 gap-1 overflow-y-auto overflow-x-hidden">
+        {!recolhida && (
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-neutral-500">
+            Menu
+          </p>
+        )}
         {ITENS.map(({ href, rotulo, exact, icone: Icone }) => {
           const a = activo(href, exact);
           return (
             <Link
               key={href}
               href={href}
+              title={recolhida ? rotulo : undefined}
+              aria-label={rotulo}
               aria-current={a ? "page" : undefined}
-              className={`relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
+              className={`relative flex items-center rounded-xl text-sm font-semibold transition ${
+                recolhida ? "justify-center px-0 py-3" : "gap-3 px-4 py-3"
+              } ${
                 a
-                  ? "bg-gradient-to-r from-primary-400/20 to-primary-400/5 text-primary-400 border border-primary-400/25 shadow-[0_4px_20px_-8px_rgba(255,195,0,0.45)]"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.05] border border-transparent"
+                  ? "bg-gradient-to-r from-amber-500/15 to-amber-500/5 text-amber-700 border border-amber-500/25 shadow-[0_4px_20px_-8px_rgba(245,158,11,0.35)] dark:from-primary-400/20 dark:to-primary-400/5 dark:text-primary-400 dark:border-primary-400/25 dark:shadow-[0_4px_20px_-8px_rgba(255,195,0,0.45)]"
+                  : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/[0.05] border border-transparent"
               }`}
             >
               {a && (
-                <span aria-hidden className="absolute -left-3 top-2 bottom-2 w-1 rounded-r-full bg-primary-400" />
+                <span aria-hidden className="absolute -left-3 top-2 bottom-2 w-1 rounded-r-full bg-amber-500 dark:bg-primary-400" />
               )}
-              <Icone className="w-5 h-5" />
-              {rotulo}
+              <Icone className="w-5 h-5 shrink-0" />
+              {!recolhida && <span className="truncate">{rotulo}</span>}
             </Link>
           );
         })}
       </nav>
 
       {/* Cartão motivacional */}
-      <div className="p-3">
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-primary-400/15 via-neutral-900 to-neutral-950 p-5 min-h-[170px]">
-          <IconeFoguete className="relative w-9 h-9 text-primary-400" />
-          <p className="relative mt-3 text-sm font-semibold text-neutral-100 leading-snug">
-            Juntos por um <br /> reboque mais rápido!
-          </p>
-          <span aria-hidden className="relative mt-3 block w-10 h-0.5 rounded-full bg-primary-400" />
-          {/* Ondas */}
-          <svg aria-hidden viewBox="0 0 200 60" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 w-full h-14">
-            <path d="M0 40 C40 20 80 55 120 35 S180 25 200 30 V60 H0Z" fill="rgba(255,195,0,0.18)" />
-            <path d="M0 48 C50 30 90 60 140 42 S185 38 200 42 V60 H0Z" fill="rgba(255,195,0,0.35)" />
-          </svg>
+      {!recolhida && (
+        <div className="px-3 pb-3">
+          <div className="relative overflow-hidden rounded-2xl border border-amber-200/80 dark:border-white/10 bg-gradient-to-br from-amber-50 via-white to-amber-50/70 dark:from-primary-400/15 dark:via-neutral-900 dark:to-neutral-950 p-5 min-h-[160px]">
+            <IconeFoguete className="relative w-9 h-9 text-amber-600 dark:text-primary-400" />
+            <p className="relative mt-3 text-sm font-semibold text-slate-800 dark:text-neutral-100 leading-snug">
+              Juntos por um <br /> reboque mais rápido!
+            </p>
+            <span aria-hidden className="relative mt-3 block w-10 h-0.5 rounded-full bg-amber-500 dark:bg-primary-400" />
+            {/* Ondas */}
+            <svg aria-hidden viewBox="0 0 200 60" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 w-full h-14">
+              <path d="M0 40 C40 20 80 55 120 35 S180 25 200 30 V60 H0Z" fill="rgba(255,195,0,0.18)" />
+              <path d="M0 48 C50 30 90 60 140 42 S185 38 200 42 V60 H0Z" fill="rgba(255,195,0,0.35)" />
+            </svg>
+          </div>
         </div>
+      )}
+
+      {/* Rodapé da barra lateral: definições + botão Recolher */}
+      <div
+        className={`border-t border-slate-200 dark:border-white/10 ${
+          recolhida
+            ? "px-2 py-3 flex flex-col items-center gap-2"
+            : "px-4 py-3.5 flex items-center justify-between gap-2"
+        }`}
+      >
+        <Link
+          href="/admin/definicoes"
+          title="Definições"
+          aria-label="Definições"
+          className={`w-10 h-10 rounded-xl grid place-items-center transition ${
+            activo("/admin/definicoes", false)
+              ? "text-[#F97316] bg-orange-50 dark:bg-white/10"
+              : "text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[0.06]"
+          }`}
+        >
+          <Settings className="w-5 h-5" />
+        </Link>
+
+        {aoAlternarRecolher && (
+          <button
+            type="button"
+            onClick={aoAlternarRecolher}
+            title={recolhida ? "Expandir menu" : "Recolher menu"}
+            aria-label={recolhida ? "Expandir menu" : "Recolher menu"}
+            aria-expanded={!recolhida}
+            className={
+              recolhida
+                ? "w-11 h-10 rounded-xl bg-[#F97316] hover:bg-[#EA580C] active:scale-[0.98] text-white grid place-items-center shadow-sm transition cursor-pointer"
+                : "inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#F97316] hover:bg-[#EA580C] active:scale-[0.98] text-white text-sm font-bold shadow-sm transition cursor-pointer"
+            }
+          >
+            {recolhida ? (
+              <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+            ) : (
+              <>
+                <span>Recolher</span>
+                <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -222,11 +286,11 @@ export function BarraTopoAdmin() {
   const inicial = nome.charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-md border-b border-neutral-200 dark:border-white/10">
+    <header className="sticky top-0 z-30 h-16 bg-white/95 dark:bg-[#070B14]/90 backdrop-blur-md border-b border-slate-200 dark:border-white/10">
       <div className="h-full px-6 lg:px-8 flex items-center gap-4">
         {/* Pesquisa */}
         <div className="relative w-full max-w-md">
-          <IconeLupa className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-neutral-500 pointer-events-none" />
+          <IconeLupa className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none" />
           <input
             value={termo}
             onChange={(e) => setTermo(e.target.value)}
@@ -236,17 +300,17 @@ export function BarraTopoAdmin() {
               if (e.key === "Enter" && resultados[0]) router.push(resultados[0].href);
             }}
             placeholder="Pesquisar no painel…"
-            className="w-full h-10 pl-10 pr-4 rounded-xl bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 outline-none focus:border-primary-400/60 focus:ring-2 focus:ring-primary-400/20 transition"
+            className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-100 dark:bg-[#0E1629] border border-slate-200 dark:border-white/10 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 outline-none focus:border-amber-500 dark:focus:border-primary-400/60 focus:ring-2 focus:ring-amber-400/20 dark:focus:ring-primary-400/20 transition"
           />
           {focado && resultados.length > 0 && (
-            <div className="absolute mt-2 w-full rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl overflow-hidden">
+            <div className="absolute mt-2 w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] shadow-2xl overflow-hidden">
               {resultados.map(({ href, rotulo, icone: Icone }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-900 dark:hover:text-white"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white"
                 >
-                  <Icone className="w-4 h-4 text-primary-400" />
+                  <Icone className="w-4 h-4 text-amber-600 dark:text-primary-400" />
                   {rotulo}
                 </Link>
               ))}
@@ -255,6 +319,7 @@ export function BarraTopoAdmin() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          <BotaoTemaAdmin />
           {/* Notificações */}
           <Link
             href="/admin/empresas"
@@ -263,17 +328,17 @@ export function BarraTopoAdmin() {
                 ? `${pendentes} empresa(s) à espera de aprovação`
                 : "Sem notificações"
             }
-            className="relative w-10 h-10 grid place-items-center rounded-full text-neutral-500 dark:text-neutral-300 hover:text-primary-400 hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition"
+            className="relative w-10 h-10 grid place-items-center rounded-full text-slate-500 dark:text-slate-300 hover:text-amber-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
           >
             <IconeSino className="w-5 h-5" />
             {pendentes > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-primary-400 text-neutral-950 text-[10px] font-extrabold grid place-items-center ring-2 ring-white dark:ring-neutral-950">
+              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-primary-400 text-slate-950 text-[10px] font-extrabold grid place-items-center ring-2 ring-white dark:ring-[#070B14]">
                 {pendentes}
               </span>
             )}
           </Link>
 
-          <span aria-hidden className="w-px h-8 bg-neutral-200 dark:bg-white/10 mx-2" />
+          <span aria-hidden className="w-px h-8 bg-slate-200 dark:bg-white/10 mx-2" />
 
           {/* Utilizador */}
           <div className="relative" ref={menuRef}>
@@ -347,6 +412,16 @@ function IconePredio(props: P) {
       <rect x="4" y="3" width="16" height="18" rx="1.5" />
       <path d="M9 7h1.5M13.5 7H15M9 11h1.5M13.5 11H15M9 15h1.5M13.5 15H15" />
       <path d="M10.5 21v-3h3v3" />
+    </svg>
+  );
+}
+function IconeCamiao(props: P) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M2 16V6h11v10" />
+      <path d="M13 9h4l4 4v3h-8" />
+      <circle cx="7" cy="17.5" r="2" />
+      <circle cx="17" cy="17.5" r="2" />
     </svg>
   );
 }

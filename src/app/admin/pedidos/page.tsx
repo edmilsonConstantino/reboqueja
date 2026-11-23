@@ -10,7 +10,7 @@ type Pedido = {
   id: string;
   estado: string;
   origemEndereco: string;
-  destinoEndereco: string;
+  destinoEndereco: string | null;
   distanciaKm: number;
   precoMin: number;
   precoMax: number;
@@ -50,7 +50,13 @@ export default function AdminPedidos() {
   if (!pedidos) return <div className="p-6"><Carregando /></div>;
 
   const corEstado = (s: string) =>
-    s === "CONCLUIDO" ? "verde" : s === "CANCELADO" ? "vermelho" : s === "PENDENTE" ? "amarelo" : "azul";
+    s === "CONCLUIDO"
+      ? "verde"
+      : s === "CANCELADO" || s === "RECUSADO"
+        ? "vermelho"
+        : s === "PENDENTE"
+          ? "amarelo"
+          : "azul";
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-5">
@@ -88,20 +94,20 @@ export default function AdminPedidos() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-bold text-sm truncate">{p.origemEndereco}</p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400 truncate">
-                    → {p.destinoEndereco} · {formatarKm(p.distanciaKm)}
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                    → {p.destinoEndereco || "Destino não indicado"} · {formatarKm(p.distanciaKm)}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400 mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     👤 {p.condutor.nome} · 🏢 {p.empresa?.nome || "—"}
                     {p.camiao ? ` · 🚚 ${p.camiao.matricula}` : ""}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-500 dark:text-neutral-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {formatarDataHora(p.criadoEm)}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <Etiqueta cor={corEstado(p.estado)}>{LABEL_ESTADO[p.estado]}</Etiqueta>
-                  <p className="text-xs font-bold mt-2 text-primary-600 dark:text-primary-400">
+                  <Etiqueta cor={corEstado(p.estado)}>{LABEL_ESTADO[p.estado] || p.estado}</Etiqueta>
+                  <p className="text-xs font-bold mt-2 text-amber-700 dark:text-primary-400 tabular-nums">
                     {faixaPrecoTexto(p.precoMin, p.precoMax)}
                   </p>
                   {p.avaliacao && (

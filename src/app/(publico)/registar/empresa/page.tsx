@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AvisoErro } from "@/components/ui";
 import { BAIRROS_MATOLA } from "@/lib/constants";
@@ -13,7 +12,6 @@ const BENEFICIOS = [
 ];
 
 export default function RegistarEmpresa() {
-  const router = useRouter();
   const [form, setForm] = useState({
     nome: "",
     nuit: "",
@@ -39,30 +37,33 @@ export default function RegistarEmpresa() {
       const res = await fetch("/api/registar/empresa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ ...form, consentimento }),
       });
-      const dados = await res.json();
+      const dados = await res.json().catch(() => ({}));
       if (!res.ok) {
         setErroMsg(dados.erro || "Não foi possível registar a empresa.");
         return;
       }
-      router.replace("/empresa");
+      window.location.assign("/empresa");
+    } catch {
+      setErroMsg("Não foi possível ligar ao servidor. Tente novamente.");
     } finally {
       setAEnviar(false);
     }
   };
 
   return (
-    <div className="relative overflow-hidden bg-[#f6f7fb] dark:bg-neutral-950 py-6 sm:py-12">
+    <div className="relative overflow-hidden bg-slate-100/80 dark:bg-[#070B14] py-6 sm:py-12 transition-colors duration-200">
       {/* Fundos decorativos */}
-      <div aria-hidden className="pointer-events-none absolute -top-28 -left-24 w-72 h-72 rounded-full bg-primary-300/45 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-36 -right-24 w-96 h-96 rounded-full bg-primary-200/50 blur-3xl dark:bg-primary-900/20" />
+      <div aria-hidden className="pointer-events-none absolute -top-28 -left-24 w-72 h-72 rounded-full bg-amber-300/30 blur-3xl dark:bg-amber-500/10" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-36 -right-24 w-96 h-96 rounded-full bg-amber-200/35 blur-3xl dark:bg-sky-500/10" />
 
       <div className="relative max-w-5xl mx-auto px-3 sm:px-6">
-        <div className="grid lg:grid-cols-[minmax(0,360px)_1fr] rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/10 shadow-[0_24px_60px_-28px_rgba(15,23,42,0.35)]">
+        <div className="grid lg:grid-cols-[minmax(0,360px)_1fr] rounded-3xl overflow-hidden bg-white dark:bg-[#0E1629] border border-slate-200 dark:border-white/10 shadow-[0_24px_60px_-28px_rgba(15,23,42,0.25)] dark:shadow-2xl">
 
           {/* ===== Painel esquerdo ===== */}
-          <aside className="relative flex flex-col gap-5 p-5 sm:p-8 bg-gradient-to-b from-primary-50 to-primary-200/80 dark:from-neutral-800 dark:to-neutral-900">
+          <aside className="relative flex flex-col gap-5 p-5 sm:p-8 bg-gradient-to-b from-amber-50 to-amber-100/90 dark:from-[#111A2E] dark:to-[#0A101E] border-b lg:border-b-0 lg:border-r border-amber-200/70 dark:border-white/10">
             <Link href="/" className="hidden sm:flex items-center gap-2.5" aria-label="ReboqueJá — início">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -70,17 +71,17 @@ export default function RegistarEmpresa() {
                 alt=""
                 className="w-10 h-10 rounded-xl shadow-[0_0_0_3px_rgba(255,195,0,0.2)]"
               />
-              <span className="font-extrabold text-lg tracking-tight text-neutral-900 dark:text-white">
-                Reboque<span className="text-primary-600 dark:text-primary-400">Já</span>
+              <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">
+                Reboque<span className="text-amber-600 dark:text-primary-400">Já</span>
               </span>
             </Link>
 
             <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight text-neutral-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight text-slate-900 dark:text-white">
                 Registe a sua{" "}
-                <span className="text-primary-600 dark:text-primary-400">empresa de reboque</span>
+                <span className="text-amber-700 dark:text-primary-400">empresa de reboque</span>
               </h2>
-              <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-2 leading-relaxed">
+              <p className="text-sm text-slate-700 dark:text-slate-300 mt-2 leading-relaxed">
                 Faça parte da nossa plataforma e ofereça os seus serviços a mais
                 condutores na Matola.
               </p>
@@ -183,18 +184,18 @@ export default function RegistarEmpresa() {
               />
 
               <label className="block">
-                <span className="block text-sm font-semibold mb-1.5 text-neutral-700 dark:text-neutral-200">
-                  Bairro de operação <b className="text-primary-600">*</b>
+                <span className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-200">
+                  Bairro de operação <b className="text-amber-600 dark:text-primary-400">*</b>
                 </span>
                 <span className="relative block">
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500"
+                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                   >
                     <IconePin className="w-[18px] h-[18px]" />
                   </span>
                   <select
-                    className="w-full min-h-[48px] pl-11 pr-9 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] text-sm outline-none transition appearance-none focus:border-primary-400 focus:ring-2 focus:ring-primary-400/30"
+                    className="w-full min-h-[48px] pl-11 pr-9 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 text-sm outline-none transition appearance-none focus:border-amber-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-amber-400/30 dark:focus:ring-primary-400/30 [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#0B1120] dark:[&>option]:text-slate-100"
                     value={form.bairro}
                     onChange={(e) => setForm({ ...form, bairro: e.target.value })}
                   >
@@ -206,7 +207,7 @@ export default function RegistarEmpresa() {
                   </select>
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                    className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
                   >
                     <IconeSeta className="w-4 h-4" />
                   </span>
@@ -225,18 +226,18 @@ export default function RegistarEmpresa() {
               />
 
               {/* Consentimento */}
-              <label className="flex gap-3 items-start bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-900 rounded-xl p-4 cursor-pointer">
+              <label className="flex gap-3 items-start bg-amber-50/90 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-400/20 rounded-xl p-4 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={consentimento}
                   onChange={(e) => setConsentimento(e.target.checked)}
                   className="mt-1 w-5 h-5 accent-primary-500 shrink-0"
                 />
-                <span className="text-xs leading-relaxed text-neutral-700 dark:text-neutral-300">
+                <span className="text-xs leading-relaxed text-slate-700 dark:text-slate-300">
                   Autorizo o ReboqueJá a publicar publicamente o <b>nome</b>, o{" "}
                   <b>contacto</b> e as <b>faixas de preço</b> desta empresa, e
                   aceito os{" "}
-                  <Link href="/termos" className="underline font-semibold">
+                  <Link href="/termos" className="underline font-semibold text-amber-800 dark:text-primary-300">
                     termos de uso e privacidade
                   </Link>
                   . Esta autorização fica registada com a data de hoje.
@@ -283,18 +284,18 @@ function Campo({
 }: { rotulo: string; icone: React.ReactNode } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
-      <span className="block text-sm font-semibold mb-1.5 text-neutral-700 dark:text-neutral-200">
-        {rotulo} <b className="text-primary-600">*</b>
+      <span className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-200">
+        {rotulo} <b className="text-amber-600 dark:text-primary-400">*</b>
       </span>
       <span className="relative block">
         <span
           aria-hidden
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500"
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
         >
           {icone}
         </span>
         <input
-          className={`w-full min-h-[48px] pl-11 pr-3 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-400/30 ${className}`}
+          className={`w-full min-h-[48px] pl-11 pr-3 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm outline-none transition focus:border-amber-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-amber-400/30 dark:focus:ring-primary-400/30 ${className}`}
           {...props}
         />
       </span>

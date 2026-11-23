@@ -1,7 +1,7 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 const secreto = new TextEncoder().encode(
@@ -23,6 +23,29 @@ export type Sessao = {
 export class NaoAutorizado extends Error {}
 export class Proibido extends Error {}
 
+function pedidoEmHttps(): boolean {
+  try {
+    const h = headers();
+    const proto = h.get("x-forwarded-proto") || "";
+    const origin = h.get("origin") || "";
+    const referer = h.get("referer") || "";
+    const host = h.get("host") || h.get("x-forwarded-host") || "";
+    if (
+      proto.includes("https") ||
+      origin.startsWith("https://") ||
+      referer.startsWith("https://")
+    ) {
+      return true;
+    }
+    if (host && !host.startsWith("localhost") && !host.startsWith("127.0.0.1")) {
+      return true;
+    }
+    return process.env.NODE_ENV === "production";
+  } catch {
+    return process.env.NODE_ENV === "production";
+  }
+}
+
 export async function criarToken(sessao: Sessao): Promise<string> {
   return new SignJWT({ ...sessao })
     .setProtectedHeader({ alg: "HS256" })
@@ -33,17 +56,27 @@ export async function criarToken(sessao: Sessao): Promise<string> {
 
 export async function definirCookieSessao(sessao: Sessao) {
   const token = await criarToken(sessao);
+  const emHttps = pedidoEmHttps();
   cookies().set(COOKIE_SESSAO, token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: emHttps ? "none" : "lax",
+    secure: emHttps,
+    ...(emHttps ? { partitioned: true } : {}),
     maxAge: 60 * 60 * 24 * 7,
     path: "/",
   });
 }
 
 export async function limparCookieSessao() {
-  cookies().delete(COOKIE_SESSAO);
+  const emHttps = pedidoEmHttps();
+  cookies().set(COOKIE_SESSAO, "", {
+    httpOnly: true,
+    sameSite: emHttps ? "none" : "lax",
+    secure: emHttps,
+    ...(emHttps ? { partitioned: true } : {}),
+    maxAge: 0,
+    path: "/",
+  });
 }
 
 export async function obterSessao(): Promise<Sessao | null> {

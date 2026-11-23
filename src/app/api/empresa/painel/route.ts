@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { exigirPapel } from "@/lib/auth";
 import { ok, tratarErroApi } from "@/lib/api";
+import { localizacaoActualizada } from "@/lib/condutor";
 import { schemaDisponivel } from "@/lib/validations";
 import type { NextRequest } from "next/server";
 
-/** GET: dados do painel da empresa (novos, em curso, números do dia). */
+/** GET: dados do painel da empresa (novos dirigidos à empresa, em curso, números do dia e estado dos camiões). */
 export async function GET() {
   try {
     const sessao = await exigirPapel("EMPRESA");
@@ -20,11 +21,12 @@ export async function GET() {
     const [novos, emCurso, concluidosHoje, canceladosHoje, ganhosHoje, pedidosRecentes, camioes] =
       await Promise.all([
         prisma.pedido.findMany({
-          where: { estado: "PENDENTE" },
+          where: { estado: "PENDENTE", empresaId: empresa.id },
           orderBy: { criadoEm: "desc" },
           include: {
             condutor: { select: { nome: true, telefone: true } },
             veiculo: true,
+            camiao: { select: { matricula: true, motoristaNome: true } },
           },
         }),
         prisma.pedido.findMany({
@@ -76,11 +78,26 @@ export async function GET() {
           select: {
             id: true,
             matricula: true,
+            marca: true,
+            modelo: true,
             tipo: true,
             capacidade: true,
             motoristaNome: true,
+            motoristaId: true,
+            motorista: { select: { id: true, nome: true, activo: true } },
             activo: true,
-            _count: { select: { pedidos: { where: { estado: { in: ["ACEITE", "A_CAMINHO", "NO_LOCAL", "EM_TRANSPORTE"] } } } } },
+            disponivel: true,
+            partilhaLocalizacao: true,
+            localizacaoActualizadaEm: true,
+            lat: true,
+            lng: true,
+            _count: {
+              select: {
+                pedidos: {
+                  where: { estado: { in: ["ACEITE", "A_CAMINHO", "NO_LOCAL", "EM_TRANSPORTE"] } },
+                },
+              },
+            },
           },
         }),
       ]);
@@ -94,12 +111,19 @@ export async function GET() {
         ? avaliacoes.reduce((s, a) => s + a.estrelas, 0) / avaliacoes.length
         : null;
 
-    // ---- Atividade da semana: concluídos e cancelados por dia (seg→dom) ----
     const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    const porDia = new Map<string, { concluidos: number; cancelados: number; ganhoMin: number; ganhoMax: number }>();
+    const porDia = new Map<
+      string,
+      { concluidos: number; cancelados: number; ganhoMin: number; ganhoMax: number }
+    >();
     for (let i = 6; i >= 0; i--) {
       const d = new Date(hoje.getTime() - i * 24 * 60 * 60 * 1000);
-      porDia.set(d.toISOString().slice(0, 10), { concluidos: 0, cancelados: 0, ganhoMin: 0, ganhoMax: 0 });
+      porDia.set(d.toISOString().slice(0, 10), {
+        concluidos: 0,
+        cancelados: 0,
+        ganhoMin: 0,
+        ganhoMax: 0,
+      });
     }
     let tempoMedioRespostaMin: number | null = null;
     const tempos: number[] = [];
@@ -116,7 +140,7 @@ export async function GET() {
         }
       }
     }
-    // Tempo médio de resposta (PENDENTE→ACEITE) via eventos dos pedidos da semana
+
     const eventosSemana = await prisma.pedidoEvento.findMany({
       where: {
         estado: { in: ["PENDENTE", "ACEITE"] },
@@ -155,9 +179,7 @@ export async function GET() {
         nome: empresa.nome,
         disponivel: empresa.disponivel,
         estadoAprovacao: empresa.estadoAprovacao,
-        camioesActivos: await prisma.camiao.count({
-          where: { empresaId: empresa.id, activo: true },
-        }),
+        camioesActivos: camioes.filter((c) => c.activo).length,
         media,
         totalAvaliacoes: avaliacoes.length,
       },
@@ -172,6 +194,8 @@ export async function GET() {
         precoMin: p.precoMin,
         precoMax: p.precoMax,
         condutorNome: p.condutor.nome,
+        camiaoMatricula: p.camiao?.matricula ?? null,
+        motoristaNome: p.camiao?.motoristaNome ?? null,
         veiculo: p.veiculo
           ? `${p.veiculo.marca} ${p.veiculo.modelo} · ${p.veiculo.matricula}`
           : null,
@@ -192,12 +216,7 @@ export async function GET() {
         ganhoMin: ganhosHoje._sum.precoMin || 0,
         ganhoMax: ganhosHoje._sum.precoMax || 0,
       },
-      resumoHoje: {
-        receitaMin: resumoHoje.receitaMin,
-        receitaMax: resumoHoje.receitaMax,
-        concluidos: resumoHoje.concluidos,
-        tempoRespostaMin: resumoHoje.tempoRespostaMin,
-      },
+      resumoHoje,
       semana: Array.from(porDia.entries()).map(([dia, v]) => ({
         dia: DIAS_SEMANA[new Date(dia + "T12:00:00").getDay()],
         dataIso: dia,
@@ -207,9 +226,15 @@ export async function GET() {
       camioes: camioes.map((c) => ({
         id: c.id,
         matricula: c.matricula,
+        marca: c.marca ?? null,
+        modelo: c.modelo ?? null,
         tipo: c.tipo,
-        motoristaNome: c.motoristaNome,
+        motoristaNome: c.motorista?.nome ?? (c.motoristaNome || ""),
+        temContaCondutor: Boolean(c.motoristaId),
         activo: c.activo,
+        disponivel: Boolean(c.disponivel),
+        localizacaoValida: localizacaoActualizada(c),
+        localizacaoActualizadaEm: c.localizacaoActualizadaEm ?? null,
         emServico: c._count.pedidos > 0,
       })),
     });
@@ -218,7 +243,7 @@ export async function GET() {
   }
 }
 
-/** PATCH: alternar disponível/indisponível. */
+/** PATCH: alternar disponível/indisponível da empresa. */
 export async function PATCH(req: NextRequest) {
   try {
     const sessao = await exigirPapel("EMPRESA");

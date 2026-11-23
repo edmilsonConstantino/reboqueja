@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { exigirPapel, Proibido } from "@/lib/auth";
 import { ok, erro, tratarErroApi } from "@/lib/api";
+import { ESTADOS_EM_CURSO } from "@/lib/condutor";
 import { schemaAceitarPedido, schemaEstado } from "@/lib/validations";
 import { PROXIMO_ESTADO, LABEL_ESTADO } from "@/lib/constants";
 import type { NextRequest } from "next/server";
 
-/** A empresa associa um camião e aceita o pedido (PENDENTE → ACEITE). */
+/** A empresa aceita o pedido dirigido a um dos seus camiões (PENDENTE → ACEITE). */
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -25,35 +26,59 @@ export async function POST(
 
     const pedido = await prisma.pedido.findUnique({ where: { id: params.id } });
     if (!pedido) return erro("Pedido não encontrado.", 404);
+    if (pedido.empresaId && pedido.empresaId !== empresa.id) {
+      throw new Proibido();
+    }
     if (pedido.estado !== "PENDENTE") {
-      return erro("Este pedido já não está disponível.", 409);
+      return erro("Este pedido já não está pendente.", 409);
     }
 
     const { camiaoId } = schemaAceitarPedido.parse(await req.json());
     const camiao = await prisma.camiao.findUnique({
       where: { id: camiaoId },
+      include: { motorista: { select: { id: true, activo: true } } },
     });
     if (!camiao || camiao.empresaId !== empresa.id) {
       return erro("Escolha um camião da sua empresa.", 422);
     }
+    if (!camiao.activo) {
+      return erro("Este camião está inactivo.", 422);
+    }
+    if (!camiao.motoristaId || !camiao.motorista?.activo) {
+      return erro("Este camião não tem um condutor activo associado.", 422);
+    }
 
-    await prisma.$transaction([
-      prisma.pedido.update({
-        where: { id: pedido.id },
-        data: {
-          estado: "ACEITE",
-          empresaId: empresa.id,
-          camiaoId: camiao.id,
-        },
-      }),
-      prisma.pedidoEvento.create({
-        data: {
-          pedidoId: pedido.id,
-          estado: "ACEITE",
-          nota: `${empresa.nome} aceitou o pedido · ${camiao.matricula}`,
-        },
-      }),
-    ]);
+    const emCursoNoCamiao = await prisma.pedido.findFirst({
+      where: { camiaoId: camiao.id, estado: { in: [...ESTADOS_EM_CURSO] } },
+    });
+    if (emCursoNoCamiao) {
+      return erro("Este camião já está a executar outro serviço.", 409);
+    }
+
+    const res = await prisma.pedido.updateMany({
+      where: { id: pedido.id, estado: "PENDENTE" },
+      data: {
+        estado: "ACEITE",
+        empresaId: empresa.id,
+        camiaoId: camiao.id,
+      },
+    });
+    if (res.count === 0) {
+      return erro("Este pedido já foi respondido ou cancelado.", 409);
+    }
+
+    await prisma.camiao.update({
+      where: { id: camiao.id },
+      data: { disponivel: false },
+    });
+
+    await prisma.pedidoEvento.create({
+      data: {
+        pedidoId: pedido.id,
+        estado: "ACEITE",
+        nota: `${empresa.nome} aceitou o pedido · ${camiao.matricula}`,
+      },
+    });
 
     return ok({ sucesso: true });
   } catch (e) {
@@ -61,7 +86,7 @@ export async function POST(
   }
 }
 
-/** A empresa recusa o pedido (recusa = remove a atribuição; permanece PENDENTE para outros). */
+/** A empresa recusa o pedido dirigido a um dos seus veículos (PENDENTE → RECUSADO). */
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }
@@ -75,13 +100,23 @@ export async function DELETE(
 
     const pedido = await prisma.pedido.findUnique({ where: { id: params.id } });
     if (!pedido) return erro("Pedido não encontrado.", 404);
+    if (pedido.empresaId && pedido.empresaId !== empresa.id) {
+      throw new Proibido();
+    }
 
-    // Regista a recusa como evento de auditoria (o pedido permanece visível a outras empresas)
+    const res = await prisma.pedido.updateMany({
+      where: { id: pedido.id, estado: "PENDENTE" },
+      data: { estado: "RECUSADO" },
+    });
+    if (res.count === 0) {
+      return erro("Este pedido já não está pendente.", 409);
+    }
+
     await prisma.pedidoEvento.create({
       data: {
         pedidoId: pedido.id,
-        estado: "PENDENTE",
-        nota: `${empresa.nome} recusou o pedido`,
+        estado: "RECUSADO",
+        nota: `${empresa.nome} recusou a solicitação`,
       },
     });
 
@@ -91,7 +126,7 @@ export async function DELETE(
   }
 }
 
-/** Avança o estado (A_CAMINHO → NO_LOCAL → EM_TRANSPORTE → CONCLUIDO). */
+/** Avança o estado (ACEITE → A_CAMINHO → NO_LOCAL → EM_TRANSPORTE → CONCLUIDO). */
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -103,7 +138,10 @@ export async function PATCH(
     });
     if (!empresa) return erro("Empresa não encontrada.", 404);
 
-    const pedido = await prisma.pedido.findUnique({ where: { id: params.id } });
+    const pedido = await prisma.pedido.findUnique({
+      where: { id: params.id },
+      include: { camiao: true },
+    });
     if (!pedido) return erro("Pedido não encontrado.", 404);
     if (pedido.empresaId !== empresa.id) throw new Proibido();
 
@@ -127,6 +165,13 @@ export async function PATCH(
         data: { pedidoId: pedido.id, estado },
       }),
     ]);
+
+    if (estado === "CONCLUIDO" && pedido.camiaoId && pedido.camiao && !pedido.camiao.disponivel) {
+      await prisma.camiao.update({
+        where: { id: pedido.camiaoId },
+        data: { partilhaLocalizacao: false },
+      });
+    }
 
     return ok({ estado });
   } catch (e) {

@@ -12,7 +12,16 @@ type Condutor = {
   activo: boolean;
 };
 
-type Camiao = { matricula: string; motorista: Condutor | null };
+type Camiao = {
+  id: string;
+  matricula: string;
+  tipo: string;
+  activo: boolean;
+  disponivel: boolean;
+  localizacaoValida: boolean;
+  emServico: boolean;
+  motorista: Condutor | null;
+};
 
 type Empresa = {
   id: string;
@@ -132,7 +141,14 @@ export default function AdminEmpresas() {
   const condutoresDa = (e: Empresa) =>
     e.camioes
       .filter((c): c is Camiao & { motorista: Condutor } => Boolean(c.motorista))
-      .map((c) => ({ ...c.motorista, matricula: c.matricula }));
+      .map((c) => ({
+        ...c.motorista,
+        matricula: c.matricula,
+        emServico: c.emServico,
+        disponivel: c.disponivel,
+        localizacaoValida: c.localizacaoValida,
+        camiaoActivo: c.activo,
+      }));
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -198,7 +214,7 @@ export default function AdminEmpresas() {
               setPagina(1);
             }}
             placeholder="Pesquisar por nome, NUIT ou localização…"
-            className="w-full h-11 pl-10 pr-4 rounded-xl bg-white dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm outline-none focus:border-primary-400/60 focus:ring-2 focus:ring-primary-400/20 transition"
+            className="w-full h-11 pl-10 pr-4 rounded-xl bg-white dark:bg-[#0E1629] border border-slate-200 dark:border-white/10 text-sm outline-none focus:border-amber-500 dark:focus:border-primary-400/60 focus:ring-2 focus:ring-amber-400/20 dark:focus:ring-primary-400/20 transition"
           />
         </div>
 
@@ -209,7 +225,7 @@ export default function AdminEmpresas() {
             setPagina(1);
           }}
           aria-label="Filtrar por estado"
-          className="h-11 px-3 rounded-xl bg-white dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm outline-none focus:border-primary-400/60 lg:w-52"
+          className="h-11 px-3 rounded-xl bg-white dark:bg-[#0E1629] border border-slate-200 dark:border-white/10 text-sm outline-none focus:border-amber-500 dark:focus:border-primary-400/60 lg:w-52 [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#0B1120] dark:[&>option]:text-slate-100"
         >
           <option value="TODAS">Todos os estados</option>
           <option value="APROVADA">Activas</option>
@@ -224,7 +240,7 @@ export default function AdminEmpresas() {
             setPagina(1);
           }}
           aria-label="Filtrar por cidade"
-          className="h-11 px-3 rounded-xl bg-white dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-sm outline-none focus:border-primary-400/60 lg:w-48"
+          className="h-11 px-3 rounded-xl bg-white dark:bg-[#0E1629] border border-slate-200 dark:border-white/10 text-sm outline-none focus:border-amber-500 dark:focus:border-primary-400/60 lg:w-48 [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#0B1120] dark:[&>option]:text-slate-100"
         >
           <option value="TODAS">Todas as cidades</option>
           {cidades.map((c) => (
@@ -251,8 +267,8 @@ export default function AdminEmpresas() {
 
       {/* Lista */}
       {daPagina.length === 0 ? (
-        <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-12 text-center">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+        <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] p-12 text-center">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Nenhuma empresa corresponde a estes filtros.
           </p>
         </div>
@@ -265,7 +281,7 @@ export default function AdminEmpresas() {
             return (
               <div
                 key={e.id}
-                className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] shadow-[0_8px_30px_-16px_rgba(0,0,0,0.5)] transition hover:border-neutral-300 dark:hover:border-white/20"
+                className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] shadow-sm dark:shadow-[0_8px_30px_-16px_rgba(0,0,0,0.5)] transition hover:border-slate-300 dark:hover:border-white/20"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-4 sm:p-5">
                   {/* Identidade */}
@@ -391,34 +407,52 @@ export default function AdminEmpresas() {
                         </p>
                       ) : (
                         <ul className="grid sm:grid-cols-2 gap-2">
-                          {condutores.map((c) => (
-                            <li
-                              key={c.id}
-                              className="rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] px-3 py-2.5"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <p className="text-sm font-semibold truncate">{c.nome}</p>
-                                <span
-                                  className={`inline-flex items-center gap-1 text-[11px] font-bold ${
-                                    c.activo
-                                      ? "text-emerald-600 dark:text-emerald-400"
-                                      : "text-red-500"
-                                  }`}
-                                >
-                                  <span
-                                    aria-hidden
-                                    className={`w-1.5 h-1.5 rounded-full ${
-                                      c.activo ? "bg-emerald-500" : "bg-red-500"
-                                    }`}
-                                  />
-                                  {c.activo ? "Activo" : "Inactivo"}
-                                </span>
-                              </div>
-                              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                {formatarTelefone(c.telefone)} · matrícula {c.matricula}
-                              </p>
-                            </li>
-                          ))}
+                          {condutores.map((c) => {
+                            const statusTexto = c.emServico
+                              ? "Em serviço"
+                              : !c.activo || !c.camiaoActivo
+                                ? "Inactivo"
+                                : c.disponivel && c.localizacaoValida
+                                  ? "Disponível"
+                                  : c.disponivel
+                                    ? "GPS expirado"
+                                    : "Indisponível";
+                            const statusCor = c.emServico
+                              ? "text-sky-600 dark:text-sky-400"
+                              : !c.activo || !c.camiaoActivo
+                                ? "text-red-500"
+                                : c.disponivel && c.localizacaoValida
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : c.disponivel
+                                    ? "text-amber-600 dark:text-amber-400"
+                                    : "text-neutral-500 dark:text-neutral-400";
+                            const pontoCor = c.emServico
+                              ? "bg-sky-500"
+                              : !c.activo || !c.camiaoActivo
+                                ? "bg-red-500"
+                                : c.disponivel && c.localizacaoValida
+                                  ? "bg-emerald-500"
+                                  : c.disponivel
+                                    ? "bg-amber-500"
+                                    : "bg-neutral-400";
+                            return (
+                              <li
+                                key={c.id}
+                                className="rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] px-3 py-2.5"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className="text-sm font-semibold truncate">{c.nome}</p>
+                                  <span className={`inline-flex items-center gap-1 text-[11px] font-bold ${statusCor}`}>
+                                    <span aria-hidden className={`w-1.5 h-1.5 rounded-full ${pontoCor}`} />
+                                    {statusTexto}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                  {formatarTelefone(c.telefone)} · matrícula {c.matricula}
+                                </p>
+                              </li>
+                            );
+                          })}
                         </ul>
                       )}
                     </div>
@@ -492,16 +526,16 @@ function Indicador({
   fundo: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-4">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E1629] p-4 shadow-sm dark:shadow-none">
       <div className="flex items-center gap-3">
         <span className={`w-11 h-11 shrink-0 rounded-xl grid place-items-center ${fundo} ${cor}`}>
           {icone}
         </span>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             {titulo}
           </p>
-          <p className="text-2xl font-extrabold leading-tight">{valor}</p>
+          <p className="text-2xl font-extrabold leading-tight tabular-nums">{valor}</p>
         </div>
       </div>
     </div>

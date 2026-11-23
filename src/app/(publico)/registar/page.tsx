@@ -1,12 +1,10 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AvisoErro } from "@/components/ui";
 
 export default function RegistarCondutor() {
-  const router = useRouter();
   const [form, setForm] = useState({ nome: "", telefone: "", senha: "" });
   const [erroMsg, setErroMsg] = useState("");
   const [aEnviar, setAEnviar] = useState(false);
@@ -19,25 +17,29 @@ export default function RegistarCondutor() {
       const res = await fetch("/api/registar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(form),
       });
-      const dados = await res.json();
+      const dados = await res.json().catch(() => ({}));
       if (!res.ok) {
         setErroMsg(dados.erro || "Não foi possível registar.");
         return;
       }
-      router.replace("/app");
+      window.location.assign("/app");
+    } catch {
+      setErroMsg("Não foi possível ligar ao servidor. Tente novamente.");
     } finally {
       setAEnviar(false);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <div className="grid lg:grid-cols-[320px_1fr] rounded-3xl overflow-hidden border border-neutral-200 dark:border-white/10 shadow-card bg-white dark:bg-neutral-900">
+    <div className="bg-slate-100/80 dark:bg-[#070B14] py-8 sm:py-12 transition-colors duration-200">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="grid lg:grid-cols-[320px_1fr] rounded-3xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-2xl bg-white dark:bg-[#0E1629]">
 
-        {/* ===== Painel lateral esquerdo ===== */}
-        <aside className="order-2 lg:order-1 bg-neutral-950 text-white p-6 sm:p-8 flex flex-col gap-8">
+          {/* ===== Painel lateral esquerdo ===== */}
+          <aside className="order-2 lg:order-1 bg-[#0B1120] dark:bg-[#080D1A] text-white p-6 sm:p-8 flex flex-col gap-8 border-t lg:border-t-0 lg:border-r border-white/10">
           {/* Marca */}
           <div>
             <Link href="/" className="flex items-center gap-3" aria-label="ReboqueJá — início">
@@ -96,12 +98,12 @@ export default function RegistarCondutor() {
         </aside>
 
         {/* ===== Painel principal direito ===== */}
-        <section className="order-1 lg:order-2 p-6 sm:p-10 lg:p-12">
+        <section className="order-1 lg:order-2 p-6 sm:p-10 lg:p-12 bg-white dark:bg-[#0E1629]">
           <header className="mb-8">
-            <h1 className="text-3xl font-extrabold tracking-tight">Criar conta de condutor</h1>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5">
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Criar conta de condutor</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5">
               Peça reboque em minutos ·{" "}
-              <span className="font-semibold text-primary-600 dark:text-primary-400 uppercase text-xs tracking-wide">
+              <span className="font-semibold text-amber-700 dark:text-primary-400 uppercase text-xs tracking-wide">
                 Cidade da Matola
               </span>
             </p>
@@ -109,12 +111,12 @@ export default function RegistarCondutor() {
 
           <div className="max-w-xl">
             {/* Cartão do formulário */}
-            <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-5 sm:p-6">
+            <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-slate-50/90 dark:bg-[#111A2E] p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-5">
-                <span className="w-10 h-10 rounded-xl bg-primary-400/15 text-primary-600 dark:text-primary-400 grid place-items-center">
+                <span className="w-10 h-10 rounded-xl bg-amber-500/15 dark:bg-primary-400/15 text-amber-700 dark:text-primary-400 grid place-items-center">
                   <IconeUtilizador className="w-5 h-5" />
                 </span>
-                <h2 className="font-bold text-lg">Os seus dados</h2>
+                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Os seus dados</h2>
               </div>
 
               <form onSubmit={submeter} className="space-y-4" id="form-registo">
@@ -165,9 +167,9 @@ export default function RegistarCondutor() {
 
             {/* Rodapé de acções */}
             <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 mt-6">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center sm:text-left">
+              <p className="text-sm text-slate-600 dark:text-slate-400 text-center sm:text-left">
                 Já tem conta?{" "}
-                <Link href="/entrar" className="font-semibold text-primary-600 dark:text-primary-400 hover:underline">
+                <Link href="/entrar" className="font-semibold text-amber-700 dark:text-primary-400 hover:underline">
                   Entrar
                 </Link>
               </p>
@@ -175,13 +177,14 @@ export default function RegistarCondutor() {
                 type="submit"
                 form="form-registo"
                 disabled={aEnviar}
-                className="min-h-[52px] px-8 inline-flex items-center justify-center gap-2 rounded-full bg-primary-400 text-neutral-950 font-bold hover:bg-primary-300 active:scale-[0.99] transition shadow-[0_8px_24px_-8px_rgba(255,195,0,0.6)] disabled:opacity-50 disabled:pointer-events-none"
+                className="min-h-[52px] px-8 inline-flex items-center justify-center gap-2 rounded-full bg-primary-400 text-slate-950 font-bold hover:bg-primary-300 active:scale-[0.99] transition shadow-[0_8px_24px_-8px_rgba(255,195,0,0.6)] disabled:opacity-50 disabled:pointer-events-none"
               >
                 {aEnviar ? "A criar conta…" : "Criar conta"} <span aria-hidden>→</span>
               </button>
             </div>
           </div>
         </section>
+        </div>
       </div>
     </div>
   );
@@ -190,7 +193,7 @@ export default function RegistarCondutor() {
 /* ===== Auxiliares ===== */
 
 const campo =
-  "w-full min-h-[48px] px-4 rounded-xl border border-neutral-300 dark:border-white/10 bg-white dark:bg-white/[0.04] text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-400/30";
+  "w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm outline-none transition focus:border-amber-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-amber-400/30 dark:focus:ring-primary-400/30";
 
 function ItemLateral({
   icone,

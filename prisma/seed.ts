@@ -29,7 +29,7 @@ async function main() {
   const senha = await bcrypt.hash("teste123", 10);
 
   // ---------- Admin ----------
-  await prisma.utilizador.create({
+  const admin = await prisma.utilizador.create({
     data: {
       nome: "Administrador ReboqueJá",
       telefone: "+258870000000",
@@ -77,7 +77,7 @@ async function main() {
   type DefEmpresa = {
     nome: string; nuit: string; telefone: string; email: string;
     bairro: keyof typeof BAIRROS; aprovada: boolean; disponivel: boolean;
-    camioes: { matricula: string; tipo: string; motorista: string; tel: string }[];
+    camioes: { matricula: string; marca: string; modelo: string; tipo: string; motorista: string; tel: string }[];
     faixas: Record<string, [number, number][]>;
   };
 
@@ -91,8 +91,8 @@ async function main() {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "RBM-001-MC", tipo: "PESADO", motorista: "Alberto Nhaca", tel: "+258875000001" },
-        { matricula: "RBM-002-MC", tipo: "LIGEIRO", motorista: "Ernesto Cuna", tel: "+258875000002" },
+        { matricula: "RBM-001-MC", marca: "Volvo", modelo: "FH 460", tipo: "PESADO", motorista: "Alberto Nhaca", tel: "+258875000001" },
+        { matricula: "RBM-002-MC", marca: "Isuzu", modelo: "NQR 500", tipo: "LIGEIRO", motorista: "Ernesto Cuna", tel: "+258875000002" },
       ],
       faixas: {
         LIGEIRO: [[500, 1000], [1000, 2000], [2000, 3000], [3500, 5000]],
@@ -110,8 +110,8 @@ async function main() {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "MRA-010-MC", tipo: "LIGEIRO", motorista: "Domingos Chirindza", tel: "+258875000003" },
-        { matricula: "MRA-011-MC", tipo: "PESADO", motorista: "Salomão Mabjaia", tel: "+258875000004" },
+        { matricula: "MRA-010-MC", marca: "Toyota", modelo: "Dyna 200", tipo: "LIGEIRO", motorista: "Domingos Chirindza", tel: "+258875000003" },
+        { matricula: "MRA-011-MC", marca: "Scania", modelo: "P310", tipo: "PESADO", motorista: "Salomão Mabjaia", tel: "+258875000004" },
       ],
       faixas: {
         LIGEIRO: [[600, 1100], [1100, 2200], [2200, 3200], [3200, 4800]],
@@ -129,8 +129,8 @@ async function main() {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "SRL-020-MC", tipo: "LIGEIRO", motorista: "Tomás Bila", tel: "+258875000005" },
-        { matricula: "SRL-021-MC", tipo: "MINIBUS", motorista: "Nelson Macassa", tel: "+258875000006" },
+        { matricula: "SRL-020-MC", marca: "Mitsubishi", modelo: "Canter FE85", tipo: "LIGEIRO", motorista: "Tomás Bila", tel: "+258875000005" },
+        { matricula: "SRL-021-MC", marca: "Mercedes-Benz", modelo: "Atego 1218", tipo: "MINIBUS", motorista: "Nelson Macassa", tel: "+258875000006" },
       ],
       faixas: {
         LIGEIRO: [[500, 950], [950, 1900], [1900, 2900], [2900, 4500]],
@@ -148,8 +148,8 @@ async function main() {
       aprovada: true,
       disponivel: true,
       camioes: [
-        { matricula: "T3R-030-MC", tipo: "LIGEIRO", motorista: "Paulo Muianga", tel: "+258875000007" },
-        { matricula: "T3R-031-MC", tipo: "SUV", motorista: "Rogério Tembe", tel: "+258875000008" },
+        { matricula: "T3R-030-MC", marca: "Hino", modelo: "300 Series", tipo: "LIGEIRO", motorista: "Paulo Muianga", tel: "+258875000007" },
+        { matricula: "T3R-031-MC", marca: "Ford", modelo: "Cargo 816", tipo: "SUV", motorista: "Rogério Tembe", tel: "+258875000008" },
       ],
       faixas: {
         LIGEIRO: [[550, 1050], [1050, 2100], [2100, 3100], [3100, 4700]],
@@ -167,7 +167,7 @@ async function main() {
       aprovada: false,
       disponivel: false,
       camioes: [
-        { matricula: "RFA-040-MC", tipo: "LIGEIRO", motorista: "Hélder Zandamela", tel: "+258875000009" },
+        { matricula: "RFA-040-MC", marca: "Hyundai", modelo: "HD65", tipo: "LIGEIRO", motorista: "Hélder Zandamela", tel: "+258875000009" },
       ],
       faixas: {
         LIGEIRO: [[500, 1000], [1000, 2000], [2000, 3000], [3000, 4500]],
@@ -215,13 +215,18 @@ async function main() {
         data: {
           empresaId: empresa.id,
           matricula: c.matricula,
+          marca: c.marca,
+          modelo: c.modelo,
           tipo: c.tipo,
           capacidade: c.tipo === "PESADO" ? "Até 5 t" : "Até 2 t",
-          motoristaNome: c.motorista,
-          motoristaTelefone: c.tel,
+          motoristaNome: "",
+          motoristaTelefone: "",
           activo: true,
-          lat: b.lat + (Math.random() - 0.5) * 0.03,
-          lng: b.lng + (Math.random() - 0.5) * 0.03,
+          lat: 0,
+          lng: 0,
+          disponivel: false,
+          partilhaLocalizacao: false,
+          localizacaoActualizadaEm: null,
         },
       });
     }
@@ -259,17 +264,55 @@ async function main() {
     orderBy: { matricula: "asc" },
     take: 4,
   });
+  const motoristasSeed = empresasDef
+    .filter((e) => e.aprovada)
+    .flatMap((e) => e.camioes);
   for (const c of camioesComConta) {
-    await prisma.utilizador.create({
+    const def = motoristasSeed.find((m) => m.matricula === c.matricula);
+    if (!def) continue;
+    const motorista = await prisma.utilizador.create({
       data: {
-        nome: c.motoristaNome,
-        telefone: c.motoristaTelefone,
+        nome: def.motorista,
+        telefone: def.tel,
         senhaHash: senha,
         papel: "CONDUTOR",
+        empresaCondutorId: c.empresaId,
         camiao: { connect: { id: c.id } },
       },
     });
+    await prisma.camiao.update({
+      where: { id: c.id },
+      data: { motoristaNome: def.motorista, motoristaTelefone: def.tel },
+    });
+    await prisma.atribuicaoCamiao.create({
+      data: {
+        camiaoId: c.id,
+        motoristaId: motorista.id,
+        atribuidoPorId: admin.id,
+        motivo: "Associação inicial",
+      },
+    });
   }
+
+  // Condutores livres para associação imediata
+  await prisma.utilizador.createMany({
+    data: [
+      {
+        nome: "Mateus Mondlane",
+        telefone: "+258875000010",
+        senhaHash: senha,
+        papel: "CONDUTOR",
+        empresaCondutorId: empresasCriadas[0].id,
+      },
+      {
+        nome: "Sérgio Guambe",
+        telefone: "+258875000011",
+        senhaHash: senha,
+        papel: "CONDUTOR",
+        empresaCondutorId: empresasCriadas[1].id,
+      },
+    ],
+  });
 
   // ---------- Pedidos históricos (10) ----------
   const pontosMatola: { lat: number; lng: number; endereco: string }[] = [

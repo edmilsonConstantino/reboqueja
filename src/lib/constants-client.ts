@@ -25,9 +25,10 @@ export const LABEL_PAGAMENTO: Record<string, string> = {
 export const LABEL_ESTADO: Record<string, string> = {
   PENDENTE: "Pendente",
   ACEITE: "Aceite",
+  RECUSADO: "Recusado",
   A_CAMINHO: "A caminho",
   NO_LOCAL: "No local",
-  EM_TRANSPORTE: "Em transporte",
+  EM_TRANSPORTE: "Em execução",
   CONCLUIDO: "Concluído",
   CANCELADO: "Cancelado",
 };
@@ -44,6 +45,7 @@ export const ORDEM_ESTADOS = [
 export const ICONES_ESTADO: Record<string, string> = {
   PENDENTE: "🔎",
   ACEITE: "✅",
+  RECUSADO: "🚫",
   A_CAMINHO: "🚚",
   NO_LOCAL: "📍",
   EM_TRANSPORTE: "🛣️",

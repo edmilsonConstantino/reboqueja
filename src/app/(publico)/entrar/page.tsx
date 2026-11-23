@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { FormEvent, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AvisoErro } from "@/components/ui";
 
@@ -15,7 +15,6 @@ export default function Entrar() {
 }
 
 function FormularioEntrar() {
-  const router = useRouter();
   const params = useSearchParams();
   // ?tipo=empresa realça a entrada de empresa (ex.: botão "Sou empresa").
   const empresa = params.get("tipo") === "empresa";
@@ -31,9 +30,10 @@ function FormularioEntrar() {
       const res = await fetch("/api/entrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ contacto: c, senha: s }),
       });
-      const dados = await res.json();
+      const dados = await res.json().catch(() => ({}));
       if (!res.ok) {
         setErroMsg(dados.erro || "Não foi possível entrar.");
         return;
@@ -49,23 +49,26 @@ function FormularioEntrar() {
         proximo && destinos[dados.papel] && proximo.startsWith(destinos[dados.papel])
           ? proximo
           : destinos[dados.papel] || "/";
-      router.replace(destino);
+      window.location.assign(destino);
+    } catch {
+      setErroMsg("Não foi possível ligar ao servidor. Tente novamente.");
     } finally {
       setAEntrar(false);
     }
   };
 
-  const submeter = async (e: FormEvent) => {
-    e.preventDefault();
+  const submeter = async (e?: FormEvent) => {
+    e?.preventDefault();
     await entrar(contacto, senha);
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <div className="grid lg:grid-cols-[320px_1fr] rounded-3xl overflow-hidden border border-neutral-200 dark:border-white/10 shadow-card bg-white dark:bg-neutral-900">
+    <div className="bg-[#FAF7F2] dark:bg-[#0C0603] py-8 sm:py-12 transition-colors duration-200">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="grid lg:grid-cols-[320px_1fr] rounded-3xl overflow-hidden border border-[#E5D6C3] dark:border-[#492C19]/80 shadow-lg dark:shadow-2xl bg-white dark:bg-[#1A0F08]">
 
-        {/* ===== Painel lateral esquerdo ===== */}
-        <aside className="order-2 lg:order-1 bg-neutral-950 text-white p-6 sm:p-8 flex flex-col gap-8">
+          {/* ===== Painel lateral esquerdo ===== */}
+          <aside className="order-2 lg:order-1 bg-[#1E1109] dark:bg-[#120A05] text-white p-6 sm:p-8 flex flex-col gap-8 border-t lg:border-t-0 lg:border-r border-[#3A2212]">
           {/* Marca */}
           <div>
             <Link href="/" className="flex items-center gap-3" aria-label="ReboqueJá — início">
@@ -176,12 +179,12 @@ function FormularioEntrar() {
         </aside>
 
         {/* ===== Painel principal direito ===== */}
-        <section className="order-1 lg:order-2 p-6 sm:p-10 lg:p-12">
+        <section className="order-1 lg:order-2 p-6 sm:p-10 lg:p-12 bg-white dark:bg-[#1A0F08]">
           <header className="mb-8">
-            <h1 className="text-3xl font-extrabold tracking-tight">Entrar na plataforma</h1>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5">
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#1A100A] dark:text-white">Entrar na plataforma</h1>
+            <p className="text-sm text-[#6B5747] dark:text-[#B9A490] mt-1.5">
               Bem-vindo de volta ·{" "}
-              <span className="font-semibold text-primary-600 dark:text-primary-400 uppercase text-xs tracking-wide">
+              <span className="font-semibold text-[#9A4D0D] dark:text-[#F59E0B] uppercase text-xs tracking-wide">
                 Cidade da Matola
               </span>
             </p>
@@ -189,12 +192,12 @@ function FormularioEntrar() {
 
           <div className="max-w-xl">
             {/* Cartão do formulário */}
-            <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] p-5 sm:p-6">
+            <div className="rounded-2xl border border-[#E5D6C3] dark:border-[#492C19]/80 bg-[#FAF7F2] dark:bg-[#120A05] p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-5">
-                <span className="w-10 h-10 rounded-xl bg-primary-400/15 text-primary-600 dark:text-primary-400 grid place-items-center">
+                <span className="w-10 h-10 rounded-xl bg-amber-500/15 dark:bg-primary-400/15 text-amber-700 dark:text-primary-400 grid place-items-center">
                   <IconeUtilizador className="w-5 h-5" />
                 </span>
-                <h2 className="font-bold text-lg">Credenciais</h2>
+                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Credenciais</h2>
               </div>
 
               <form onSubmit={submeter} className="space-y-4">
@@ -234,26 +237,27 @@ function FormularioEntrar() {
 
             {/* Rodapé de acções */}
             <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 mt-6">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center sm:text-left">
+              <p className="text-sm text-slate-600 dark:text-slate-400 text-center sm:text-left">
                 Não tem conta?{" "}
                 <Link
                   href={empresa ? "/registar/empresa" : "/registar"}
-                  className="font-semibold text-primary-600 dark:text-primary-400 hover:underline"
+                  className="font-semibold text-amber-700 dark:text-primary-400 hover:underline"
                 >
                   Registe-se
                 </Link>
               </p>
               <button
                 type="button"
-                onClick={submeter}
+                onClick={() => void submeter()}
                 disabled={aEntrar}
-                className="min-h-[52px] px-8 inline-flex items-center justify-center gap-2 rounded-full bg-primary-400 text-neutral-950 font-bold hover:bg-primary-300 active:scale-[0.99] transition shadow-[0_8px_24px_-8px_rgba(255,195,0,0.6)] disabled:opacity-50 disabled:pointer-events-none"
+                className="min-h-[52px] px-8 inline-flex items-center justify-center gap-2 rounded-full bg-primary-400 text-slate-950 font-bold hover:bg-primary-300 active:scale-[0.99] transition shadow-[0_8px_24px_-8px_rgba(255,195,0,0.6)] disabled:opacity-50 disabled:pointer-events-none"
               >
                 {aEntrar ? "A entrar…" : "Entrar"} <span aria-hidden>→</span>
               </button>
             </div>
           </div>
         </section>
+        </div>
       </div>
     </div>
   );
@@ -262,7 +266,7 @@ function FormularioEntrar() {
 /* ===== Auxiliares ===== */
 
 const campo =
-  "w-full min-h-[48px] px-4 rounded-xl border border-neutral-300 dark:border-white/10 bg-white dark:bg-white/[0.04] text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-400/30";
+  "w-full min-h-[48px] px-4 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm outline-none transition focus:border-amber-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-amber-400/30 dark:focus:ring-primary-400/30";
 
 function ItemLateral({
   icone,
